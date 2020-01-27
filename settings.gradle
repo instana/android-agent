@@ -1,0 +1,2 @@
+include ':app', ':android-agent-library'
+rootProject.name='android-agent'
