@@ -4,6 +4,7 @@ import android.os.Build;
 import com.instana.android.Instana;
 import com.instana.android.core.event.models.RemoteCall;
 import com.instana.android.core.util.ConstantsAndUtil;
+import com.instana.android.core.util.Logger;
 import com.instana.android.instrumentation.RemoteCallMarker;
 import org.aspectj.lang.JoinPoint;
 
@@ -33,6 +34,7 @@ public aspect UrlConnectionAspect {
     pointcut setRequestMethod(): call(* java.net.HttpURLConnection.setRequestMethod(..));
 
     after() returning(HttpURLConnection connection): openConnectionMethodCall() {
+        Logger.i("Interceptiong openConnection");
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();
         if (isAutoEnabled() && !checkTag(header) && isNotLibraryCallBoolean(url)) {
@@ -43,6 +45,7 @@ public aspect UrlConnectionAspect {
     }
 
     after(HttpURLConnection connection): disconnectMethodCall(connection) {
+        Logger.i("Intercepting disconnect");
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();
         if (isAutoEnabled() && isNotLibraryCallBoolean(url) && checkTag(header)) {
@@ -74,6 +77,7 @@ public aspect UrlConnectionAspect {
     }
 
     private void handleException(JoinPoint joinPoint, Throwable e) {
+        Logger.i("Handling exception");
         if (joinPoint.getTarget() instanceof HttpURLConnection) {
             HttpURLConnection it = (HttpURLConnection) joinPoint.getTarget();
             String header = it.getRequestProperty(TRACKING_HEADER_KEY);

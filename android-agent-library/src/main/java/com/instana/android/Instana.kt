@@ -7,6 +7,7 @@ import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.EventService
 import com.instana.android.core.util.JsonUtil
+import com.instana.android.core.util.Logger
 import com.instana.android.crash.CrashEventStore
 import com.instana.android.crash.CrashService
 import com.instana.android.instrumentation.InstrumentationService
@@ -62,6 +63,7 @@ object Instana {
     fun init(app: Application, configuration: InstanaConfiguration) {
         initStoreAndLifecycle(app)
         this.configuration = configuration
+        Logger.i("Starting Instana agent")
         InstanaWorkManager(configuration).also {
             crashReporting = CrashService(app, it, configuration)
             sessionService = SessionService(app, it)
