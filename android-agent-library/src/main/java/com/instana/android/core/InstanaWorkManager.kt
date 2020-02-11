@@ -7,9 +7,9 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.WorkManager
 import com.instana.android.core.event.BaseEvent
+import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.CrashEvent
 import com.instana.android.core.event.worker.EventWorker
-import com.instana.android.core.util.JsonUtil
 import com.instana.android.crash.CrashEventStore
 import org.apache.commons.collections4.QueueUtils
 import org.apache.commons.collections4.queue.CircularFifoQueue
@@ -19,17 +19,19 @@ import java.util.concurrent.TimeUnit
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class InstanaWorkManager(
-        private val configuration: InstanaConfiguration,
-        private val manager: WorkManager = WorkManager.getInstance()
+    private val configuration: InstanaConfiguration,
+    private val manager: WorkManager = WorkManager.getInstance()
 ) {
 
-    private var eventQueue: Queue<BaseEvent>? = null
+    private var eventQueue: Queue<BaseEvent>
+    private var eventQueue2: Queue<Beacon>
     private val constraints: Constraints
 
     init {
         checkConfigurationParameters(configuration)
         constraints = configureWorkManager(configuration)
         eventQueue = QueueUtils.synchronizedQueue(CircularFifoQueue(configuration.eventsBufferSize))
+        eventQueue2 = QueueUtils.synchronizedQueue(CircularFifoQueue(configuration.eventsBufferSize))
         startPeriodicEventDump(10, TimeUnit.SECONDS)
         checkIfUnSendCrashExistAndAddToQueue()
     }
@@ -39,7 +41,7 @@ class InstanaWorkManager(
      */
     private fun checkIfUnSendCrashExistAndAddToQueue() {
         val tag = CrashEventStore.tag
-        val json = CrashEventStore.json
+        val json = CrashEventStore.serialized
         if (tag.isNotEmpty() && json.isNotEmpty()) {
             val work = EventWorker.createCrashWorkRequest(constraints, tag)
             manager.enqueueUniqueWork(tag, ExistingWorkPolicy.KEEP, work)
@@ -73,10 +75,10 @@ class InstanaWorkManager(
         }
 
         return Constraints.Builder()
-                .setRequiredNetworkType(networkType)
-                .setRequiresBatteryNotLow(lowBattery)
-                .setRequiresCharging(false)
-                .build()
+            .setRequiredNetworkType(networkType)
+            .setRequiresBatteryNotLow(lowBattery)
+            .setRequiresCharging(false)
+            .build()
     }
 
     private fun checkConfigurationParameters(instanaConfiguration: InstanaConfiguration) {
@@ -94,9 +96,14 @@ class InstanaWorkManager(
     private fun startPeriodicEventDump(period: Long, timeUnit: TimeUnit) {
         val executor = Executors.newScheduledThreadPool(1)
         executor.scheduleAtFixedRate({
-            eventQueue?.run {
+            eventQueue.run {
                 if (this.size > 0) {
                     addToManagerAndClear()
+                }
+            }
+            eventQueue2.run {
+                if (this.size > 0) {
+                    addToManagerAndClear2()
                 }
             }
         }, 1, period, timeUnit)
@@ -106,8 +113,8 @@ class InstanaWorkManager(
      * Persisting crash event before crash closes the app
      */
     fun persistCrash(event: CrashEvent) {
-        val json = JsonUtil.EVENT_JSON_ADAPTER.toJson(listOf(event))
-        CrashEventStore.saveEvent(UUID.randomUUID().toString(), json)
+        val serialized = event.serialize()
+        CrashEventStore.saveEvent(UUID.randomUUID().toString(), serialized)
     }
 
     /**
@@ -116,19 +123,42 @@ class InstanaWorkManager(
     private fun Queue<BaseEvent>.addToManagerAndClear() {
         val tag = UUID.randomUUID().toString()
         manager.enqueueUniqueWork(
-                tag,
-                ExistingWorkPolicy.APPEND,
-                EventWorker.createWorkRequest(constraints, this.toList(), tag)
+            tag,
+            ExistingWorkPolicy.APPEND,
+            EventWorker.createWorkRequest(constraints, this.toList(), tag)
+        )
+        this.clear()
+    }
+
+    /**
+     * Upon configuration.eventsBufferSize limit send all data to worker and clear queue
+     */
+    private fun Queue<Beacon>.addToManagerAndClear2() {
+        val tag = UUID.randomUUID().toString()
+        manager.enqueueUniqueWork(
+            tag,
+            ExistingWorkPolicy.APPEND,
+            EventWorker.createWorkRequest2(constraints, this.toList(), tag)
         )
         this.clear()
     }
 
     @Synchronized
     fun send(event: BaseEvent) {
-        eventQueue?.apply {
+        eventQueue.apply {
             this.add(event)
             if (this.size == configuration.eventsBufferSize) {
                 addToManagerAndClear()
+            }
+        }
+    }
+
+    @Synchronized
+    fun send(beacon: Beacon) {
+        eventQueue2.apply {
+            this.add(beacon)
+            if (this.size == configuration.eventsBufferSize) {
+                addToManagerAndClear2()
             }
         }
     }

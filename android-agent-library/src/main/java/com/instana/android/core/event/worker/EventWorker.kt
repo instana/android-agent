@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.work.*
 import com.instana.android.Instana
 import com.instana.android.core.event.BaseEvent
+import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.util.ConstantsAndUtil
-import com.instana.android.core.util.JsonUtil
 import com.instana.android.core.util.Logger
 import com.instana.android.crash.CrashEventStore
 import okhttp3.MediaType
@@ -17,8 +17,8 @@ import java.net.HttpURLConnection
 import java.util.*
 
 open class EventWorker(
-        context: Context,
-        private val params: WorkerParameters
+    context: Context,
+    private val params: WorkerParameters
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = try {
@@ -32,7 +32,7 @@ open class EventWorker(
         if (eventsJson == CrashEventStore.tag) {
             // due to the crash string size we log just "crash"
             Logger.e("crash")
-            eventsJson = CrashEventStore.json
+            eventsJson = CrashEventStore.serialized
             CrashEventStore.clear()
         } else {
             eventsJson?.let {
@@ -42,13 +42,12 @@ open class EventWorker(
 
         var request: Request?
         eventsJson.let {
-
             request = Request.Builder()
-                    .url("${Instana.configuration.reportingUrl}/${Instana.configuration.key}/batch")
-                    .addHeader("Content-Type", "application/json")
-                    .addHeader("Accept-Encoding", "gzip")
-                    .post(RequestBody.create(JSON, it!!))
-                    .build()
+                .url(Instana.configuration.reportingUrl)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept-Encoding", "gzip")
+                .post(RequestBody.create(TEXT_PLAIN, it!!))
+                .build()
         }
 
         var response: Response? = null
@@ -57,7 +56,7 @@ open class EventWorker(
                 Result.failure()
             }
             response = ConstantsAndUtil.client.newCall(request!!).execute()
-            if (response.code() == HttpURLConnection.HTTP_NO_CONTENT) {
+            if (response.code() == HttpURLConnection.HTTP_OK) {
                 Result.success()
             } else {
                 Result.failure()
@@ -76,29 +75,52 @@ open class EventWorker(
     companion object {
 
         fun createWorkRequest(
-                constraints: Constraints,
-                event: List<BaseEvent>,
-                tag: String = UUID.randomUUID().toString()
+            constraints: Constraints,
+            event: List<BaseEvent>,
+            tag: String = UUID.randomUUID().toString()
         ): OneTimeWorkRequest {
-            val serialized = JsonUtil.EVENT_JSON_ADAPTER.toJson(event)
+            // TODO move serialization to a more sensible place
+            val sb = StringBuffer()
+            event.forEach { sb.append("${it.serialize()}\n") }
+            val serialized = sb.toString()
+
             val data = Data.Builder().putString(EVENT_JSON_STRING, serialized).build()
             return OneTimeWorkRequest.Builder(EventWorker::class.java)
-                    .setInputData(data)
-                    .setConstraints(constraints)
-                    .addTag(tag)
-                    .build()
-        }
-
-        fun createCrashWorkRequest(
-                constraints: Constraints,
-                tag: String
-        ): OneTimeWorkRequest = OneTimeWorkRequest.Builder(EventWorker::class.java)
-                .setInputData(Data.Builder().putString(EVENT_JSON_STRING, tag).build())
+                .setInputData(data)
                 .setConstraints(constraints)
                 .addTag(tag)
                 .build()
+        }
+
+        fun createWorkRequest2(
+            constraints: Constraints,
+            event: List<Beacon>,
+            tag: String = UUID.randomUUID().toString()
+        ): OneTimeWorkRequest {
+            // TODO move serialization to a more sensible place
+            val sb = StringBuffer()
+            event.forEach { sb.append("$it\n") }
+            val serialized = sb.toString()
+
+            val data = Data.Builder().putString(EVENT_JSON_STRING, serialized).build()
+            return OneTimeWorkRequest.Builder(EventWorker::class.java)
+                .setInputData(data)
+                .setConstraints(constraints)
+                .addTag(tag)
+                .build()
+        }
+
+        fun createCrashWorkRequest(
+            constraints: Constraints,
+            tag: String
+        ): OneTimeWorkRequest = OneTimeWorkRequest.Builder(EventWorker::class.java)
+            .setInputData(Data.Builder().putString(EVENT_JSON_STRING, tag).build())
+            .setConstraints(constraints)
+            .addTag(tag)
+            .build()
 
         val JSON = MediaType.parse("application/json; charset=utf-8")
+        val TEXT_PLAIN = MediaType.parse("text/plain; charset=utf-8")
 
         const val EVENT_JSON_STRING = "event_string"
     }
