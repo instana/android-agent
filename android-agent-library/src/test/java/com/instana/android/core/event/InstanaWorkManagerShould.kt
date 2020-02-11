@@ -46,9 +46,9 @@ class InstanaWorkManagerShould : BaseTest() {
         val instanaWorkManager = InstanaWorkManager(InstanaConfiguration(InstanaShould.SERVER_URL, InstanaShould.API_KEY, eventsBufferSize = 2), mockManager)
         val crash = EventFactory.createCrash("VERSION", "200", emptyList(), "stacktrace", hashMapOf())
         instanaWorkManager.persistCrash(crash)
-        assertTrue(CrashEventStore.json.contains(crash.sessionId))
-        assertTrue(CrashEventStore.json.contains(crash.id.toString()))
-        assertTrue(CrashEventStore.json.contains("VERSION"))
+        assertTrue(CrashEventStore.serialized.contains(crash.sessionId))
+        assertTrue(CrashEventStore.serialized.contains(crash.id.toString()))
+        assertTrue(CrashEventStore.serialized.contains("VERSION"))
         assertTrue(IdProvider.sessionId == crash.sessionId)
 
         InstanaWorkManager(InstanaConfiguration(InstanaShould.SERVER_URL, InstanaShould.API_KEY, eventsBufferSize = 2), mockManager)

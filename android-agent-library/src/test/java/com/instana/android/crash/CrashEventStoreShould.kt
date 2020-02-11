@@ -30,14 +30,14 @@ class CrashEventStoreShould : BaseTest() {
     fun getJsonWhenEmpty() {
         CrashEventStore.init(app)
         CrashEventStore.reset()
-        assertEquals(CrashEventStore.json, EMPTY_STR)
+        assertEquals(CrashEventStore.serialized, EMPTY_STR)
     }
 
     @Test
     fun getJson() {
         CrashEventStore.init(app)
         CrashEventStore.saveEvent("tag", "json")
-        assertEquals(CrashEventStore.json, "json")
+        assertEquals(CrashEventStore.serialized, "json")
     }
 
     @Test
@@ -45,7 +45,7 @@ class CrashEventStoreShould : BaseTest() {
         CrashEventStore.init(app)
         CrashEventStore.saveEvent("tag", "json")
         assertEquals(CrashEventStore.tag, "tag")
-        assertEquals(CrashEventStore.json, "json")
+        assertEquals(CrashEventStore.serialized, "json")
     }
 
     @Test
@@ -53,13 +53,13 @@ class CrashEventStoreShould : BaseTest() {
         CrashEventStore.init(app)
         CrashEventStore.reset()
         assertEquals(CrashEventStore.tag, EMPTY_STR)
-        assertEquals(CrashEventStore.json, EMPTY_STR)
+        assertEquals(CrashEventStore.serialized, EMPTY_STR)
     }
 
     @Test
     fun clear() {
         CrashEventStore.init(app)
         assertEquals(CrashEventStore.tag, EMPTY_STR)
-        assertEquals(CrashEventStore.json, EMPTY_STR)
+        assertEquals(CrashEventStore.serialized, EMPTY_STR)
     }
 }
