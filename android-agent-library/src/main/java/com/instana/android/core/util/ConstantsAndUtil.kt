@@ -1,11 +1,14 @@
 package com.instana.android.core.util
 
 import android.app.Application
+import android.content.Context
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import android.telephony.TelephonyManager
+import android.util.DisplayMetrics
+import android.view.WindowManager
 import androidx.annotation.RestrictTo
 import com.instana.android.Instana
 import com.instana.android.instrumentation.InstrumentationType
@@ -92,6 +95,12 @@ object ConstantsAndUtil {
         return Pair(version ?: EMPTY_STR, versionCode)
     }
 
+    fun getViewportWidthAndHeight(app: Application): Pair<Int, Int> {
+        val displayMetrics = DisplayMetrics()
+        (app.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay?.getRealMetrics(displayMetrics)
+        return displayMetrics.widthPixels to displayMetrics.heightPixels
+    }
+
     @JvmStatic
     fun hasTrackingHeader(header: String?): Boolean = header != null
 
@@ -128,15 +137,16 @@ object ConstantsAndUtil {
 
     private fun checkRootMethod2(): Boolean {
         val paths = arrayOf(
-                "/system/app/Superuser.apk",
-                "/sbin/su", "/system/bin/su",
-                "/system/xbin/su",
-                "/data/local/xbin/su",
-                "/data/local/bin/su",
-                "/system/sd/xbin/su",
-                "/system/bin/failsafe/su",
-                "/data/local/su",
-                "/su/bin/su")
+            "/system/app/Superuser.apk",
+            "/sbin/su", "/system/bin/su",
+            "/system/xbin/su",
+            "/data/local/xbin/su",
+            "/data/local/bin/su",
+            "/system/sd/xbin/su",
+            "/system/bin/failsafe/su",
+            "/data/local/su",
+            "/su/bin/su"
+        )
         for (path in paths) {
             if (File(path).exists()) return true
         }

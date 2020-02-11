@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        tools:ignore="HardcodedText">
+
+        <Button
+            android:id="@+id/http_url_post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="50dp"
+            android:text="HttpUrl post" />
+
+        <Button
+            android:id="@+id/http_url_put"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="HttpUrl put" />
+
+        <Button
+            android:id="@+id/http_url_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="HttpUrl delete" />
+
+        <Button
+            android:id="@+id/http_url_get"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="HttpUrl get" />
+
+        <Button
+            android:id="@+id/ok_http_post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="50dp"
+            android:text="OkHttp post" />
+
+        <Button
+            android:id="@+id/ok_http_put"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="OkHttp put" />
+
+        <Button
+            android:id="@+id/ok_http_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="OkHttp delete" />
+
+        <Button
+            android:id="@+id/ok_http_get"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="OkHttp get" />
+
+        <Button
+            android:id="@+id/crash_me_kotlin_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="50dp"
+            android:text="Crash runtime" />
+
+        <Button
+            android:id="@+id/crash_me_different_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Crash throwable" />
+
+        <Button
+            android:id="@+id/invoke_low_memory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Invoke low memory" />
+
+        <Button
+            android:id="@+id/invoke_frame_skip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Invoke frame skip" />
+
+        <Button
+            android:id="@+id/invoke_anr_sleep"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="Invoke anr" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</ScrollView>

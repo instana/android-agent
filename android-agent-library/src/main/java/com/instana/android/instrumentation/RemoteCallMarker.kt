@@ -27,7 +27,7 @@ class RemoteCallMarker(
         private val manager: InstanaWorkManager
 ) {
 
-    private val stopWatch: StopWatch = StopWatch()
+    private val stopWatch: StopWatch = StopWatch() // TODO replace with startTime&endTime
     private val eventId = IdProvider.eventId()
     private var connectionType: String? = null
     private var carrierName: String? = null

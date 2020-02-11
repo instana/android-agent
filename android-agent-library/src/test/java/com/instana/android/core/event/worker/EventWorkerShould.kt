@@ -51,7 +51,6 @@ class EventWorkerShould : BaseTest() {
         assertThat(workSpec.constraints.requiredNetworkType, `is`(equalTo(NetworkType.UNMETERED)))
         assertThat(workSpec.constraints.requiresBatteryNotLow(), `is`(equalTo(true)))
         assertThat(workSpec.constraints.requiresCharging(), `is`(equalTo(false)))
-        assertThat(workSpec.input.getString(EVENT_JSON_STRING), `is`(equalTo(JsonUtil.EVENT_JSON_ADAPTER.toJson(listOf(event)))))
     }
 
     @Test

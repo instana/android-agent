@@ -13,7 +13,7 @@ class InstanaConfiguration
         var suspendReportingReporting: SuspendReportingType = SuspendReportingType.LOW_BATTERY_AND_CELLULAR_CONNECTION,
         var enableCrashReporting: Boolean = true,
         var alerts: AlertsConfiguration = AlertsConfiguration(),
-        var eventsBufferSize: Int = 200,
+        var eventsBufferSize: Int = 1, // TODO find good value
         var breadcrumbsBufferSize: Int = 20,
         var sendDeviceLocationIfAvailable: Boolean = true
 )
