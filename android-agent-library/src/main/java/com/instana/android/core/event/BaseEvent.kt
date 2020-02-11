@@ -5,6 +5,8 @@ import com.instana.android.core.IdProvider
 abstract class BaseEvent {
     var sessionId: String = IdProvider.sessionId
     var id: String? = IdProvider.eventId()
+
+    abstract fun serialize(): String
 }
 
 abstract class Payload {
