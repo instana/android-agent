@@ -7,10 +7,10 @@ import okhttp3.OkHttpClient;
 /**
  * This aspect adds OkHttp interceptor to the OkHttp builder
  */
-public aspect OkHttpAspect {
+public aspect OkHttp3Aspect {
     pointcut builderCall(OkHttpClient.Builder builder): target(builder) && call(* okhttp3.OkHttpClient.Builder.build());
     before(OkHttpClient.Builder builder): builderCall(builder) {
-        Logger.i("Adding interceptor to OkHttp3 builder");
+        Logger.i("OkHttp3: adding interceptor to builder");
         if (!builder.interceptors().contains(OkHttpGlobalInterceptor.INSTANCE)) {
             builder.addInterceptor(OkHttpGlobalInterceptor.INSTANCE);
         }
@@ -18,7 +18,7 @@ public aspect OkHttpAspect {
 
     pointcut clientConstructor(): call(OkHttpClient.new());
     OkHttpClient around(): clientConstructor() {
-        Logger.i("Adding interceptor to OkHttp3 constructor");
+        Logger.i("OkHttp3: adding interceptor to constructor");
         return new OkHttpClient.Builder().addInterceptor(OkHttpGlobalInterceptor.INSTANCE).build();
     }
 }

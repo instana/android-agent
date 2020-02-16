@@ -487,8 +487,8 @@ class Beacon private constructor(
             url: String,
             responseCode: Int?,
             error: String?,
-            requestSizeBytes: Long, //TODO ignored?
-            responseSizeBytes: Long
+            requestSizeBytes: Long?, //TODO ignored?
+            responseSizeBytes: Long?
         ): Beacon { // must set customEventName
             return Beacon(BeaconType.HTTP_REQUEST, duration, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile)
                 .apply {
@@ -496,7 +496,7 @@ class Beacon private constructor(
                     setHttpCallUrl(url)
                     responseCode?.run { setHttpCallStatus(this) }
                     error?.run { setErrorMessage(this) }
-                    setDecodedBodySize(responseSizeBytes)
+                    responseSizeBytes?.run { setDecodedBodySize(this) }
                 }
         }
 

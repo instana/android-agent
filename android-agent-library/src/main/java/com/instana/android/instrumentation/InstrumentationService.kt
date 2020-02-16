@@ -35,8 +35,6 @@ class InstrumentationService(
 
     fun markCall(url: String, method: String): RemoteCallMarker = RemoteCallMarker(url, method, manager)
 
-    fun markCall(url: String): RemoteCallMarker = RemoteCallMarker(url, manager = manager)
-
     fun hasTag(header: String): Boolean = tagSet.contains(header)
 
     fun addTag(tag: String) {
