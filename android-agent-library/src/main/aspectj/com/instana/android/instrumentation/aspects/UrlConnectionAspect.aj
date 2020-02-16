@@ -2,8 +2,6 @@ package com.instana.android.instrumentation.aspects;
 
 import android.os.Build;
 import com.instana.android.Instana;
-import com.instana.android.core.event.models.RemoteCall;
-import com.instana.android.core.util.ConstantsAndUtil;
 import com.instana.android.core.util.Logger;
 import com.instana.android.instrumentation.RemoteCallMarker;
 import org.aspectj.lang.JoinPoint;
@@ -13,7 +11,6 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static com.instana.android.core.util.ConstantsAndUtil.*;
 
@@ -34,7 +31,7 @@ public aspect UrlConnectionAspect {
     pointcut setRequestMethod(): call(* java.net.HttpURLConnection.setRequestMethod(..));
 
     after() returning(HttpURLConnection connection): openConnectionMethodCall() {
-        Logger.i("Interceptiong openConnection");
+        Logger.i("Intercepting openConnection");
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();
         if (isAutoEnabled() && !checkTag(header) && isNotLibraryCallBoolean(url)) {

@@ -13,12 +13,13 @@ import java.util.*
 @Suppress("MemberVisibilityCanBePrivate", "unused")
 class Beacon private constructor(
     type: BeaconType,
-    duration: Int,
+    duration: Long,
     mobileAppId: String,
     sessionId: String,
     errorCount: Long,
     appProfile: AppProfile,
-    deviceProfile: DeviceProfile
+    deviceProfile: DeviceProfile,
+    connectionProfile: ConnectionProfile
 ) {
 
     private val intMap: MutableMap<String, Int> = mutableMapOf()
@@ -38,6 +39,10 @@ class Beacon private constructor(
         setViewportWidth(deviceProfile.viewportWidth)
         setViewportHeight(deviceProfile.viewportHeight)
 
+        connectionProfile.carrierName?.run { setCarrier(this) }
+        connectionProfile.connectionType?.run { setConnectionType(this) }
+        connectionProfile.effectiveConnectionType?.run { setEffectiveConnectionType(this) }
+
         setTimestamp(System.currentTimeMillis())
         setBeaconId(UUID.randomUUID().toString())
 
@@ -45,7 +50,7 @@ class Beacon private constructor(
         setSessionId(sessionId)
         setType(type)
         setBatchSize(1) // TODO isn't this optional except for crashes?
-        setDuration(duration.toLong())
+        setDuration(duration)
         setErrorCount(errorCount)
     }
 
@@ -357,8 +362,8 @@ class Beacon private constructor(
      *
      * -1 means that the value wasn't recorded.
      */
-    fun setEncodedBodySize(@IntRange(from = -1) value: Int) {
-        intMap["ebs"] = value
+    fun setEncodedBodySize(@IntRange(from = -1) value: Long) {
+        longMap["ebs"] = value
     }
 
     /**
@@ -368,8 +373,8 @@ class Beacon private constructor(
      *
      * -1 means that the value wasn't recorded.
      */
-    fun setDecodedBodySize(@IntRange(from = -1) value: Int) {
-        intMap["dbs"] = value
+    fun setDecodedBodySize(@IntRange(from = -1) value: Long) {
+        longMap["dbs"] = value
     }
 
     /**
@@ -378,8 +383,8 @@ class Beacon private constructor(
      *
      * -1 means that the value wasn't recorded.
      */
-    fun setTransferSize(@IntRange(from = -1) value: Int) {
-        intMap["trs"] = value
+    fun setTransferSize(@IntRange(from = -1) value: Long) {
+        longMap["trs"] = value
     }
 
     /**
@@ -464,34 +469,33 @@ class Beacon private constructor(
         fun newSessionStart(
             appKey: String,
             appProfile: AppProfile,
-            deviceProfile: DeviceProfile
+            deviceProfile: DeviceProfile,
+            connectionProfile: ConnectionProfile,
+            sessionId: String
         ): Beacon {
-            return Beacon(BeaconType.SESSION_START, 0, appKey, UUID.randomUUID().toString(), 0, appProfile, deviceProfile)
+            return Beacon(BeaconType.SESSION_START, 0, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile)
         }
 
         fun newHttpRequest(
             appKey: String,
             appProfile: AppProfile,
             deviceProfile: DeviceProfile,
+            connectionProfile: ConnectionProfile,
             sessionId: String,
-            duration: Int,
+            duration: Long,
             method: String,
             url: String,
-            responseCode: Int,
-            error: String,
-            carrier: String,
-            connectionType: ConnectionType,
+            responseCode: Int?,
+            error: String?,
             requestSizeBytes: Long, //TODO ignored?
-            responseSizeBytes: Int
+            responseSizeBytes: Long
         ): Beacon { // must set customEventName
-            return Beacon(BeaconType.HTTP_REQUEST, duration, appKey, sessionId, 0, appProfile, deviceProfile)
+            return Beacon(BeaconType.HTTP_REQUEST, duration, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile)
                 .apply {
                     setHttpCallMethod(method)
                     setHttpCallUrl(url)
-                    setHttpCallStatus(responseCode)
-                    setErrorMessage(error)
-                    setCarrier(carrier)
-                    setConnectionType(connectionType)
+                    responseCode?.run { setHttpCallStatus(this) }
+                    error?.run { setErrorMessage(this) }
                     setDecodedBodySize(responseSizeBytes)
                 }
         }
@@ -500,10 +504,11 @@ class Beacon private constructor(
             appKey: String,
             appProfile: AppProfile,
             deviceProfile: DeviceProfile,
+            connectionProfile: ConnectionProfile,
             sessionId: String,
             view: String
         ): Beacon {
-            return Beacon(BeaconType.VIEW_CHANGE, 0, appKey, sessionId, 0, appProfile, deviceProfile)
+            return Beacon(BeaconType.VIEW_CHANGE, 0, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile)
                 .apply {
                     setView(view)
                 }
@@ -513,12 +518,13 @@ class Beacon private constructor(
             appKey: String,
             appProfile: AppProfile,
             deviceProfile: DeviceProfile,
+            connectionProfile: ConnectionProfile,
             sessionId: String,
-            duration: Int,
+            duration: Long,
             name: String,
             meta: Map<String, String>
         ): Beacon {
-            return Beacon(BeaconType.CUSTOM, duration, appKey, sessionId, 0, appProfile, deviceProfile)
+            return Beacon(BeaconType.CUSTOM, duration, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile)
                 .apply {
                     setCustomEventName(name)
                     meta.forEach { setMeta(it.key, it.value) }
@@ -528,9 +534,10 @@ class Beacon private constructor(
         fun newCrash(
             sessionId: String,
             appProfile: AppProfile,
-            deviceProfile: DeviceProfile
+            deviceProfile: DeviceProfile,
+            connectionProfile: ConnectionProfile
         ): Beacon { // might need batchSize. If not needed, remove batchSize
-            return Beacon(BeaconType.CRASH, 0, "", sessionId, 0, appProfile, deviceProfile)
+            return Beacon(BeaconType.CRASH, 0, "", sessionId, 0, appProfile, deviceProfile, connectionProfile)
         }
     }
 }

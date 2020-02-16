@@ -48,7 +48,7 @@ class OkHttpGlobalInterceptor private constructor() : Interceptor {
             marker?.endedWith(response)
             response
         } catch (e: Exception) {
-            marker?.endedWith(e)
+            marker?.endedWith(request, e)
             chain.proceed(chain.request())
         }
     }

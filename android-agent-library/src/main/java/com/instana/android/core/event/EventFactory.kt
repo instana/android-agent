@@ -91,22 +91,6 @@ object EventFactory {
         return RemoteCallEvent(payload)
     }
 
-    fun createRemoteCall(
-        url: String,
-        method: String,
-        result: String,
-        startTime: Long,
-        duration: Long,
-        responseCode: Int
-    ): RemoteCallEvent {
-        val remoteCall = RemoteCall(method, url, responseCode, result)
-        val payload = RemoteCallPayload(remoteCall).apply {
-            this.timestamp = startTime
-            this.durationMs = duration
-        }
-        return RemoteCallEvent(payload)
-    }
-
     fun createCustom(
         customMap: Map<String, String>,
         startTime: Long,

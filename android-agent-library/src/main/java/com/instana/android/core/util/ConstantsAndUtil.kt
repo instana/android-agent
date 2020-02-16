@@ -11,6 +11,8 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.annotation.RestrictTo
 import com.instana.android.Instana
+import com.instana.android.core.event.models.ConnectionType
+import com.instana.android.core.event.models.EffectiveConnectionType
 import com.instana.android.instrumentation.InstrumentationType
 import okhttp3.OkHttpClient
 import java.io.BufferedReader
@@ -63,17 +65,76 @@ object ConstantsAndUtil {
         return null
     }
 
-    fun getCellularConnectionType(tm: TelephonyManager): String = when (tm.networkType) {
-        TelephonyManager.NETWORK_TYPE_GPRS, TelephonyManager.NETWORK_TYPE_EDGE,
-        TelephonyManager.NETWORK_TYPE_CDMA, TelephonyManager.NETWORK_TYPE_1xRTT,
-        TelephonyManager.NETWORK_TYPE_IDEN -> "2G"
-        TelephonyManager.NETWORK_TYPE_UMTS, TelephonyManager.NETWORK_TYPE_EVDO_0,
-        TelephonyManager.NETWORK_TYPE_EVDO_A, TelephonyManager.NETWORK_TYPE_HSDPA,
-        TelephonyManager.NETWORK_TYPE_HSUPA, TelephonyManager.NETWORK_TYPE_HSPA,
-        TelephonyManager.NETWORK_TYPE_EVDO_B, TelephonyManager.NETWORK_TYPE_EHRPD,
-        TelephonyManager.NETWORK_TYPE_HSPAP -> "3G"
-        TelephonyManager.NETWORK_TYPE_LTE -> "4G"
-        else -> "Unknown"
+    @Suppress("DEPRECATION")
+    fun getConnectionType2(cm: ConnectivityManager): ConnectionType? {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = cm.activeNetwork
+            val capabilities = cm.getNetworkCapabilities(network)
+            if (capabilities != null) {
+                return when {
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> ConnectionType.WIRED
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> ConnectionType.WIFI
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> ConnectionType.CELLULAR
+                    else -> null
+                }
+            }
+        } else {
+            val activeNetwork = cm.activeNetworkInfo
+            if (activeNetwork != null) { // connected to the internet
+                return when (activeNetwork.type) {
+                    ConnectivityManager.TYPE_ETHERNET -> ConnectionType.WIRED
+                    ConnectivityManager.TYPE_WIFI -> ConnectionType.WIFI
+                    ConnectivityManager.TYPE_MOBILE -> ConnectionType.CELLULAR
+                    else -> null
+                }
+            }
+        }
+        return null
+    }
+
+    fun getCarrierName(cm: ConnectivityManager, tm: TelephonyManager): String? =
+        when (getConnectionType2(cm)) {
+            ConnectionType.CELLULAR -> tm.networkOperatorName
+            else -> null
+        }
+
+    fun getCellularConnectionType(tm: TelephonyManager): String =
+        when (tm.networkType) {
+            TelephonyManager.NETWORK_TYPE_GPRS, TelephonyManager.NETWORK_TYPE_EDGE,
+            TelephonyManager.NETWORK_TYPE_CDMA, TelephonyManager.NETWORK_TYPE_1xRTT,
+            TelephonyManager.NETWORK_TYPE_IDEN -> "2G"
+            TelephonyManager.NETWORK_TYPE_UMTS, TelephonyManager.NETWORK_TYPE_EVDO_0,
+            TelephonyManager.NETWORK_TYPE_EVDO_A, TelephonyManager.NETWORK_TYPE_HSDPA,
+            TelephonyManager.NETWORK_TYPE_HSUPA, TelephonyManager.NETWORK_TYPE_HSPA,
+            TelephonyManager.NETWORK_TYPE_EVDO_B, TelephonyManager.NETWORK_TYPE_EHRPD,
+            TelephonyManager.NETWORK_TYPE_HSPAP -> "3G"
+            TelephonyManager.NETWORK_TYPE_LTE -> "4G"
+            else -> "Unknown"
+        }
+
+    fun getCellularConnectionType2(cm: ConnectivityManager, tm: TelephonyManager): EffectiveConnectionType? {
+        if (getConnectionType2(cm) != ConnectionType.CELLULAR) {
+            return null
+        } else {
+            return when (tm.networkType) {
+                TelephonyManager.NETWORK_TYPE_GPRS,
+                TelephonyManager.NETWORK_TYPE_EDGE,
+                TelephonyManager.NETWORK_TYPE_CDMA,
+                TelephonyManager.NETWORK_TYPE_1xRTT,
+                TelephonyManager.NETWORK_TYPE_IDEN -> EffectiveConnectionType.TYPE_2G
+                TelephonyManager.NETWORK_TYPE_UMTS,
+                TelephonyManager.NETWORK_TYPE_EVDO_0,
+                TelephonyManager.NETWORK_TYPE_EVDO_A,
+                TelephonyManager.NETWORK_TYPE_HSDPA,
+                TelephonyManager.NETWORK_TYPE_HSUPA,
+                TelephonyManager.NETWORK_TYPE_HSPA,
+                TelephonyManager.NETWORK_TYPE_EVDO_B,
+                TelephonyManager.NETWORK_TYPE_EHRPD,
+                TelephonyManager.NETWORK_TYPE_HSPAP -> EffectiveConnectionType.TYPE_3G
+                TelephonyManager.NETWORK_TYPE_LTE -> EffectiveConnectionType.TYPE_4G
+                else -> null
+            }
+        }
     }
 
     fun getAppVersionNameAndVersionCode(app: Application): Pair<String, String> {

@@ -22,20 +22,36 @@ class KotlinActivity : AppCompatActivity() {
 
         ok_http_delete.setOnClickListener {
             Thread {
-                OkHttpRequests.executeDelete(enableManual = true)
+                OkHttpRequests.executeDelete(enableManual = false)
             }.start()
         }
 
-        ok_http_get.setOnClickListener {
+        ok_http_get_success.setOnClickListener {
             Thread {
-                OkHttpRequests.executeGet(enableManual = false)
+                OkHttpRequests.executeGetSuccess()
+            }.start()
+        }
+        ok_http_get_failure.setOnClickListener {
+            Thread {
+                OkHttpRequests.executeGetFailure()
+            }.start()
+        }
+        ok_http_get_exception.setOnClickListener {
+            Thread {
+                OkHttpRequests.executeGetException()
             }.start()
         }
 
-        ok_http_post.setOnClickListener {
+        ok_http_post_success.setOnClickListener {
             // check if work manager works for client app
             val compressionWork =
-                    OneTimeWorkRequest.Builder(TestWorker::class.java).build()
+                OneTimeWorkRequest.Builder(TestWorkerSuccess::class.java).build()
+            WorkManager.getInstance().enqueue(compressionWork)
+        }
+        ok_http_post_failure.setOnClickListener {
+            // check if work manager works for client app
+            val compressionWork =
+                OneTimeWorkRequest.Builder(TestWorkerFailure::class.java).build()
             WorkManager.getInstance().enqueue(compressionWork)
         }
 
