@@ -22,53 +22,51 @@ open class EventWorker(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = try {
+        
+        var eventsJson: String? = params.inputData.getString(EVENT_JSON_STRING)
 
-        Result.success()
+        if (eventsJson == null || eventsJson.isEmpty()) {
+            Result.failure()
+        }
 
-//        var eventsJson: String? = params.inputData.getString(EVENT_JSON_STRING)
-//
-//        if (eventsJson == null || eventsJson.isEmpty()) {
-//            Result.failure()
-//        }
-//
-//        if (eventsJson == CrashEventStore.tag) {
-//            // due to the crash string size we log just "crash"
-//            Logger.e("crash")
-//            eventsJson = CrashEventStore.serialized
-//            CrashEventStore.clear()
-//        } else {
-//            eventsJson?.let {
-//                Logger.e(it)
-//            }
-//        }
-//
-//        var request: Request?
-//        eventsJson.let {
-//            request = Request.Builder()
-//                .url(Instana.configuration.reportingUrl)
-//                .addHeader("Content-Type", "application/json")
-//                .addHeader("Accept-Encoding", "gzip")
-//                .post(RequestBody.create(TEXT_PLAIN, it!!))
-//                .build()
-//        }
-//
-//        var response: Response? = null
-//        try {
-//            if (request == null) {
-//                Result.failure()
-//            }
-//            response = ConstantsAndUtil.client.newCall(request!!).execute()
-//            if (response.code() == HttpURLConnection.HTTP_OK) {
-//                Result.success()
-//            } else {
-//                Result.failure()
-//            }
-//        } catch (e: IOException) {
-//            e.printStackTrace()
-//            Result.failure()
-//        } finally {
-//            response?.close()
-//        }
+        if (eventsJson == CrashEventStore.tag) {
+            // due to the crash string size we log just "crash"
+            Logger.e("crash")
+            eventsJson = CrashEventStore.serialized
+            CrashEventStore.clear()
+        } else {
+            eventsJson?.let {
+                Logger.e(it)
+            }
+        }
+
+        var request: Request?
+        eventsJson.let {
+            request = Request.Builder()
+                .url(Instana.configuration.reportingUrl)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept-Encoding", "gzip")
+                .post(RequestBody.create(TEXT_PLAIN, it!!))
+                .build()
+        }
+
+        var response: Response? = null
+        try {
+            if (request == null) {
+                Result.failure()
+            }
+            response = ConstantsAndUtil.client.newCall(request!!).execute()
+            if (response.code() == HttpURLConnection.HTTP_OK) {
+                Result.success()
+            } else {
+                Result.failure()
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+            Result.failure()
+        } finally {
+            response?.close()
+        }
     } catch (e: Exception) {
         e.printStackTrace()
         Result.failure()
