@@ -10,7 +10,7 @@ import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
 
-@Suppress("MemberVisibilityCanBePrivate", "unused")
+@Suppress("MemberVisibilityCanBePrivate")
 class Beacon private constructor(
     type: BeaconType,
     duration: Long,
@@ -174,18 +174,13 @@ class Beacon private constructor(
         stringMap["ue"] = value
     }
 
-    // TODO check with Ben to see how this list is serialized
-//    /**
-//     * The current selected language for the app
-//     * The language is described using BCP 47 language tags.
-//     * <p>
-//     * For example: en-US
-//
-//          short serialization key: "ul"
-//     */
-//    @Nullable
-//    @Size(max = 5)
-//    public List<String> userLanguages;
+    /**
+     * The current selected language for the app
+     * The language is described using BCP 47 language tags.
+     */
+    fun setUserLanguages(@Size(max = 5) value: List<String>) {
+        stringMap["ul"] = value.take(5).joinToString(separator = ",")
+    }
 
     /**
      * The bundle identifier uniquely identifies an app. Two apps cannot have the same bundle identifier.
