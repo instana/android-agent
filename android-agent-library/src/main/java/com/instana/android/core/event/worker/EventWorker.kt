@@ -22,7 +22,7 @@ open class EventWorker(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = try {
-
+        
         var eventsJson: String? = params.inputData.getString(EVENT_JSON_STRING)
 
         if (eventsJson == null || eventsJson.isEmpty()) {

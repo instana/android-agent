@@ -55,58 +55,6 @@ object EventFactory {
         ).apply { timestamp = System.currentTimeMillis() }
     )
 
-    fun createRemoteCall(
-        url: String,
-        method: String,
-        result: String,
-        startTime: Long,
-        duration: Long,
-        errorMsg: String
-    ): RemoteCallEvent {
-        val remoteCall = RemoteCall(method, url, -1, result, errorMsg)
-        val payload = RemoteCallPayload(remoteCall).apply {
-            this.timestamp = startTime
-            this.durationMs = duration
-        }
-        return RemoteCallEvent(payload)
-    }
-
-    fun createRemoteCall(
-        url: String,
-        method: String,
-        result: String,
-        startTime: Long,
-        duration: Long,
-        carrierName: String?,
-        connectionType: String?,
-        requestSizeKb: Long,
-        responseSizeKb: Long,
-        responseCode: Int
-    ): RemoteCallEvent {
-        val remoteCall = RemoteCall(method, url, responseCode, result, null, carrierName, connectionType, requestSizeKb, responseSizeKb)
-        val payload = RemoteCallPayload(remoteCall).apply {
-            this.timestamp = startTime
-            this.durationMs = duration
-        }
-        return RemoteCallEvent(payload)
-    }
-
-    fun createRemoteCall(
-        url: String,
-        method: String,
-        result: String,
-        startTime: Long,
-        duration: Long,
-        responseCode: Int
-    ): RemoteCallEvent {
-        val remoteCall = RemoteCall(method, url, responseCode, result)
-        val payload = RemoteCallPayload(remoteCall).apply {
-            this.timestamp = startTime
-            this.durationMs = duration
-        }
-        return RemoteCallEvent(payload)
-    }
-
     fun createCustom(
         customMap: Map<String, String>,
         startTime: Long,

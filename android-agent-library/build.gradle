@@ -39,10 +39,6 @@ android {
     }
 }
 
-aspectj {
-    java = JavaVersion.VERSION_1_8
-}
-
 kapt {
     javacOptions {
         // Increase the max count of errors from annotation processors.

@@ -1,58 +1,48 @@
 package com.instana.android.instrumentation.aspects;
 
-import android.os.Build;
 import com.instana.android.Instana;
-import com.instana.android.core.event.models.RemoteCall;
-import com.instana.android.core.util.ConstantsAndUtil;
 import com.instana.android.core.util.Logger;
 import com.instana.android.instrumentation.RemoteCallMarker;
+
 import org.aspectj.lang.JoinPoint;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
-import static com.instana.android.core.util.ConstantsAndUtil.*;
+import static com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY;
+import static com.instana.android.core.util.ConstantsAndUtil.checkTag;
+import static com.instana.android.core.util.ConstantsAndUtil.hasTrackingHeader;
+import static com.instana.android.core.util.ConstantsAndUtil.isAutoEnabled;
+import static com.instana.android.core.util.ConstantsAndUtil.isNotLibraryCallBoolean;
 
 public aspect UrlConnectionAspect {
-    private final ArrayList<RemoteCallMarker> remoteMarkers = new ArrayList<>();
+    private final List<RemoteCallMarker> remoteMarkers = new LinkedList<>();
 
     pointcut openConnectionMethodCall(): call(* java.net.URL.openConnection());
-
-    pointcut disconnectMethodCall(HttpURLConnection connection):
-            target(connection) && call(* java.net.HttpURLConnection.disconnect());
-
-    pointcut outputStream(): call(* java.net.HttpURLConnection.getOutputStream());
-
-    pointcut inputStream(): call(* java.net.HttpURLConnection.getInputStream());
-
-    pointcut connect(): call(* java.net.HttpURLConnection.connect());
-
-    pointcut setRequestMethod(): call(* java.net.HttpURLConnection.setRequestMethod(..));
-
     after() returning(HttpURLConnection connection): openConnectionMethodCall() {
-        Logger.i("Interceptiong openConnection");
+        Logger.i("HttpURLConnection: intercepting openConnection");
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();
         if (isAutoEnabled() && !checkTag(header) && isNotLibraryCallBoolean(url)) {
-            RemoteCallMarker marker = Instana.remoteCallInstrumentation.markCall(url);
+            RemoteCallMarker marker = Instana.remoteCallInstrumentation.markCall(url, connection.getRequestMethod());
             connection.setRequestProperty(marker.headerKey(), marker.headerValue());
             remoteMarkers.add(marker);
         }
     }
 
+    pointcut disconnectMethodCall(HttpURLConnection connection): target(connection) && call(* java.net.HttpURLConnection.disconnect());
     after(HttpURLConnection connection): disconnectMethodCall(connection) {
-        Logger.i("Intercepting disconnect");
+        Logger.i("HttpURLConnection: intercepting disconnect");
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();
         if (isAutoEnabled() && isNotLibraryCallBoolean(url) && checkTag(header)) {
             try {
-                RemoteCallMarker marker = remoteMarkers.stream().filter(m -> m.headerValue().equals(header)).findFirst().get();
-                long responseSize = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? connection.getContentLengthLong() : (long) connection.getContentLength();
-                marker.endedWith(0, responseSize, connection);
+                RemoteCallMarker marker = findFirst(remoteMarkers, header);
+                marker.endedWith(connection);
                 remoteMarkers.remove(marker);
             } catch (NoSuchElementException ignored) {
                 // swallow exception
@@ -60,37 +50,50 @@ public aspect UrlConnectionAspect {
         }
     }
 
+    pointcut outputStream(): call(* java.net.HttpURLConnection.getOutputStream());
     after() throwing(IOException e): outputStream() {
         handleException(thisJoinPoint, e);
     }
 
+    pointcut inputStream(): call(* java.net.HttpURLConnection.getInputStream());
     after() throwing(IOException e): inputStream() {
         handleException(thisJoinPoint, e);
     }
 
+    pointcut setRequestMethod(): call(* java.net.HttpURLConnection.setRequestMethod(..));
     after() throwing(ProtocolException e): setRequestMethod() {
         handleException(thisJoinPoint, e);
     }
 
+    pointcut connect(): call(* java.net.HttpURLConnection.connect());
     after() throwing(IOException e): connect() {
         handleException(thisJoinPoint, e);
     }
 
     private void handleException(JoinPoint joinPoint, Throwable e) {
-        Logger.i("Handling exception");
+        Logger.i("HttpURLConnection: handling exception");
         if (joinPoint.getTarget() instanceof HttpURLConnection) {
-            HttpURLConnection it = (HttpURLConnection) joinPoint.getTarget();
-            String header = it.getRequestProperty(TRACKING_HEADER_KEY);
-            String url = it.getURL().toString();
+            HttpURLConnection urlConnection = (HttpURLConnection) joinPoint.getTarget();
+            String header = urlConnection.getRequestProperty(TRACKING_HEADER_KEY);
+            String url = urlConnection.getURL().toString();
             if (isAutoEnabled() && hasTrackingHeader(header) && isNotLibraryCallBoolean(url) && checkTag(header)) {
                 try {
-                    RemoteCallMarker marker = remoteMarkers.stream().filter(m -> m.headerValue().equals(header)).findFirst().get();
-                    marker.endedWith(it, e);
+                    RemoteCallMarker marker = findFirst(remoteMarkers, header);
+                    marker.endedWith(urlConnection, e);
                     remoteMarkers.remove(marker);
                 } catch (NoSuchElementException ignored) {
                     // swallow exception
                 }
             }
         }
+    }
+
+    private RemoteCallMarker findFirst(List<RemoteCallMarker> list, String tag) throws NoSuchElementException {
+        for (RemoteCallMarker remoteMarker : list) {
+            if (remoteMarker.headerValue().equals(tag)) {
+                return remoteMarker;
+            }
+        }
+        throw new NoSuchElementException();
     }
 }

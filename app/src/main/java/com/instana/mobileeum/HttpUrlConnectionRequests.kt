@@ -17,8 +17,8 @@ object HttpUrlConnectionRequests {
     private const val ERROR = "error"
 
     fun doGet(
-            desiredUrl: String = "https://reqres.in/api/users/23",
-            enableManual: Boolean
+        desiredUrl: String = "https://httpstat.us/200",
+        enableManual: Boolean
     ): Boolean {
         var urlConnection: HttpsURLConnection? = null
         var marker: RemoteCallMarker? = null
@@ -28,15 +28,16 @@ object HttpUrlConnectionRequests {
                 marker = Instana.remoteCallInstrumentation!!.markCall(desiredUrl, "GET")
                 urlConnection.setRequestProperty(marker.headerKey(), marker.headerValue())
             }
-            urlConnection.requestMethod = "GET9"
+            urlConnection.requestMethod = "GET"
+            urlConnection.setRequestProperty("Accept", "application/json")
             urlConnection.doOutput = true
             urlConnection.connect()
             val responseCode = urlConnection.responseCode
-            marker?.endedWith(0, 0, responseCode)
+            marker?.endedWith(urlConnection)
             return responseCode == HttpsURLConnection.HTTP_OK
         } catch (e: IOException) {
             Log.e(TAG, ERROR, e)
-            marker?.endedWith(e)
+            marker?.endedWith(urlConnection!!, e)
             return false
         } finally {
             urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {
@@ -47,9 +48,9 @@ object HttpUrlConnectionRequests {
     }
 
     fun doPost(
-            desiredUrl: String = "https://reqres.in/api/users",
-            json: String = """{"name": "morpheus","job": "zion resident"}""",
-            enableManual: Boolean
+        desiredUrl: String = "https://reqres.in/api/users",
+        json: String = """{"name": "morpheus","job": "zion resident"}""",
+        enableManual: Boolean
     ): Boolean {
         var urlConnection: HttpURLConnection? = null
         var marker: RemoteCallMarker? = null
@@ -71,11 +72,11 @@ object HttpUrlConnectionRequests {
             outputStream.close()
 
             val responseCode = urlConnection.responseCode
-            marker?.endedWith(0, 0, responseCode)
+            marker?.endedWith(urlConnection)
             return responseCode == HttpsURLConnection.HTTP_OK
         } catch (e: IOException) {
             Log.e(TAG, ERROR, e)
-            marker?.endedWith(e)
+            marker?.endedWith(urlConnection!!, e)
             return false
         } finally {
             urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {
@@ -86,8 +87,8 @@ object HttpUrlConnectionRequests {
     }
 
     fun doDelete(
-            desiredUrl: String = "https://reqres.in/api/users/2",
-            enableManual: Boolean
+        desiredUrl: String = "https://reqres.in/api/users/2",
+        enableManual: Boolean
     ): Boolean {
         var urlConnection: HttpURLConnection? = null
         var marker: RemoteCallMarker? = null
@@ -102,11 +103,11 @@ object HttpUrlConnectionRequests {
             urlConnection.connect()
 
             val responseCode = urlConnection.responseCode
-            marker?.endedWith(0, 0, responseCode)
+            marker?.endedWith(urlConnection)
             return responseCode == HttpsURLConnection.HTTP_OK
         } catch (e: IOException) {
             Log.e(TAG, ERROR, e)
-            marker?.endedWith(e)
+            marker?.endedWith(urlConnection!!, e)
             return false
         } finally {
             urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {
@@ -117,9 +118,9 @@ object HttpUrlConnectionRequests {
     }
 
     fun doPut(
-            desiredUrl: String = "https://reqres.in/api/users/2",
-            json: String = """{"name": "morpheus","job": "zion resident"}""",
-            enableManual: Boolean
+        desiredUrl: String = "https://reqres.in/api/users/2",
+        json: String = """{"name": "morpheus","job": "zion resident"}""",
+        enableManual: Boolean
     ): Boolean {
         var urlConnection: HttpURLConnection? = null
         var marker: RemoteCallMarker? = null
@@ -141,11 +142,11 @@ object HttpUrlConnectionRequests {
             outputStream.close()
 
             val responseCode = urlConnection.responseCode
-            marker?.endedWith(0, 0, responseCode)
+            marker?.endedWith(urlConnection)
             return responseCode == HttpsURLConnection.HTTP_OK
         } catch (e: IOException) {
             Log.e(TAG, ERROR, e)
-            marker?.endedWith(e)
+            marker?.endedWith(urlConnection!!, e)
             return false
         } finally {
             urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {

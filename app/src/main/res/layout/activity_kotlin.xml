@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -41,12 +41,40 @@
             android:text="HttpUrl get" />
 
         <Button
-            android:id="@+id/ok_http_post"
+            android:id="@+id/ok_http_get_success"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center_horizontal"
+            android:text="OkHttp get success (constructor)" />
+
+        <Button
+            android:id="@+id/ok_http_get_failure"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="50dp"
-            android:text="OkHttp post" />
+            android:text="OkHttp get failure (constructor)" />
+
+        <Button
+            android:id="@+id/ok_http_get_exception"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="OkHttp get exception (constructor)" />
+
+        <Button
+            android:id="@+id/ok_http_post_success"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="OkHttp post success (builder)" />
+
+        <Button
+            android:id="@+id/ok_http_post_failure"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="OkHttp post failure (builder)" />
 
         <Button
             android:id="@+id/ok_http_put"
@@ -61,13 +89,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:text="OkHttp delete" />
-
-        <Button
-            android:id="@+id/ok_http_get"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="OkHttp get" />
 
         <Button
             android:id="@+id/crash_me_kotlin_button"
@@ -105,6 +126,6 @@
             android:layout_gravity="center_horizontal"
             android:text="Invoke anr" />
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+    </LinearLayout>
 
 </ScrollView>

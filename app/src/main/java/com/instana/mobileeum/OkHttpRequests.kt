@@ -16,14 +16,18 @@ object OkHttpRequests {
     private val contentType = MediaType.get("application/json; charset=utf-8")
     private val okHttpClient = OkHttpClient.Builder().build()
 
-    fun executeGet(url: String = "https://reqres.in/api/users/23", enableManual: Boolean): Boolean {
+    fun executeGetSuccess() = executeGet("https://httpstat.us/200", false)
+    fun executeGetFailure() = executeGet("https://httpstat.us/404", false)
+    fun executeGetException() = executeGet("https://httpstat-nonexistingurlhere.us/200", false)
+
+    private fun executeGet(url: String = "https://httpstat.us/404", enableManual: Boolean): Boolean {
         var tracker: RemoteCallMarker? = null
         if (enableManual) {
             tracker = Instana.remoteCallInstrumentation?.markCall(url, "GET")
         }
         val requestBuilder = Request.Builder()
-                .url(url)
-                .get()
+            .url(url)
+            .get()
 
         tracker?.let {
             requestBuilder.header(tracker.headerKey(), tracker.headerValue())
@@ -38,7 +42,7 @@ object OkHttpRequests {
             true
         } catch (e: Exception) {
             e.printStackTrace()
-            tracker?.endedWith(e)
+            tracker?.endedWith(request, e)
             false
         } finally {
             request.header(TRACKING_HEADER_KEY)?.run {
@@ -47,10 +51,12 @@ object OkHttpRequests {
         }
     }
 
-    fun executePost(
-            url: String = "https://reqres.in/api/users",
-            json: String = """{"name": "morpheus","job": "leader"}""",
-            enableManual: Boolean
+    fun executePostSuccess() = executePost("https://reqres.in/api/users", """{"name": "morpheus","job": "leader"}""", false)
+    fun executePostFailure() = executePost("https://httpstat.us/403", """{"name": "morpheus","job": "leader"}""", false)
+    private fun executePost(
+        url: String = "https://reqres.in/api/users",
+        json: String = """{"name": "morpheus","job": "leader"}""",
+        enableManual: Boolean
     ): Boolean {
         val body = RequestBody.create(contentType, json)
         var tracker: RemoteCallMarker? = null
@@ -58,8 +64,8 @@ object OkHttpRequests {
             tracker = Instana.remoteCallInstrumentation?.markCall(url, "POST")
         }
         val requestBuilder = Request.Builder()
-                .url(url)
-                .post(body)
+            .url(url)
+            .post(body)
 
         tracker?.let {
             requestBuilder.header(tracker.headerKey(), tracker.headerValue())
@@ -73,7 +79,7 @@ object OkHttpRequests {
             true
         } catch (e: Exception) {
             e.printStackTrace()
-            tracker?.endedWith(e)
+            tracker?.endedWith(request, e)
             false
         } finally {
             request.header(TRACKING_HEADER_KEY)?.run {
@@ -88,8 +94,8 @@ object OkHttpRequests {
             tracker = Instana.remoteCallInstrumentation?.markCall(url, "DELETE")
         }
         val requestBuilder = Request.Builder()
-                .url(url)
-                .delete()
+            .url(url)
+            .delete()
         tracker?.let {
             requestBuilder.header(tracker.headerKey(), tracker.headerValue())
         }
@@ -102,7 +108,7 @@ object OkHttpRequests {
             true
         } catch (e: Exception) {
             e.printStackTrace()
-            tracker?.endedWith(e)
+            tracker?.endedWith(request, e)
             false
         } finally {
             request.header(TRACKING_HEADER_KEY)?.run {
@@ -112,9 +118,9 @@ object OkHttpRequests {
     }
 
     fun executePut(
-            url: String = "https://reqres.in/api/users/2",
-            json: String = """{"name": "morpheus","job": "zion resident"}""",
-            enableManual: Boolean
+        url: String = "https://reqres.in/api/users/2",
+        json: String = """{"name": "morpheus","job": "zion resident"}""",
+        enableManual: Boolean
     ): Boolean {
         val body = RequestBody.create(contentType, json)
         var tracker: RemoteCallMarker? = null
@@ -122,8 +128,8 @@ object OkHttpRequests {
             tracker = Instana.remoteCallInstrumentation?.markCall(url, "PUT")
         }
         val requestBuilder = Request.Builder()
-                .url(url)
-                .put(body)
+            .url(url)
+            .put(body)
 
         tracker?.let {
             requestBuilder.header(tracker.headerKey(), tracker.headerValue())
@@ -137,7 +143,7 @@ object OkHttpRequests {
             true
         } catch (e: Exception) {
             e.printStackTrace()
-            tracker?.endedWith(e)
+            tracker?.endedWith(request, e)
             false
         } finally {
             request.header(TRACKING_HEADER_KEY)?.run {

@@ -35,18 +35,6 @@ class InstrumentationService(
 
     fun markCall(url: String, method: String): RemoteCallMarker = RemoteCallMarker(url, method, manager)
 
-    fun markCall(url: String): RemoteCallMarker = RemoteCallMarker(url, manager = manager)
-
-    fun reportCall(url: String, method: String, startTime: Long, duration: Long, error: String) {
-        val event = EventFactory.createRemoteCall(url, method, TYPE_ERROR, startTime, duration, error)
-        manager.send(event)
-    }
-
-    fun reportCall(url: String, method: String, startTime: Long, duration: Long, responseCode: Int) {
-        val event = EventFactory.createRemoteCall(url, method, TYPE_SUCCESS, startTime, duration, responseCode)
-        manager.send(event)
-    }
-
     fun hasTag(header: String): Boolean = tagSet.contains(header)
 
     fun addTag(tag: String) {
