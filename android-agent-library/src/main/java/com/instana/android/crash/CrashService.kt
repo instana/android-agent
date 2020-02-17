@@ -7,26 +7,24 @@ import com.instana.android.core.InstanaMonitor
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.EventFactory
 import com.instana.android.core.util.ConstantsAndUtil.getAppVersionNameAndVersionCode
-import org.apache.commons.collections4.QueueUtils
-import org.apache.commons.collections4.queue.CircularFifoQueue
 import java.lang.Thread.currentThread
 import java.util.*
+import java.util.concurrent.LinkedBlockingDeque
 
 /**
  * Handling crash related actions
  */
 class CrashService(
-        private val app: Application,
-        private val manager: InstanaWorkManager,
-        private val configuration: InstanaConfiguration,
-        defaultThreadHandler: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler()
+    private val app: Application,
+    private val manager: InstanaWorkManager,
+    private val configuration: InstanaConfiguration,
+    defaultThreadHandler: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler()
 ) : InstanaMonitor {
 
-    private var breadCrumbs: Queue<String>? = null
+    private var breadCrumbs: Queue<String> = LinkedBlockingDeque()
     private var handler: ExceptionHandler? = null
 
     init {
-        breadCrumbs = QueueUtils.synchronizedQueue(CircularFifoQueue(configuration.breadcrumbsBufferSize))
         if (defaultThreadHandler != null) {
             handler = ExceptionHandler(this, defaultThreadHandler)
         }
@@ -45,22 +43,24 @@ class CrashService(
     override fun disable() {
         configuration.enableCrashReporting = false
         handler?.disable()
-        breadCrumbs?.clear()
+        breadCrumbs.clear()
     }
 
     fun changeBufferSize(size: Int) {
+        // TODO should this not just remove the first X elements (if necessary)?
         configuration.breadcrumbsBufferSize = size
-        breadCrumbs?.clear()
-        breadCrumbs = null
-        breadCrumbs = QueueUtils.synchronizedQueue(CircularFifoQueue(size))
+        breadCrumbs.clear()
     }
 
     fun leave(breadCrumb: String) {
-        breadCrumbs?.add(breadCrumb)
+        breadCrumbs.add(breadCrumb)
+        if (breadCrumbs.size > configuration.breadcrumbsBufferSize) {
+            breadCrumbs.poll()
+        }
     }
 
     fun submitCrash(thread: Thread?, throwable: Throwable?) {
-        val breadCrumbList = breadCrumbs?.toList()
+        val breadCrumbsCopy = breadCrumbs.toList()
         val stackTrace = Log.getStackTraceString(throwable)
 
         val stackTraces = Thread.getAllStackTraces()
@@ -78,9 +78,13 @@ class CrashService(
 
         val (versionCode: String, version: String) = getAppVersionNameAndVersionCode(app)
 
-        manager.persistCrash(EventFactory.createCrash(version, versionCode,
-                breadCrumbList ?: emptyList(), stackTrace, appStackTraces))
-        breadCrumbs?.clear()
+        manager.persistCrash(
+            EventFactory.createCrash(
+                version, versionCode,
+                breadCrumbsCopy, stackTrace, appStackTraces
+            )
+        )
+        breadCrumbs.clear()
     }
 
     private fun getStackTracesFor(threadList: Array<Thread?>): HashMap<String, String> {

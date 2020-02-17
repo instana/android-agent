@@ -3,10 +3,8 @@ package com.instana.android.core.event.models
 import com.instana.android.Instana
 import com.instana.android.core.event.AlertPayload
 import com.instana.android.core.event.BaseEvent
-import com.squareup.moshi.JsonClass
 import java.util.*
 
-@JsonClass(generateAdapter = true)
 class AnrAlertEvent(
     var alert: AnrAlertPayload
 ) : BaseEvent() {
@@ -39,7 +37,6 @@ class AnrAlert(
 )
 
 
-@JsonClass(generateAdapter = true)
 class FrameSkipAlertEvent(
     var alert: FrameSkipPayload
 ) : BaseEvent() {
@@ -74,29 +71,28 @@ class FrameSkipAlert(
 )
 
 
-@JsonClass(generateAdapter = true)
 class LowMemoryAlertEvent(
     var alert: LowMemoryPayload
 ) : BaseEvent() {
-        override fun serialize(): String {
-                val sb = StringBuilder()
+    override fun serialize(): String {
+        val sb = StringBuilder()
 
-                sessionId.let { sb.append("sid\t$it\n") }
-                sb.append("bid\t${UUID.randomUUID()}\n")
+        sessionId.let { sb.append("sid\t$it\n") }
+        sb.append("bid\t${UUID.randomUUID()}\n")
 
-                alert.lowMemory.availableMemoryMB?.let { sb.append("p\t$it\n") } //TODO
-                alert.lowMemory.screen?.let { sb.append("p\t$it\n") } //TODO
-                alert.lowMemory.usedMemoryMB?.let { sb.append("p\t$it\n") } //TODO
+        alert.lowMemory.availableMemoryMB?.let { sb.append("p\t$it\n") } //TODO
+        alert.lowMemory.screen?.let { sb.append("p\t$it\n") } //TODO
+        alert.lowMemory.usedMemoryMB?.let { sb.append("p\t$it\n") } //TODO
 
-                sb.append("ti\t${System.currentTimeMillis()}\n")
-                sb.append("k\t${Instana.configuration.key}\n")
+        sb.append("ti\t${System.currentTimeMillis()}\n")
+        sb.append("k\t${Instana.configuration.key}\n")
 //        sb.append("t\tsessionStart\n") //TODO
-                sb.append("d\t0\n")
-                sb.append("ec\t0\n")
-                sb.append("bs\t1\n")
+        sb.append("d\t0\n")
+        sb.append("ec\t0\n")
+        sb.append("bs\t1\n")
 
-                return sb.toString()
-        }
+        return sb.toString()
+    }
 }
 
 class LowMemoryPayload(

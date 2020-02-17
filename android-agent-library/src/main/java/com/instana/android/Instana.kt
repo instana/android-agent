@@ -11,7 +11,6 @@ import com.instana.android.core.event.models.AppProfile
 import com.instana.android.core.event.models.DeviceProfile
 import com.instana.android.core.event.models.Platform
 import com.instana.android.core.util.ConstantsAndUtil
-import com.instana.android.core.util.JsonUtil
 import com.instana.android.core.util.Logger
 import com.instana.android.crash.CrashEventStore
 import com.instana.android.crash.CrashService
@@ -46,15 +45,6 @@ object Instana {
     lateinit var appProfile: AppProfile
     lateinit var deviceProfile: DeviceProfile
     var currentSessionId: String? = null
-
-    /**
-     * Use this initializer when config file is provided
-     */
-    @JvmStatic
-    fun init(app: Application) {
-        configuration = JsonUtil.getAssetJsonString(app) ?: throw IllegalArgumentException("Config file not provided from service")
-        init(app, configuration)
-    }
 
     /**
      * Use this initializer when you need custom configuration

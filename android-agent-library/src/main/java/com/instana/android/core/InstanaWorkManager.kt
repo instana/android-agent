@@ -11,10 +11,9 @@ import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.CrashEvent
 import com.instana.android.core.event.worker.EventWorker
 import com.instana.android.crash.CrashEventStore
-import org.apache.commons.collections4.QueueUtils
-import org.apache.commons.collections4.queue.CircularFifoQueue
 import java.util.*
 import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.TimeUnit
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -23,15 +22,13 @@ class InstanaWorkManager(
     private val manager: WorkManager = WorkManager.getInstance()
 ) {
 
-    private var eventQueue: Queue<BaseEvent>
-    private var eventQueue2: Queue<Beacon>
+    private var eventQueue: Queue<BaseEvent> = LinkedBlockingDeque()
+    private var eventQueue2: Queue<Beacon> = LinkedBlockingDeque()
     private val constraints: Constraints
 
     init {
         checkConfigurationParameters(configuration)
         constraints = configureWorkManager(configuration)
-        eventQueue = QueueUtils.synchronizedQueue(CircularFifoQueue(configuration.eventsBufferSize))
-        eventQueue2 = QueueUtils.synchronizedQueue(CircularFifoQueue(configuration.eventsBufferSize))
         startPeriodicEventDump(10, TimeUnit.SECONDS)
         checkIfUnSendCrashExistAndAddToQueue()
     }

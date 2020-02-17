@@ -3,10 +3,8 @@ package com.instana.android.core.event.models
 import com.instana.android.Instana
 import com.instana.android.core.event.BaseEvent
 import com.instana.android.core.event.Payload
-import com.squareup.moshi.JsonClass
 import java.util.*
 
-@JsonClass(generateAdapter = true)
 class CustomEvent(var event: CustomPayload) : BaseEvent() {
     override fun serialize(): String {
         val sb = StringBuilder()

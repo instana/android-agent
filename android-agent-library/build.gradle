@@ -1,14 +1,11 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
 apply plugin: 'com.archinamon.aspectj'
 apply plugin: 'digital.wup.android-maven-publish'
 
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
-
 
     defaultConfig {
         minSdkVersion 16
@@ -17,7 +14,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles 'consumer-rules.pro'
+        consumerProguardFiles 'proguard-rules.pro'
     }
 
     testOptions {
@@ -32,39 +29,14 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
-    compileOptions {
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
-    }
-}
-
-kapt {
-    javacOptions {
-        // Increase the max count of errors from annotation processors.
-        // Default is 100.
-        option("-Xmaxerrs", 500)
-    }
-    correctErrorTypes = true
-}
-
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        def requested = details.requested
-        if (requested.group == 'org.jetbrains.kotlin' && requested.name == 'kotlin-reflect') {
-            details.useVersion "1.3.21"
-        }
-    }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'android.arch.work:work-runtime-ktx:1.0.0'
-    implementation 'org.apache.commons:commons-collections4:4.4'
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
-    implementation 'com.squareup.moshi:moshi-kotlin:1.8.0'
+
     testImplementation 'junit:junit:4.13'
     testImplementation 'androidx.arch.core:core-testing:2.0.1'
     testImplementation 'androidx.test:core:1.2.0'
@@ -74,7 +46,6 @@ dependencies {
     testImplementation 'android.arch.work:work-testing:1.0.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.8.0'
 }
 
 publishing {

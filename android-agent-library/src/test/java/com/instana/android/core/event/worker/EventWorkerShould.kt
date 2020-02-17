@@ -11,8 +11,6 @@ import com.instana.android.InstanaShould.Companion.API_KEY
 import com.instana.android.InstanaShould.Companion.SERVER_URL
 import com.instana.android.core.InstanaConfiguration
 import com.instana.android.core.event.EventFactory
-import com.instana.android.core.event.worker.EventWorker.Companion.EVENT_JSON_STRING
-import com.instana.android.core.util.JsonUtil
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat

@@ -2,9 +2,7 @@ package com.instana.android.core
 
 import com.instana.android.alerts.AlertsConfiguration
 import com.instana.android.instrumentation.InstrumentationType
-import com.squareup.moshi.JsonClass
 
-@JsonClass(generateAdapter = true)
 class InstanaConfiguration
 @JvmOverloads constructor(
         val reportingUrl: String,
