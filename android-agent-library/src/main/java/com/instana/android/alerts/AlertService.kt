@@ -6,13 +6,11 @@ import com.instana.android.alerts.frame.FrameSkipMonitor
 import com.instana.android.alerts.mem.LowMemoryMonitor
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.InstanaMonitor
-import com.instana.android.core.InstanaWorkManager
 
 class AlertService(
-        app: Application,
-        manager: InstanaWorkManager,
-        private val alertsConfiguration: AlertsConfiguration,
-        lifeCycle: InstanaLifeCycle
+    app: Application,
+    private val alertsConfiguration: AlertsConfiguration,
+    lifeCycle: InstanaLifeCycle
 ) : InstanaMonitor, InstanaLifeCycle.AppStateCallback {
 
     private var lowMemoryMonitor: LowMemoryMonitor? = null
@@ -22,9 +20,9 @@ class AlertService(
     private var enabled: Boolean = alertsConfiguration.reportingEnabled
 
     init {
-        lowMemoryMonitor = LowMemoryMonitor(app, alertsConfiguration, manager, lifeCycle)
-        frameSkipMonitor = FrameSkipMonitor(alertsConfiguration, manager, lifeCycle)
-        anrMonitor = ANRMonitor(alertsConfiguration, manager, lifeCycle)
+        lowMemoryMonitor = LowMemoryMonitor(app, alertsConfiguration, lifeCycle)
+        frameSkipMonitor = FrameSkipMonitor(alertsConfiguration, lifeCycle)
+        anrMonitor = ANRMonitor(alertsConfiguration, lifeCycle)
         lifeCycle.registerCallback(this)
     }
 

@@ -17,6 +17,7 @@ import com.instana.android.core.util.ConstantsAndUtil.getConnectionType2
 import okhttp3.Request
 import okhttp3.Response
 import java.net.HttpURLConnection
+import java.net.URLEncoder
 
 /**
  * Use for manual instrumentation, called over instrumentation service instance
@@ -67,7 +68,9 @@ class RemoteCallMarker(
         stopWatch.stop()
         val requestSize = response.request().body()?.contentLength() ?: 0L
         val responseSize = response.body()?.contentLength() ?: 0L
-        val errorMessage = if (response.isSuccessful || responseSize == 0L) null else response.peekBody(Long.MAX_VALUE).string()
+        val errorMessage =
+            if (response.isSuccessful || responseSize == 0L) null
+            else URLEncoder.encode(response.peekBody(Long.MAX_VALUE).string(), "UTF-8")
 
         if (sessionId == null) {
             Logger.e("Tried to end RemoteCallMarker with null sessionId")
@@ -83,9 +86,10 @@ class RemoteCallMarker(
             method = method,
             url = url,
             responseCode = response.code(),
-            error = errorMessage,
             requestSizeBytes = requestSize,
-            responseSizeBytes = responseSize
+            responseSizeBytes = responseSize,
+            backendTraceId = getBackendTraceId(response),
+            error = errorMessage
         )
 
         Instana.remoteCallInstrumentation?.removeTag(eventId)
@@ -111,9 +115,10 @@ class RemoteCallMarker(
             method = method,
             url = url,
             responseCode = null,
-            error = error.toString(),
             requestSizeBytes = requestSize,
-            responseSizeBytes = null
+            responseSizeBytes = null,
+            backendTraceId = null,
+            error = error.toString()
         )
 
         Instana.remoteCallInstrumentation?.removeTag(eventId)
@@ -142,9 +147,10 @@ class RemoteCallMarker(
             method = method,
             url = url,
             responseCode = responseCode,
-            error = errorMessage,
             requestSizeBytes = null,
-            responseSizeBytes = responseSize
+            responseSizeBytes = responseSize,
+            backendTraceId = getBackendTraceId(connection),
+            error = errorMessage
         )
 
         Instana.remoteCallInstrumentation?.removeTag(eventId)
@@ -168,13 +174,32 @@ class RemoteCallMarker(
             method = method,
             url = url,
             responseCode = connection.responseCode,
-            error = error.message,
             requestSizeBytes = null,
-            responseSizeBytes = null
+            responseSizeBytes = null,
+            backendTraceId = getBackendTraceId(connection),
+            error = error.message
         )
 
         Instana.remoteCallInstrumentation?.removeTag(eventId)
         manager.send(beacon)
     }
     //endregion
+
+    private fun getBackendTraceId(connection: HttpURLConnection): String? {
+        //Server-Timing: intid;desc=bd777df70e5e5356
+        return connection.getHeaderField(backendTraceIdHeaderKey)?.let { it ->
+            backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
+        }
+    }
+
+    private fun getBackendTraceId(response: Response): String? {
+        return response.header(backendTraceIdHeaderKey)?.let { it ->
+            backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
+        }
+    }
+
+    companion object {
+        const val backendTraceIdHeaderKey = "Server-Timing"
+        val backendTraceIdParser = "^intid;desc=(.*)\$".toRegex() //TODO check whether we can restrict the match pattern a bit more
+    }
 }

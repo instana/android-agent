@@ -1,4 +1,4 @@
-package com.instana.android.core.event.models
+package com.instana.android.core.event.models.legacy
 
 import com.instana.android.Instana
 import com.instana.android.core.event.BaseEvent

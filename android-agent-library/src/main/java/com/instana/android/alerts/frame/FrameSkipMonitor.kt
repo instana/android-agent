@@ -3,18 +3,16 @@ package com.instana.android.alerts.frame
 import android.os.SystemClock
 import android.view.Choreographer
 import androidx.annotation.VisibleForTesting
+import com.instana.android.Instana
 import com.instana.android.alerts.AlertsConfiguration
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.InstanaMonitor
-import com.instana.android.core.InstanaWorkManager
-import com.instana.android.core.event.EventFactory
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
 
 class FrameSkipMonitor(
-        private val alertsConfiguration: AlertsConfiguration,
-        private val manager: InstanaWorkManager,
-        private val lifeCycle: InstanaLifeCycle,
-        private val choreographer: Choreographer = Choreographer.getInstance()
+    private val alertsConfiguration: AlertsConfiguration,
+    private val lifeCycle: InstanaLifeCycle,
+    private val choreographer: Choreographer = Choreographer.getInstance()
 ) : Choreographer.FrameCallback, InstanaMonitor {
 
     private var enabled: Boolean = alertsConfiguration.reportingEnabled
@@ -67,9 +65,16 @@ class FrameSkipMonitor(
     }
 
     private fun sendFrameDipEvent(averageFrameRate: Long) {
-        // send alert event
         val activityName = lifeCycle.activityName ?: EMPTY_STR
-        manager.send(EventFactory.createFrameDipAlert(activityName, averageFrameRate, duration))
+        Instana.customEvents?.submit(
+            name = "FrameDip",
+            startTime = startTime,
+            duration = duration,
+            meta = mapOf(
+                "activityName" to activityName,
+                "avgFrameRate" to averageFrameRate.toString()
+            )
+        )
     }
 
     private fun calculateFPS(): Long {

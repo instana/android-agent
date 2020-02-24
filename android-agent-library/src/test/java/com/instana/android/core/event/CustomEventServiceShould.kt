@@ -7,10 +7,10 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import org.junit.Test
 
-class EventServiceShould : BaseTest() {
+class CustomEventServiceShould : BaseTest() {
 
     private val managerMock: InstanaWorkManager = mock()
-    private val eventService = EventService(managerMock)
+    private val eventService = CustomEventService(managerMock)
 
     @Test
     fun submitEvent() {

@@ -480,18 +480,21 @@ class Beacon private constructor(
             duration: Long,
             method: String,
             url: String,
+            backendTraceId: String?,
             responseCode: Int?,
-            error: String?,
             requestSizeBytes: Long?, //TODO ignored?
-            responseSizeBytes: Long?
-        ): Beacon { // must set customEventName
-            return Beacon(BeaconType.HTTP_REQUEST, duration, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile)
+            responseSizeBytes: Long?,
+            error: String?
+        ): Beacon {
+            val errorCount = if (error != null) 1L else 0L
+            return Beacon(BeaconType.HTTP_REQUEST, duration, appKey, sessionId, errorCount, appProfile, deviceProfile, connectionProfile)
                 .apply {
                     setHttpCallMethod(method)
                     setHttpCallUrl(url)
                     responseCode?.run { setHttpCallStatus(this) }
-                    error?.run { setErrorMessage(this) }
                     responseSizeBytes?.run { setDecodedBodySize(this) }
+                    backendTraceId?.run { setBackendTraceId(backendTraceId) }
+                    error?.run { setErrorMessage(this) }
                 }
         }
 
@@ -515,6 +518,7 @@ class Beacon private constructor(
             deviceProfile: DeviceProfile,
             connectionProfile: ConnectionProfile,
             sessionId: String,
+            startTime: Long,
             duration: Long,
             name: String,
             meta: Map<String, String>
@@ -522,6 +526,7 @@ class Beacon private constructor(
             return Beacon(BeaconType.CUSTOM, duration, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile)
                 .apply {
                     setCustomEventName(name)
+                    setTimestamp(startTime)
                     meta.forEach { setMeta(it.key, it.value) }
                 }
         }

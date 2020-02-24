@@ -17,7 +17,7 @@ object HttpUrlConnectionRequests {
     private const val ERROR = "error"
 
     fun doGet(
-        desiredUrl: String = "https://httpstat.us/200",
+        desiredUrl: String = "https://sesandbox-instana.instana.io",
         enableManual: Boolean
     ): Boolean {
         var urlConnection: HttpsURLConnection? = null

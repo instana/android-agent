@@ -16,7 +16,7 @@ object OkHttpRequests {
     private val contentType = MediaType.get("application/json; charset=utf-8")
     private val okHttpClient = OkHttpClient.Builder().build()
 
-    fun executeGetSuccess() = executeGet("https://httpstat.us/200", false)
+    fun executeGetSuccess() = executeGet("https://sesandbox-instana.instana.io", false)
     fun executeGetFailure() = executeGet("https://httpstat.us/404", false)
     fun executeGetException() = executeGet("https://httpstat-nonexistingurlhere.us/200", false)
 

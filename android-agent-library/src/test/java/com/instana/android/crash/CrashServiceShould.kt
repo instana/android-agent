@@ -4,7 +4,7 @@ import com.instana.android.BaseTest
 import com.instana.android.InstanaShould.Companion.API_KEY
 import com.instana.android.InstanaShould.Companion.SERVER_URL
 import com.instana.android.core.InstanaConfiguration
-import com.instana.android.core.event.models.CrashEvent
+import com.instana.android.core.event.models.legacy.CrashEvent
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.mock

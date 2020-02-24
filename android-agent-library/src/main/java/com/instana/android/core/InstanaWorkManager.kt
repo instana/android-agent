@@ -6,9 +6,8 @@ import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.WorkManager
-import com.instana.android.core.event.BaseEvent
 import com.instana.android.core.event.models.Beacon
-import com.instana.android.core.event.models.CrashEvent
+import com.instana.android.core.event.models.legacy.CrashEvent
 import com.instana.android.core.event.worker.EventWorker
 import com.instana.android.crash.CrashEventStore
 import java.util.*
@@ -22,8 +21,7 @@ class InstanaWorkManager(
     private val manager: WorkManager = WorkManager.getInstance()
 ) {
 
-    private var eventQueue: Queue<BaseEvent> = LinkedBlockingDeque()
-    private var eventQueue2: Queue<Beacon> = LinkedBlockingDeque()
+    private var eventQueue: Queue<Beacon> = LinkedBlockingDeque()
     private val constraints: Constraints
 
     init {
@@ -98,11 +96,6 @@ class InstanaWorkManager(
                     addToManagerAndClear()
                 }
             }
-            eventQueue2.run {
-                if (this.size > 0) {
-                    addToManagerAndClear2()
-                }
-            }
         }, 1, period, timeUnit)
     }
 
@@ -117,20 +110,7 @@ class InstanaWorkManager(
     /**
      * Upon configuration.eventsBufferSize limit send all data to worker and clear queue
      */
-    private fun Queue<BaseEvent>.addToManagerAndClear() {
-        val tag = UUID.randomUUID().toString()
-        manager.enqueueUniqueWork(
-            tag,
-            ExistingWorkPolicy.APPEND,
-            EventWorker.createWorkRequest(constraints, this.toList(), tag)
-        )
-        this.clear()
-    }
-
-    /**
-     * Upon configuration.eventsBufferSize limit send all data to worker and clear queue
-     */
-    private fun Queue<Beacon>.addToManagerAndClear2() {
+    private fun Queue<Beacon>.addToManagerAndClear() {
         val tag = UUID.randomUUID().toString()
         manager.enqueueUniqueWork(
             tag,
@@ -141,21 +121,11 @@ class InstanaWorkManager(
     }
 
     @Synchronized
-    fun send(event: BaseEvent) {
-        eventQueue.apply {
-            this.add(event)
-            if (this.size == configuration.eventsBufferSize) {
-                addToManagerAndClear()
-            }
-        }
-    }
-
-    @Synchronized
     fun send(beacon: Beacon) {
-        eventQueue2.apply {
+        eventQueue.apply {
             this.add(beacon)
             if (this.size == configuration.eventsBufferSize) {
-                addToManagerAndClear2()
+                addToManagerAndClear()
             }
         }
     }

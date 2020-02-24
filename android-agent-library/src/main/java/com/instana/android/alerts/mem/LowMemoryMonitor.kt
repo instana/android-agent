@@ -5,19 +5,17 @@ import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
 import android.content.res.Configuration
+import com.instana.android.Instana
 import com.instana.android.alerts.AlertsConfiguration
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.InstanaMonitor
-import com.instana.android.core.InstanaWorkManager
-import com.instana.android.core.event.EventFactory
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
 
 class LowMemoryMonitor(
-        private val app: Application,
-        private val alertsConfiguration: AlertsConfiguration,
-        private val manager: InstanaWorkManager,
-        private val lifeCycle: InstanaLifeCycle
+    private val app: Application,
+    private val alertsConfiguration: AlertsConfiguration,
+    private val lifeCycle: InstanaLifeCycle
 ) : ComponentCallbacks2, InstanaMonitor {
 
     private var enabled: Boolean = alertsConfiguration.reportingEnabled && alertsConfiguration.lowMemory
@@ -48,9 +46,20 @@ class LowMemoryMonitor(
         val maxMem = ConstantsAndUtil.runtime.maxMemory()
         val usedMem = ConstantsAndUtil.runtime.totalMemory() - ConstantsAndUtil.runtime.freeMemory()
         val availableMem = maxMem - usedMem
+        val maxInMb = maxMem / MB
         val availableInMb = availableMem / MB
         val usedInMb = usedMem / MB
-        manager.send(EventFactory.createLowMemAlert(activityName, availableInMb.toString(), usedInMb.toString()))
+        Instana.customEvents?.submit(
+            name = "LowMemory",
+            startTime = System.currentTimeMillis(),
+            duration = 0L,
+            meta = mapOf(
+                "activityName" to activityName,
+                "maxMb" to maxInMb.toString(),
+                "availableMb" to availableInMb.toString(),
+                "usedMb" to usedInMb.toString()
+            )
+        )
     }
 
     override fun enable() {

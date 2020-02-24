@@ -17,7 +17,7 @@ class DemoAppKotlin : Application() {
                 key = "REPLACE_WITH_YOUR_INSTANA_KEY",
                 remoteCallInstrumentationType = InstrumentationType.ALL.type,
                 suspendReportingReporting = SuspendReportingType.LOW_BATTERY_AND_CELLULAR_CONNECTION,
-                enableCrashReporting = true,
+                enableCrashReporting = false,
                 alerts = AlertsConfiguration(
                     reportingEnabled = false,
                     lowMemory = false,

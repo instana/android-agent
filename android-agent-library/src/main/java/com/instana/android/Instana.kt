@@ -1,12 +1,15 @@
 package com.instana.android
 
 import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Build
+import android.telephony.TelephonyManager
 import com.instana.android.alerts.AlertService
 import com.instana.android.core.InstanaConfiguration
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.InstanaWorkManager
-import com.instana.android.core.event.EventService
+import com.instana.android.core.event.CustomEventService
 import com.instana.android.core.event.models.AppProfile
 import com.instana.android.core.event.models.DeviceProfile
 import com.instana.android.core.event.models.Platform
@@ -31,7 +34,7 @@ object Instana {
     lateinit var configuration: InstanaConfiguration
 
     @JvmField
-    var events: EventService? = null
+    var customEvents: CustomEventService? = null
 
     @JvmField
     var crashReporting: CrashService? = null
@@ -88,9 +91,12 @@ object Instana {
         InstanaWorkManager(configuration).also {
             crashReporting = CrashService(app, it, configuration)
             sessionService = SessionService(app, it)
-            events = EventService(it)
+            customEvents = CustomEventService(
+                manager = it,
+                cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!!, //TODO don't force-cast
+                tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!) //TODO don't force-cast
             remoteCallInstrumentation = InstrumentationService(app, it, configuration)
-//            alert = AlertService(app, it, configuration.alerts, lifeCycle!!) // TODO enable again
+            alert = AlertService(app, configuration.alerts, lifeCycle!!) //TODO don't force-cast
         }
     }
 }
