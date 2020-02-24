@@ -448,7 +448,7 @@ class Beacon private constructor(
         stringMap.forEach {
             sb.append(it.key)
                 .append("\t")
-                .append(it.value)
+                .append(it.value.escape())
                 .append("\n")
         }
         return sb.toString()
@@ -459,6 +459,12 @@ class Beacon private constructor(
         val md = MessageDigest.getInstance("MD5")
         return BigInteger(1, md.digest(toByteArray())).toString(16).padStart(32, '0')
     }
+
+    @VisibleForTesting
+    private fun String.escape(): String =
+        replace("""\\""", """\\\\""")
+            .replace("""\n""", """\\n""")
+            .replace("""\t""", """\\t""")
 
     companion object {
         fun newSessionStart(
