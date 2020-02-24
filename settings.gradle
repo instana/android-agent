@@ -1,2 +1,2 @@
-include ':app', ':android-agent-library'
+include ':app', ':runtime'
 rootProject.name='android-agent'
