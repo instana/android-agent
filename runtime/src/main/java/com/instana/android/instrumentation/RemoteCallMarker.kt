@@ -17,7 +17,6 @@ import com.instana.android.core.util.ConstantsAndUtil.getConnectionType2
 import okhttp3.Request
 import okhttp3.Response
 import java.net.HttpURLConnection
-import java.net.URLEncoder
 
 /**
  * Use for manual instrumentation, called over instrumentation service instance
@@ -66,11 +65,8 @@ class RemoteCallMarker(
     //region OkHttp
     fun endedWith(response: Response) {
         stopWatch.stop()
-        val requestSize = response.request().body()?.contentLength() ?: 0L
-        val responseSize = response.body()?.contentLength() ?: 0L
-        val errorMessage =
-            if (response.isSuccessful || responseSize == 0L) null
-            else URLEncoder.encode(response.peekBody(Long.MAX_VALUE).string(), "UTF-8")
+        val requestSize = response.request().body()?.contentLength()
+        val responseSize = response.body()?.contentLength()
 
         if (sessionId == null) {
             Logger.e("Tried to end RemoteCallMarker with null sessionId")
@@ -89,7 +85,7 @@ class RemoteCallMarker(
             requestSizeBytes = requestSize,
             responseSizeBytes = responseSize,
             backendTraceId = getBackendTraceId(response),
-            error = errorMessage
+            error = null
         )
 
         Instana.remoteCallInstrumentation?.removeTag(eventId)
@@ -99,7 +95,7 @@ class RemoteCallMarker(
     fun endedWith(request: Request, error: Throwable) {
         stopWatch.stop()
 
-        val requestSize = request.body()?.contentLength() ?: 0L
+        val requestSize = request.body()?.contentLength()
 
         if (sessionId == null) {
             Logger.e("Tried to end RemoteCallMarker with null sessionId")
