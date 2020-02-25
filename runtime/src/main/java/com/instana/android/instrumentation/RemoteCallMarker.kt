@@ -66,7 +66,7 @@ class RemoteCallMarker(
     fun endedWith(response: Response) {
         stopWatch.stop()
         val requestSize = response.request().body()?.contentLength()
-        val responseSize = response.body()?.contentLength()
+        val encodedResponseSize = response.body()?.contentLength()
 
         if (sessionId == null) {
             Logger.e("Tried to end RemoteCallMarker with null sessionId")
@@ -83,7 +83,7 @@ class RemoteCallMarker(
             url = url,
             responseCode = response.code(),
             requestSizeBytes = requestSize,
-            responseSizeBytes = responseSize,
+            encodedResponseSizeBytes = encodedResponseSize,
             backendTraceId = getBackendTraceId(response),
             error = null
         )
@@ -112,7 +112,7 @@ class RemoteCallMarker(
             url = url,
             responseCode = null,
             requestSizeBytes = requestSize,
-            responseSizeBytes = null,
+            encodedResponseSizeBytes = null,
             backendTraceId = null,
             error = error.toString()
         )
@@ -125,7 +125,7 @@ class RemoteCallMarker(
     //region HttpUrlConnection
     fun endedWith(connection: HttpURLConnection) {
         stopWatch.stop()
-        val responseSize = connection.responseSizeOrNull()
+        val encodedResponseSize = connection.encodedResponseSizeOrNull()
         val responseCode = connection.responseCodeOrNull()
         val errorMessage = connection.errorMessageOrNull()
 
@@ -144,7 +144,7 @@ class RemoteCallMarker(
             url = url,
             responseCode = responseCode,
             requestSizeBytes = null,
-            responseSizeBytes = responseSize,
+            encodedResponseSizeBytes = encodedResponseSize,
             backendTraceId = getBackendTraceId(connection),
             error = errorMessage
         )
@@ -171,7 +171,7 @@ class RemoteCallMarker(
             url = url,
             responseCode = connection.responseCode,
             requestSizeBytes = null,
-            responseSizeBytes = null,
+            encodedResponseSizeBytes = null,
             backendTraceId = getBackendTraceId(connection),
             error = error.message
         )

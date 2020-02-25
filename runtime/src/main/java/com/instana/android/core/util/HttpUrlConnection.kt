@@ -10,7 +10,7 @@ fun HttpURLConnection.isSuccessful(): Boolean =
         false
     }
 
-fun HttpURLConnection.responseSizeOrNull(): Long? {
+fun HttpURLConnection.encodedResponseSizeOrNull(): Long? {
     var size: Long? =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) contentLengthLong
         else contentLength.toLong()
@@ -36,7 +36,7 @@ fun HttpURLConnection.errorMessageOrNull(): String? {
         } catch (e: Exception) {
             e.toString()
         }
-        compareValues(responseSizeOrNull(), 0) > 0 -> errorStream?.use { it.readCopy() }
+        compareValues(encodedResponseSizeOrNull(), 0) > 0 -> errorStream?.use { it.readCopy() }
         else -> null
     }
 }

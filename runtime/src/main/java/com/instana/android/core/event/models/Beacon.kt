@@ -489,7 +489,7 @@ class Beacon private constructor(
             backendTraceId: String?,
             responseCode: Int?,
             requestSizeBytes: Long?, //TODO ignored?
-            responseSizeBytes: Long?,
+            encodedResponseSizeBytes: Long?,
             error: String?
         ): Beacon {
             val errorCount = if (error != null) 1L else 0L
@@ -498,7 +498,7 @@ class Beacon private constructor(
                     setHttpCallMethod(method)
                     setHttpCallUrl(url)
                     responseCode?.run { setHttpCallStatus(this) }
-                    responseSizeBytes?.run { setDecodedBodySize(this) }
+                    encodedResponseSizeBytes?.run { setEncodedBodySize(this) }
                     backendTraceId?.run { setBackendTraceId(backendTraceId) }
                     error?.run { setErrorMessage(this) }
                 }
