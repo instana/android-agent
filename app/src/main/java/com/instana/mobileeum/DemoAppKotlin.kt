@@ -29,5 +29,10 @@ class DemoAppKotlin : Application() {
                 sendDeviceLocationIfAvailable = true
             )
         )
+        Instana.userProfile.apply {
+            userId = "1234567890"
+            userEmail = "instana@example.com"
+            userName = "instana android agent demo"
+        }
     }
 }

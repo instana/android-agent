@@ -10,6 +10,8 @@ import android.telephony.TelephonyManager
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.annotation.RestrictTo
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.instana.android.Instana
 import com.instana.android.core.event.models.ConnectionType
 import com.instana.android.core.event.models.EffectiveConnectionType
@@ -98,21 +100,7 @@ object ConstantsAndUtil {
             else -> null
         }
 
-    fun getCellularConnectionType(tm: TelephonyManager): String =
-        when (tm.networkType) {
-            TelephonyManager.NETWORK_TYPE_GPRS, TelephonyManager.NETWORK_TYPE_EDGE,
-            TelephonyManager.NETWORK_TYPE_CDMA, TelephonyManager.NETWORK_TYPE_1xRTT,
-            TelephonyManager.NETWORK_TYPE_IDEN -> "2G"
-            TelephonyManager.NETWORK_TYPE_UMTS, TelephonyManager.NETWORK_TYPE_EVDO_0,
-            TelephonyManager.NETWORK_TYPE_EVDO_A, TelephonyManager.NETWORK_TYPE_HSDPA,
-            TelephonyManager.NETWORK_TYPE_HSUPA, TelephonyManager.NETWORK_TYPE_HSPA,
-            TelephonyManager.NETWORK_TYPE_EVDO_B, TelephonyManager.NETWORK_TYPE_EHRPD,
-            TelephonyManager.NETWORK_TYPE_HSPAP -> "3G"
-            TelephonyManager.NETWORK_TYPE_LTE -> "4G"
-            else -> "Unknown"
-        }
-
-    fun getCellularConnectionType2(cm: ConnectivityManager, tm: TelephonyManager): EffectiveConnectionType? {
+    fun getCellularConnectionType(cm: ConnectivityManager, tm: TelephonyManager): EffectiveConnectionType? {
         if (getConnectionType2(cm) != ConnectionType.CELLULAR) {
             return null
         } else {
@@ -225,5 +213,9 @@ object ConstantsAndUtil {
         } finally {
             process?.destroy()
         }
+    }
+
+    fun isGooglePlayServicesAvailable(context: Context): Boolean {
+        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
     }
 }

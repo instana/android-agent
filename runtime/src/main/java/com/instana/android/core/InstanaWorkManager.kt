@@ -47,6 +47,7 @@ class InstanaWorkManager(
      * Set constraints based on configuration
      */
     private fun configureWorkManager(instanaConfiguration: InstanaConfiguration): Constraints {
+        //TODO review these. Right now cellular is not sent until I connect to wifi...
         val networkType: NetworkType
         val lowBattery: Boolean
 

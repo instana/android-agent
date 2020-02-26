@@ -41,13 +41,14 @@ class CustomEventService(
         val connectionProfile = ConnectionProfile(
             carrierName = ConstantsAndUtil.getCarrierName(cm, tm),
             connectionType = ConstantsAndUtil.getConnectionType2(cm),
-            effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType2(cm, tm)
+            effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(cm, tm)
         )
         val beacon = Beacon.newCustomEvent(
             appKey = Instana.configuration.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
+            userProfile = Instana.userProfile,
             sessionId = sessionId,
             startTime = startTime,
             duration = duration,

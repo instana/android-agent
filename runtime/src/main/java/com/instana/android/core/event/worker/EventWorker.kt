@@ -74,24 +74,6 @@ open class EventWorker(
 
     companion object {
 
-        fun createWorkRequest(
-            constraints: Constraints,
-            event: List<BaseEvent>,
-            tag: String = UUID.randomUUID().toString()
-        ): OneTimeWorkRequest {
-            // TODO move serialization to a more sensible place
-            val sb = StringBuffer()
-            event.forEach { sb.append("${it.serialize()}\n") }
-            val serialized = sb.toString()
-
-            val data = Data.Builder().putString(EVENT_JSON_STRING, serialized).build()
-            return OneTimeWorkRequest.Builder(EventWorker::class.java)
-                .setInputData(data)
-                .setConstraints(constraints)
-                .addTag(tag)
-                .build()
-        }
-
         fun createWorkRequest2(
             constraints: Constraints,
             event: List<Beacon>,

@@ -6,13 +6,10 @@ import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
 import com.instana.android.core.util.*
-import com.instana.android.core.util.ConstantsAndUtil.CELLULAR
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
 import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
 import com.instana.android.core.util.ConstantsAndUtil.getCarrierName
 import com.instana.android.core.util.ConstantsAndUtil.getCellularConnectionType
-import com.instana.android.core.util.ConstantsAndUtil.getCellularConnectionType2
-import com.instana.android.core.util.ConstantsAndUtil.getConnectionType
 import com.instana.android.core.util.ConstantsAndUtil.getConnectionType2
 import okhttp3.Request
 import okhttp3.Response
@@ -31,7 +28,6 @@ class RemoteCallMarker(
     private val stopWatch: StopWatch = StopWatch() // TODO replace with startTime&endTime
     private val eventId = IdProvider.eventId()
     private var carrierName: String? = null
-    private var connectionType: String? = null
     private var connectionProfile: ConnectionProfile
     private val sessionId: String?
 
@@ -41,15 +37,11 @@ class RemoteCallMarker(
         connectionProfile = ConnectionProfile(
             carrierName = Instana.remoteCallInstrumentation?.run { getCarrierName(getConnectionManager(), getTelephonyManager()) },
             connectionType = Instana.remoteCallInstrumentation?.run { getConnectionType2(getConnectionManager()) },
-            effectiveConnectionType = Instana.remoteCallInstrumentation?.run { getCellularConnectionType2(getConnectionManager(), getTelephonyManager()) }
+            effectiveConnectionType = Instana.remoteCallInstrumentation?.run { getCellularConnectionType(getConnectionManager(), getTelephonyManager()) }
         )
         Instana.remoteCallInstrumentation?.run {
-            connectionType = getConnectionType(getConnectionManager())
             carrierName = getTelephonyManager().networkOperatorName
             if (carrierName == EMPTY_STR) carrierName = null
-            if (connectionType == CELLULAR) {
-                connectionType = getCellularConnectionType(getTelephonyManager())
-            }
             addTag(eventId)
         }
     }
@@ -68,6 +60,8 @@ class RemoteCallMarker(
         val requestSize = response.request().body()?.contentLength()
         val encodedResponseSize = response.body()?.contentLength()
 
+        //TODO provide decodedResponseSize: https://github.com/square/okhttp/blob/master/okhttp-logging-interceptor/src/main/java/okhttp3/logging/HttpLoggingInterceptor.kt
+
         if (sessionId == null) {
             Logger.e("Tried to end RemoteCallMarker with null sessionId")
             return
@@ -77,6 +71,7 @@ class RemoteCallMarker(
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
+            userProfile = Instana.userProfile,
             sessionId = sessionId,
             duration = stopWatch.totalTimeMillis,
             method = method,
@@ -106,6 +101,7 @@ class RemoteCallMarker(
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
+            userProfile = Instana.userProfile,
             sessionId = sessionId,
             duration = stopWatch.totalTimeMillis,
             method = method,
@@ -138,6 +134,7 @@ class RemoteCallMarker(
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
+            userProfile = Instana.userProfile,
             sessionId = sessionId,
             duration = stopWatch.totalTimeMillis,
             method = method,
@@ -165,6 +162,7 @@ class RemoteCallMarker(
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
+            userProfile = Instana.userProfile,
             sessionId = sessionId,
             duration = stopWatch.totalTimeMillis,
             method = method,

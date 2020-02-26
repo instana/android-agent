@@ -13,12 +13,14 @@ import com.instana.android.core.event.CustomEventService
 import com.instana.android.core.event.models.AppProfile
 import com.instana.android.core.event.models.DeviceProfile
 import com.instana.android.core.event.models.Platform
+import com.instana.android.core.event.models.UserProfile
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 import com.instana.android.crash.CrashEventStore
 import com.instana.android.crash.CrashService
 import com.instana.android.instrumentation.InstrumentationService
 import com.instana.android.session.SessionService
+import java.util.*
 
 /**
  * Singleton object that provides all functionality
@@ -47,6 +49,7 @@ object Instana {
 
     lateinit var appProfile: AppProfile
     lateinit var deviceProfile: DeviceProfile
+    val userProfile = UserProfile(null, null, null)
     var currentSessionId: String? = null
 
     /**
@@ -74,10 +77,13 @@ object Instana {
         val viewportWidthAndHeight = ConstantsAndUtil.getViewportWidthAndHeight(app)
         deviceProfile = DeviceProfile(
             platform = Platform.ANDROID,
-            osVersion = Build.VERSION.SDK_INT.toString(),
+            osVersion = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
             deviceManufacturer = Build.MANUFACTURER ?: ConstantsAndUtil.EMPTY_STR,
             deviceModel = Build.MODEL ?: ConstantsAndUtil.EMPTY_STR,
+            deviceHardware = Build.HARDWARE,
+            googlePlayServicesAvailable = ConstantsAndUtil.isGooglePlayServicesAvailable(app),
             rooted = ConstantsAndUtil.isDeviceRooted(),
+            locale = Locale.getDefault(),
             viewportWidth = viewportWidthAndHeight.first,
             viewportHeight = viewportWidthAndHeight.second
         )
