@@ -103,6 +103,7 @@ class KotlinActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
+        Instana.view = "Home screen"
         Instana.crashReporting?.leave("onResume")
     }
 }

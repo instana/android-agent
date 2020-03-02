@@ -500,9 +500,13 @@ class Beacon private constructor(
             deviceProfile: DeviceProfile,
             connectionProfile: ConnectionProfile,
             userProfile: UserProfile,
-            sessionId: String
+            sessionId: String,
+            view: String?
         ): Beacon {
             return Beacon(BeaconType.SESSION_START, 0, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
+                .apply {
+                    view?.run { setView(this) }
+                }
         }
 
         fun newHttpRequest(
@@ -512,6 +516,7 @@ class Beacon private constructor(
             connectionProfile: ConnectionProfile,
             userProfile: UserProfile,
             sessionId: String,
+            view: String?,
             duration: Long,
             method: String,
             url: String,
@@ -525,6 +530,7 @@ class Beacon private constructor(
             val errorCount = if (error != null) 1L else 0L
             return Beacon(BeaconType.HTTP_REQUEST, duration, appKey, sessionId, errorCount, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
+                    view?.run { setView(this) }
                     setHttpCallMethod(method)
                     setHttpCallUrl(url)
                     responseCode?.run { setHttpCallStatus(this) }
@@ -557,6 +563,7 @@ class Beacon private constructor(
             connectionProfile: ConnectionProfile,
             userProfile: UserProfile,
             sessionId: String,
+            view: String?,
             startTime: Long,
             duration: Long,
             name: String,
@@ -564,6 +571,7 @@ class Beacon private constructor(
         ): Beacon {
             return Beacon(BeaconType.CUSTOM, duration, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
+                    view?.run { setView(this) }
                     setCustomEventName(name)
                     setTimestamp(startTime)
                     meta.forEach { setMeta(it.key, it.value) }
@@ -571,14 +579,18 @@ class Beacon private constructor(
         }
 
         fun newCrash(
-            sessionId: String,
             appProfile: AppProfile,
             deviceProfile: DeviceProfile,
             connectionProfile: ConnectionProfile,
-            userProfile: UserProfile
+            userProfile: UserProfile,
+            sessionId: String,
+            view: String?
         ): Beacon {
             // TODO might need to set batchSize
             return Beacon(BeaconType.CRASH, 0, "", sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
+                .apply {
+                    view?.run { setView(this) }
+                }
         }
     }
 }

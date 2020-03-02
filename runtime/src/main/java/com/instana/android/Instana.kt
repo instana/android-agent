@@ -20,7 +20,9 @@ import com.instana.android.crash.CrashEventStore
 import com.instana.android.crash.CrashService
 import com.instana.android.instrumentation.InstrumentationService
 import com.instana.android.session.SessionService
+import com.instana.android.view.ViewChangeService
 import java.util.*
+import kotlin.properties.Delegates
 
 /**
  * Singleton object that provides all functionality
@@ -47,11 +49,16 @@ object Instana {
     @JvmField
     var remoteCallInstrumentation: InstrumentationService? = null // TODO does it really need to be nullable? Currently null when SessionStart is sent
 
+    private var viewChangeService: ViewChangeService? = null
+
     lateinit var appProfile: AppProfile
     lateinit var deviceProfile: DeviceProfile
     val userProfile = UserProfile(null, null, null)
     var currentSessionId: String? = null
     val ignoreURLs = mutableListOf<Regex>()
+    var view by Delegates.observable<String?>(null) { _, oldValue, newValue ->
+        if (oldValue != newValue && newValue != null) viewChangeService?.sendViewChange(newValue)
+    }
 
     /**
      * Use this initializer when you need custom configuration
@@ -101,9 +108,11 @@ object Instana {
             customEvents = CustomEventService(
                 manager = it,
                 cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!!, //TODO don't force-cast
-                tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!) //TODO don't force-cast
+                tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!
+            ) //TODO don't force-cast
             remoteCallInstrumentation = InstrumentationService(app, it, configuration)
             alert = AlertService(app, configuration.alerts, lifeCycle!!) //TODO don't force-cast
+            viewChangeService = ViewChangeService(app, it)
         }
     }
 }

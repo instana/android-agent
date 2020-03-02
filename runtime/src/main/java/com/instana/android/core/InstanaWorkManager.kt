@@ -31,8 +31,8 @@ class InstanaWorkManager(
         constraints = configureWorkManager(configuration)
         Executors.newScheduledThreadPool(1).schedule({
             updateQueueItems(eventQueue)
-            isInitialDelayComplete = true
             startPeriodicEventDump(10, TimeUnit.SECONDS)
+            isInitialDelayComplete = true
         }, configuration.initialBeaconDelay, TimeUnit.SECONDS)
 
         addUnsentCrashesToQueue()

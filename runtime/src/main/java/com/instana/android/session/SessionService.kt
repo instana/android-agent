@@ -38,7 +38,8 @@ class SessionService(
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
             userProfile = Instana.userProfile,
-            sessionId = sessionId
+            sessionId = sessionId,
+            view = Instana.view
         )
 
         Instana.currentSessionId = sessionId
