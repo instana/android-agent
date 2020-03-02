@@ -67,10 +67,10 @@ object Instana {
     }
 
     /**
-     * Use this initializer when you need custom configuration
+     * Initialize Instana
      */
     @JvmStatic
-    fun init(app: Application, configuration: InstanaConfiguration) {
+    fun setup(app: Application, configuration: InstanaConfiguration) {
         initProfiles(app)
         initStoreAndLifecycle(app)
         this.configuration = configuration

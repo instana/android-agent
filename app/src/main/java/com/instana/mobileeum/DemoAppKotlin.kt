@@ -11,8 +11,8 @@ class DemoAppKotlin : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Instana.init(
             this, InstanaConfiguration( //TODO move configuration to gradle once plugin is in place
+        Instana.setup(
                 reportingUrl = "REPLACE_WITH_YOUR_INSTANA_REPORTING_URL",
                 key = "REPLACE_WITH_YOUR_INSTANA_KEY",
                 remoteCallInstrumentationType = InstrumentationType.ALL.type,
