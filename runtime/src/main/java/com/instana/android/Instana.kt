@@ -54,7 +54,12 @@ object Instana {
     lateinit var deviceProfile: DeviceProfile
     val userProfile = UserProfile(null, null, null)
     val ignoreURLs = mutableListOf<Regex>()
-    var firstView: String? = null
+
+    internal var firstView: String? = null
+
+    /**
+     * Human-readable name of logical view to which beacons will be associated
+     */
     var view by Delegates.observable<String?>(null) { _, oldValue, newValue ->
         if (firstView == null && newValue != null) {
             firstView = newValue
@@ -67,12 +72,14 @@ object Instana {
      * Unique ID assigned by Instana to current session
      */
     var sessionId: String? = null
+        internal set
 
     /**
      * Instana configuration object
      */
     @JvmStatic
     lateinit var config: InstanaConfig
+        internal set
 
     /**
      * Initialize Instana
