@@ -154,15 +154,12 @@ object ConstantsAndUtil {
     fun hasTrackingHeader(header: String?): Boolean = header != null
 
     @JvmStatic
-    fun checkTag(header: String?): Boolean = if (header != null) {
-        if (Instana.remoteCallInstrumentation != null) {
-            Instana.remoteCallInstrumentation!!.hasTag(header)
+    fun checkTag(header: String?): Boolean =
+        if (header != null) {
+            Instana.remoteCallInstrumentation?.hasTag(header) ?: false
         } else {
             false
         }
-    } else {
-        false
-    }
 
     @JvmStatic
     fun isNotLibraryCallBoolean(url: String?): Boolean = if (url == null) {
@@ -176,6 +173,13 @@ object ConstantsAndUtil {
         get() =
             Instana.configuration.remoteCallInstrumentationType != InstrumentationType.DISABLED.type &&
                     Instana.configuration.remoteCallInstrumentationType != InstrumentationType.MANUAL.type
+
+    @JvmStatic
+    fun isBlacklistedURL(url: String): Boolean {
+        return Instana.ignoreURLs.any {
+            it.matches(url) || it.matches(url.removeTrailing("/"))
+        }
+    }
 
     fun isDeviceRooted(): Boolean = checkRootMethod1() || checkRootMethod2() || checkRootMethod3()
 

@@ -17,6 +17,7 @@ import static com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
 import static com.instana.android.core.util.ConstantsAndUtil.checkTag;
 import static com.instana.android.core.util.ConstantsAndUtil.hasTrackingHeader;
 import static com.instana.android.core.util.ConstantsAndUtil.isAutoEnabled;
+import static com.instana.android.core.util.ConstantsAndUtil.isBlacklistedURL;
 import static com.instana.android.core.util.ConstantsAndUtil.isNotLibraryCallBoolean;
 
 public aspect UrlConnectionAspect {
@@ -27,7 +28,7 @@ public aspect UrlConnectionAspect {
         Logger.i("HttpURLConnection: intercepting openConnection");
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();
-        if (isAutoEnabled() && !checkTag(header) && isNotLibraryCallBoolean(url)) {
+        if (isAutoEnabled() && !checkTag(header) && isNotLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
             RemoteCallMarker marker = Instana.remoteCallInstrumentation.markCall(url, connection.getRequestMethod());
             connection.setRequestProperty(marker.headerKey(), marker.headerValue());
             remoteMarkers.add(marker);

@@ -5,6 +5,7 @@ import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
 import com.instana.android.core.util.ConstantsAndUtil.checkTag
 import com.instana.android.core.util.ConstantsAndUtil.hasTrackingHeader
 import com.instana.android.core.util.ConstantsAndUtil.isAutoEnabled
+import com.instana.android.core.util.ConstantsAndUtil.isBlacklistedURL
 import com.instana.android.core.util.ConstantsAndUtil.isNotLibraryCallBoolean
 import com.instana.android.instrumentation.RemoteCallMarker
 import okhttp3.Interceptor
@@ -32,7 +33,7 @@ class OkHttpGlobalInterceptor private constructor() : Interceptor {
         val request: Request
         var marker: RemoteCallMarker? = null
 
-        if (isAutoEnabled && !hasTrackingHeader(header)) {
+        if (isAutoEnabled && !hasTrackingHeader(header) && !isBlacklistedURL(url)) {
             if (!checkTag(header) && isNotLibraryCallBoolean(url)) {
                 marker = Instana.remoteCallInstrumentation?.markCall(url, intercepted.method())!!
                 request = chain.request().newBuilder().header(marker.headerKey(), marker.headerValue()).build()

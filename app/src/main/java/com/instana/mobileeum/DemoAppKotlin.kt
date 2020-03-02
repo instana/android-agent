@@ -34,5 +34,6 @@ class DemoAppKotlin : Application() {
             userEmail = "instana@example.com"
             userName = "instana android agent demo"
         }
+        Instana.ignoreURLs.add("""^.*google\.com$""".toRegex())
     }
 }

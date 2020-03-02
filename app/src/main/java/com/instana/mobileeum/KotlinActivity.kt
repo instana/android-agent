@@ -31,6 +31,11 @@ class KotlinActivity : AppCompatActivity() {
                 OkHttpRequests.executeGetSuccess()
             }.start()
         }
+        ok_http_get_ignored.setOnClickListener {
+            Thread {
+                OkHttpRequests.executeGetIgnored()
+            }.start()
+        }
         ok_http_get_failure.setOnClickListener {
             Thread {
                 OkHttpRequests.executeGetFailure()

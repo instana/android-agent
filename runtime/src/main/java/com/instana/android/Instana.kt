@@ -51,6 +51,7 @@ object Instana {
     lateinit var deviceProfile: DeviceProfile
     val userProfile = UserProfile(null, null, null)
     var currentSessionId: String? = null
+    val ignoreURLs = mutableListOf<Regex>()
 
     /**
      * Use this initializer when you need custom configuration
