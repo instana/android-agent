@@ -14,6 +14,5 @@ class InstanaConfiguration
     var alerts: AlertsConfiguration = AlertsConfiguration(),
     var eventsBufferSize: Int = 1, // TODO find good value
     var breadcrumbsBufferSize: Int = 20,
-    var sendDeviceLocationIfAvailable: Boolean = true,
     var initialBeaconDelay: Long = 5
 )

@@ -26,7 +26,6 @@ class DemoAppKotlin : Application() {
                 ),
                 eventsBufferSize = 1, // TODO find good value
                 breadcrumbsBufferSize = 20,
-                sendDeviceLocationIfAvailable = true
             )
         )
         Instana.userProfile.apply {
