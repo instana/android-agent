@@ -422,8 +422,6 @@ class Beacon private constructor(
      */
     fun setErrorMessage(@Size(max = 16384) value: String) {
         stringMap["em"] = value
-        // TODO verify if md5 is good here
-        // TODO decide what to do when the md5 is null (use value.hashCode()?)
         setErrorId(value.md5())
     }
 

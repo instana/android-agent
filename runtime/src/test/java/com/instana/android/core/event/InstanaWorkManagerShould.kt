@@ -5,7 +5,6 @@ import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.instana.android.BaseTest
 import com.instana.android.InstanaShould
-import com.instana.android.core.IdProvider
 import com.instana.android.core.InstanaConfiguration
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.crash.CrashEventStore

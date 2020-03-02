@@ -1,10 +1,10 @@
 package com.instana.android.core.event
 
-import com.instana.android.core.IdProvider
+import java.util.*
 
 abstract class BaseEvent {
-    var sessionId: String = IdProvider.sessionId
-    var id: String? = IdProvider.eventId()
+    var sessionId: String = UUID.randomUUID().toString()
+    var id: String? = UUID.randomUUID().toString()
 
     abstract fun serialize(): String
 }

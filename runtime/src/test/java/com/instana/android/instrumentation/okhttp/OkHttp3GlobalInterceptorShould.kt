@@ -6,6 +6,7 @@ import com.instana.android.Instana
 import com.instana.android.core.InstanaConfiguration
 import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
 import com.instana.android.instrumentation.InstrumentationType
+import com.instana.android.instrumentation.okhttp3.OkHttp3GlobalInterceptor
 import junit.framework.Assert.assertEquals
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -14,9 +15,9 @@ import org.hamcrest.core.IsInstanceOf
 import org.junit.Before
 import org.junit.Test
 
-class OkHttpGlobalInterceptorShould : BaseTest() {
+class OkHttp3GlobalInterceptorShould : BaseTest() {
 
-    private val interceptor = OkHttpGlobalInterceptor.INSTANCE
+    private val interceptor = OkHttp3GlobalInterceptor.INSTANCE
 
     init {
         WorkManagerTestInitHelper.initializeTestWorkManager(app)

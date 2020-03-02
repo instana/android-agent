@@ -1,6 +1,5 @@
 package com.instana.android.core.event
 
-import com.instana.android.core.IdProvider
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test

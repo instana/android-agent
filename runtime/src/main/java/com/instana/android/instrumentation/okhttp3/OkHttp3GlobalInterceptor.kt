@@ -1,4 +1,4 @@
-package com.instana.android.instrumentation.okhttp
+package com.instana.android.instrumentation.okhttp3
 
 import com.instana.android.Instana
 import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
@@ -17,11 +17,11 @@ import java.io.IOException
  * This interceptor will be added automatically by plugin and OkHttpAspect
  * Also you can add this interceptor to your OkHttp client builder manually
  */
-class OkHttpGlobalInterceptor private constructor() : Interceptor {
+class OkHttp3GlobalInterceptor private constructor() : Interceptor {
 
     companion object {
         @JvmField
-        val INSTANCE = OkHttpGlobalInterceptor()
+        val INSTANCE = OkHttp3GlobalInterceptor()
     }
 
     @Throws(IOException::class)

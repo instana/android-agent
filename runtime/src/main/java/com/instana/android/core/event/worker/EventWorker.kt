@@ -3,7 +3,6 @@ package com.instana.android.core.event.worker
 import android.content.Context
 import androidx.work.*
 import com.instana.android.Instana
-import com.instana.android.core.event.BaseEvent
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
@@ -74,12 +73,11 @@ open class EventWorker(
 
     companion object {
 
-        fun createWorkRequest2(
+        fun createWorkRequest(
             constraints: Constraints,
             event: List<Beacon>,
             tag: String = UUID.randomUUID().toString()
         ): OneTimeWorkRequest {
-            // TODO move serialization to a more sensible place
             val sb = StringBuffer()
             event.forEach { sb.append("$it\n") }
             val serialized = sb.toString()

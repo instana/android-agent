@@ -1,7 +1,6 @@
 package com.instana.android.instrumentation
 
 import com.instana.android.Instana
-import com.instana.android.core.IdProvider
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
@@ -14,6 +13,7 @@ import com.instana.android.core.util.ConstantsAndUtil.getConnectionType
 import okhttp3.Request
 import okhttp3.Response
 import java.net.HttpURLConnection
+import java.util.*
 
 /**
  * Use for manual instrumentation, called over instrumentation service instance
@@ -26,7 +26,7 @@ class RemoteCallMarker(
 ) {
 
     private val stopWatch: StopWatch = StopWatch() // TODO replace with startTime&endTime
-    private val eventId = IdProvider.eventId()
+    private val markerId = UUID.randomUUID().toString()
     private var carrierName: String? = null
     private var connectionProfile: ConnectionProfile
     private val sessionId: String?
@@ -42,16 +42,16 @@ class RemoteCallMarker(
         Instana.remoteCallInstrumentation?.run {
             carrierName = getTelephonyManager().networkOperatorName
             if (carrierName == EMPTY_STR) carrierName = null
-            addTag(eventId)
+            addTag(markerId)
         }
     }
 
     fun headerKey(): String = TRACKING_HEADER_KEY
-    fun headerValue(): String = eventId
+    fun headerValue(): String = markerId
 
     fun canceled() {
         stopWatch.stop()
-        Instana.remoteCallInstrumentation?.removeTag(eventId)
+        Instana.remoteCallInstrumentation?.removeTag(markerId)
     }
 
     //region OkHttp
@@ -84,7 +84,7 @@ class RemoteCallMarker(
             error = null
         )
 
-        Instana.remoteCallInstrumentation?.removeTag(eventId)
+        Instana.remoteCallInstrumentation?.removeTag(markerId)
         manager.send(beacon)
     }
 
@@ -116,7 +116,7 @@ class RemoteCallMarker(
             error = error.toString()
         )
 
-        Instana.remoteCallInstrumentation?.removeTag(eventId)
+        Instana.remoteCallInstrumentation?.removeTag(markerId)
         manager.send(beacon)
     }
     //endregion
@@ -152,7 +152,7 @@ class RemoteCallMarker(
             error = errorMessage
         )
 
-        Instana.remoteCallInstrumentation?.removeTag(eventId)
+        Instana.remoteCallInstrumentation?.removeTag(markerId)
         manager.send(beacon)
     }
 
@@ -182,7 +182,7 @@ class RemoteCallMarker(
             error = error.message
         )
 
-        Instana.remoteCallInstrumentation?.removeTag(eventId)
+        Instana.remoteCallInstrumentation?.removeTag(markerId)
         manager.send(beacon)
     }
     //endregion

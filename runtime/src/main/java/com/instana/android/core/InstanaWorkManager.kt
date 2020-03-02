@@ -134,7 +134,7 @@ class InstanaWorkManager(
         manager.enqueueUniqueWork(
             tag,
             ExistingWorkPolicy.APPEND,
-            EventWorker.createWorkRequest2(constraints, this.toList(), tag)
+            EventWorker.createWorkRequest(constraints, this.toList(), tag)
         )
         this.clear()
     }
