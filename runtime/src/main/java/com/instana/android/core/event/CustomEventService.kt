@@ -40,7 +40,7 @@ class CustomEventService(
         }
         val connectionProfile = ConnectionProfile(
             carrierName = ConstantsAndUtil.getCarrierName(cm, tm),
-            connectionType = ConstantsAndUtil.getConnectionType2(cm),
+            connectionType = ConstantsAndUtil.getConnectionType(cm),
             effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(cm, tm)
         )
         val beacon = Beacon.newCustomEvent(

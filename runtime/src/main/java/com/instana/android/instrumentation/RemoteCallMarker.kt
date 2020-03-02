@@ -10,7 +10,7 @@ import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
 import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
 import com.instana.android.core.util.ConstantsAndUtil.getCarrierName
 import com.instana.android.core.util.ConstantsAndUtil.getCellularConnectionType
-import com.instana.android.core.util.ConstantsAndUtil.getConnectionType2
+import com.instana.android.core.util.ConstantsAndUtil.getConnectionType
 import okhttp3.Request
 import okhttp3.Response
 import java.net.HttpURLConnection
@@ -36,7 +36,7 @@ class RemoteCallMarker(
         sessionId = Instana.currentSessionId
         connectionProfile = ConnectionProfile(
             carrierName = Instana.remoteCallInstrumentation?.run { getCarrierName(getConnectionManager(), getTelephonyManager()) },
-            connectionType = Instana.remoteCallInstrumentation?.run { getConnectionType2(getConnectionManager()) },
+            connectionType = Instana.remoteCallInstrumentation?.run { getConnectionType(getConnectionManager()) },
             effectiveConnectionType = Instana.remoteCallInstrumentation?.run { getCellularConnectionType(getConnectionManager(), getTelephonyManager()) }
         )
         Instana.remoteCallInstrumentation?.run {

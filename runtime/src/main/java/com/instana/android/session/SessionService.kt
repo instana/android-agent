@@ -11,7 +11,7 @@ import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
 import com.instana.android.core.util.ConstantsAndUtil.getCarrierName
 import com.instana.android.core.util.ConstantsAndUtil.getCellularConnectionType
-import com.instana.android.core.util.ConstantsAndUtil.getConnectionType2
+import com.instana.android.core.util.ConstantsAndUtil.getConnectionType
 import java.util.*
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -29,7 +29,7 @@ class SessionService(
         val cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)
         val connectionProfile = ConnectionProfile(
             carrierName = if (cm != null && tm != null) getCarrierName(cm, tm) else null,
-            connectionType = if (cm != null) getConnectionType2(cm) else null,
+            connectionType = if (cm != null) getConnectionType(cm) else null,
             effectiveConnectionType = if (cm != null && tm != null) getCellularConnectionType(cm, tm) else null
         )
         val session = Beacon.newSessionStart(

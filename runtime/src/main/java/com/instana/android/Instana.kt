@@ -16,6 +16,7 @@ import com.instana.android.core.event.models.Platform
 import com.instana.android.core.event.models.UserProfile
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
+import com.instana.android.core.util.RootCheck
 import com.instana.android.crash.CrashEventStore
 import com.instana.android.crash.CrashService
 import com.instana.android.instrumentation.InstrumentationService
@@ -95,7 +96,7 @@ object Instana {
             deviceModel = Build.MODEL ?: ConstantsAndUtil.EMPTY_STR,
             deviceHardware = Build.HARDWARE,
             googlePlayServicesAvailable = ConstantsAndUtil.isGooglePlayServicesAvailable(app),
-            rooted = ConstantsAndUtil.isDeviceRooted(),
+            rooted = RootCheck.isDeviceRooted(),
             locale = Locale.getDefault(),
             viewportWidth = viewportWidthAndHeight.first,
             viewportHeight = viewportWidthAndHeight.second

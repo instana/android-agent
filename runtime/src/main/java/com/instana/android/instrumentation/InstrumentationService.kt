@@ -5,15 +5,12 @@ import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import com.instana.android.core.InstanaConfiguration
 import com.instana.android.core.InstanaWorkManager
-import com.instana.android.core.event.EventFactory
-import com.instana.android.core.util.ConstantsAndUtil.TYPE_ERROR
-import com.instana.android.core.util.ConstantsAndUtil.TYPE_SUCCESS
 
 
 class InstrumentationService(
-        context: Context,
-        private val manager: InstanaWorkManager,
-        private val configuration: InstanaConfiguration
+    context: Context,
+    private val manager: InstanaWorkManager,
+    private val configuration: InstanaConfiguration
 ) {
 
     private val tagSet = hashSetOf<String>()

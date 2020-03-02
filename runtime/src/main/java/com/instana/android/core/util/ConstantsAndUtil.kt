@@ -17,20 +17,13 @@ import com.instana.android.core.event.models.ConnectionType
 import com.instana.android.core.event.models.EffectiveConnectionType
 import com.instana.android.instrumentation.InstrumentationType
 import okhttp3.OkHttpClient
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStreamReader
 
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 object ConstantsAndUtil {
 
     const val EMPTY_STR = ""
-    const val CELLULAR = "cellular"
-    const val WIFI = "wifi"
 
-    const val TYPE_SUCCESS = "success"
-    const val TYPE_ERROR = "error"
     const val OS_TYPE = "android"
 
     const val TRACKING_HEADER_KEY = "X-INSTANA-T"
@@ -43,32 +36,8 @@ object ConstantsAndUtil {
         OkHttpClient()
     }
 
-    fun getConnectionType(cm: ConnectivityManager): String? {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val network = cm.activeNetwork
-            val capabilities = cm.getNetworkCapabilities(network)
-            if (capabilities != null) {
-                return when {
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> WIFI
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> CELLULAR
-                    else -> null
-                }
-            }
-        } else {
-            val activeNetwork = cm.activeNetworkInfo
-            if (activeNetwork != null) { // connected to the internet
-                return when {
-                    activeNetwork.type == ConnectivityManager.TYPE_WIFI -> WIFI
-                    activeNetwork.type == ConnectivityManager.TYPE_MOBILE -> CELLULAR
-                    else -> null
-                }
-            }
-        }
-        return null
-    }
-
     @Suppress("DEPRECATION")
-    fun getConnectionType2(cm: ConnectivityManager): ConnectionType? {
+    fun getConnectionType(cm: ConnectivityManager): ConnectionType? {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = cm.activeNetwork
             val capabilities = cm.getNetworkCapabilities(network)
@@ -95,13 +64,13 @@ object ConstantsAndUtil {
     }
 
     fun getCarrierName(cm: ConnectivityManager, tm: TelephonyManager): String? =
-        when (getConnectionType2(cm)) {
+        when (getConnectionType(cm)) {
             ConnectionType.CELLULAR -> tm.networkOperatorName
             else -> null
         }
 
     fun getCellularConnectionType(cm: ConnectivityManager, tm: TelephonyManager): EffectiveConnectionType? {
-        if (getConnectionType2(cm) != ConnectionType.CELLULAR) {
+        if (getConnectionType(cm) != ConnectionType.CELLULAR) {
             return null
         } else {
             return when (tm.networkType) {
@@ -178,44 +147,6 @@ object ConstantsAndUtil {
     fun isBlacklistedURL(url: String): Boolean {
         return Instana.ignoreURLs.any {
             it.matches(url) || it.matches(url.removeTrailing("/"))
-        }
-    }
-
-    fun isDeviceRooted(): Boolean = checkRootMethod1() || checkRootMethod2() || checkRootMethod3()
-
-    private fun checkRootMethod1(): Boolean {
-        val buildTags = android.os.Build.TAGS
-        return buildTags != null && buildTags.contains("test-keys")
-    }
-
-    private fun checkRootMethod2(): Boolean {
-        val paths = arrayOf(
-            "/system/app/Superuser.apk",
-            "/sbin/su", "/system/bin/su",
-            "/system/xbin/su",
-            "/data/local/xbin/su",
-            "/data/local/bin/su",
-            "/system/sd/xbin/su",
-            "/system/bin/failsafe/su",
-            "/data/local/su",
-            "/su/bin/su"
-        )
-        for (path in paths) {
-            if (File(path).exists()) return true
-        }
-        return false
-    }
-
-    private fun checkRootMethod3(): Boolean {
-        var process: Process? = null
-        return try {
-            process = runtime.exec(arrayOf("/system/xbin/which", "su"))
-            val br = BufferedReader(InputStreamReader(process!!.inputStream))
-            br.readLine() != null
-        } catch (t: Throwable) {
-            false
-        } finally {
-            process?.destroy()
         }
     }
 
