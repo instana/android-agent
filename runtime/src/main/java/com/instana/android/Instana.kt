@@ -56,8 +56,13 @@ object Instana {
     val userProfile = UserProfile(null, null, null)
     var currentSessionId: String? = null
     val ignoreURLs = mutableListOf<Regex>()
+    var firstView: String? = null
     var view by Delegates.observable<String?>(null) { _, oldValue, newValue ->
-        if (oldValue != newValue && newValue != null) viewChangeService?.sendViewChange(newValue)
+        if (firstView == null && newValue != null) {
+            firstView = newValue
+        } else if (oldValue != newValue && newValue != null) {
+            viewChangeService?.sendViewChange(newValue)
+        }
     }
 
     /**

@@ -45,6 +45,7 @@ class InstanaWorkManager(
             Instana.userProfile.userName?.run { item.setUserName(this) }
             Instana.userProfile.userId?.run { item.setUserId(this) }
             Instana.userProfile.userEmail?.run { item.setUserEmail(this) }
+            if (item.getView() == null) Instana.firstView?.run { item.setView(this) }
         }
     }
 

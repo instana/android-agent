@@ -151,6 +151,8 @@ class Beacon private constructor(
         stringMap["v"] = value
     }
 
+    fun getView(): String? = stringMap["v"]
+
     /**
      * Defines what kind of event has happened on your website that should result in the transmission of a custom beacon.
      */
