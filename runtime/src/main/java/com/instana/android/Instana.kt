@@ -35,6 +35,13 @@ object Instana {
     private lateinit var app: Application
     private lateinit var sessionService: SessionService
     private var lifeCycle: InstanaLifeCycle? = null
+    private var alertService: AlertService? = null
+    private var instrumentationService: InstrumentationService? = null
+    private var viewChangeService: ViewChangeService? = null
+
+    internal lateinit var appProfile: AppProfile
+    internal lateinit var deviceProfile: DeviceProfile
+    internal var firstView: String? = null
 
     @JvmField
     var customEvents: CustomEventService? = null
@@ -42,20 +49,8 @@ object Instana {
     @JvmField
     var crashReporting: CrashService? = null
 
-    @JvmField
-    var alert: AlertService? = null
-
-    @JvmField
-    var remoteCallInstrumentation: InstrumentationService? = null // TODO does it really need to be nullable? Currently null when SessionStart is sent
-
-    private var viewChangeService: ViewChangeService? = null
-
-    lateinit var appProfile: AppProfile
-    lateinit var deviceProfile: DeviceProfile
     val userProfile = UserProfile(null, null, null)
     val ignoreURLs = mutableListOf<Regex>()
-
-    internal var firstView: String? = null
 
     /**
      * Human-readable name of logical view to which beacons will be associated
@@ -131,8 +126,8 @@ object Instana {
                 cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!!, //TODO don't force-cast
                 tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!
             ) //TODO don't force-cast
-            remoteCallInstrumentation = InstrumentationService(app, it, config)
-            alert = AlertService(app, config.alerts, lifeCycle!!) //TODO don't force-cast
+            instrumentationService = InstrumentationService(app, it, config)
+            alertService = AlertService(app, config.alerts, lifeCycle!!) //TODO don't force-cast
             viewChangeService = ViewChangeService(app, it)
         }
     }
