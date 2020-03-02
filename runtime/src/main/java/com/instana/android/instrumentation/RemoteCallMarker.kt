@@ -85,7 +85,9 @@ class RemoteCallMarker(
         )
 
         Instana.remoteCallInstrumentation?.removeTag(markerId)
-        manager.send(beacon)
+        if (Instana.configuration.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+            manager.send(beacon)
+        }
     }
 
     fun endedWith(request: Request, error: Throwable) {
@@ -117,7 +119,9 @@ class RemoteCallMarker(
         )
 
         Instana.remoteCallInstrumentation?.removeTag(markerId)
-        manager.send(beacon)
+        if (Instana.configuration.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+            manager.send(beacon)
+        }
     }
     //endregion
 
@@ -153,7 +157,9 @@ class RemoteCallMarker(
         )
 
         Instana.remoteCallInstrumentation?.removeTag(markerId)
-        manager.send(beacon)
+        if (Instana.configuration.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+            manager.send(beacon)
+        }
     }
 
     fun endedWith(connection: HttpURLConnection, error: Throwable) {
@@ -183,7 +189,9 @@ class RemoteCallMarker(
         )
 
         Instana.remoteCallInstrumentation?.removeTag(markerId)
-        manager.send(beacon)
+        if (Instana.configuration.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+            manager.send(beacon)
+        }
     }
     //endregion
 

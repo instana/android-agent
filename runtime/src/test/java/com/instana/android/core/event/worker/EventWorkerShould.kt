@@ -32,7 +32,7 @@ class EventWorkerShould : BaseTest() {
 
         // Initialize WorkManager for instrumentation tests.
         WorkManagerTestInitHelper.initializeTestWorkManager(app, configuration)
-        Instana.init(app, InstanaConfiguration(SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfiguration(SERVER_URL, API_KEY))
     }
 
     @Test

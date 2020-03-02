@@ -5,17 +5,17 @@ import com.instana.android.Instana
 import com.instana.android.alerts.AlertsConfiguration
 import com.instana.android.core.InstanaConfiguration
 import com.instana.android.core.SuspendReportingType
-import com.instana.android.instrumentation.InstrumentationType
 
 class DemoAppKotlin : Application() {
 
     override fun onCreate() {
         super.onCreate()
-            this, InstanaConfiguration( //TODO move configuration to gradle once plugin is in place
         Instana.setup(
+            this,
+            InstanaConfiguration(
                 reportingUrl = "REPLACE_WITH_YOUR_INSTANA_REPORTING_URL",
                 key = "REPLACE_WITH_YOUR_INSTANA_KEY",
-                remoteCallInstrumentationType = InstrumentationType.ALL.type,
+
                 suspendReportingReporting = SuspendReportingType.LOW_BATTERY_AND_CELLULAR_CONNECTION,
                 enableCrashReporting = false,
                 alerts = AlertsConfiguration(

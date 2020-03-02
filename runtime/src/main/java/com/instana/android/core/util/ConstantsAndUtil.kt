@@ -15,7 +15,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.instana.android.Instana
 import com.instana.android.core.event.models.ConnectionType
 import com.instana.android.core.event.models.EffectiveConnectionType
-import com.instana.android.instrumentation.InstrumentationType
+import com.instana.android.instrumentation.HTTPCaptureConfig
 import okhttp3.OkHttpClient
 
 
@@ -139,9 +139,7 @@ object ConstantsAndUtil {
 
     @JvmStatic
     val isAutoEnabled: Boolean
-        get() =
-            Instana.configuration.remoteCallInstrumentationType != InstrumentationType.DISABLED.type &&
-                    Instana.configuration.remoteCallInstrumentationType != InstrumentationType.MANUAL.type
+        get() = Instana.configuration.httpCaptureConfig == HTTPCaptureConfig.AUTO
 
     @JvmStatic
     fun isBlacklistedURL(url: String): Boolean {

@@ -1,13 +1,14 @@
 package com.instana.android.core
 
 import com.instana.android.alerts.AlertsConfiguration
-import com.instana.android.instrumentation.InstrumentationType
+import com.instana.android.instrumentation.HTTPCaptureConfig
 
 class InstanaConfiguration
 @JvmOverloads constructor(
     val reportingUrl: String,
     val key: String,
-    var remoteCallInstrumentationType: Int = InstrumentationType.ALL.type,
+    var httpCaptureConfig: HTTPCaptureConfig = HTTPCaptureConfig.AUTO,
+
     var suspendReportingReporting: SuspendReportingType = SuspendReportingType.LOW_BATTERY_AND_CELLULAR_CONNECTION,
     var enableCrashReporting: Boolean = false,
     var alerts: AlertsConfiguration = AlertsConfiguration(),

@@ -25,9 +25,9 @@ class InstrumentationService(
         return tm
     }
 
-    fun setType(type: InstrumentationType) {
+    fun setType(type: HTTPCaptureConfig) {
         // change instrumentation type
-        configuration.remoteCallInstrumentationType = type.type
+        configuration.httpCaptureConfig = type
     }
 
     fun markCall(url: String, method: String): RemoteCallMarker = RemoteCallMarker(url, method, manager)
