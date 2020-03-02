@@ -6,6 +6,7 @@ import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.WorkManager
+import com.instana.android.Instana
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.legacy.CrashEvent
 import com.instana.android.core.event.worker.EventWorker
@@ -23,18 +24,34 @@ class InstanaWorkManager(
 
     private var eventQueue: Queue<Beacon> = LinkedBlockingDeque()
     private val constraints: Constraints
+    private var isInitialDelayComplete = false
 
     init {
         checkConfigurationParameters(configuration)
         constraints = configureWorkManager(configuration)
-        startPeriodicEventDump(10, TimeUnit.SECONDS)
-        checkIfUnSendCrashExistAndAddToQueue()
+        Executors.newScheduledThreadPool(1).schedule({
+            updateQueueItems(eventQueue)
+            isInitialDelayComplete = true
+            startPeriodicEventDump(10, TimeUnit.SECONDS)
+        }, configuration.initialBeaconDelay, TimeUnit.SECONDS)
+
+        addUnsentCrashesToQueue()
+    }
+
+    private fun updateQueueItems(queue: Queue<Beacon>) {
+        //TODO handle meta values
+        //TODO handle other user-set values (GooglePlayServicesMissing, ie)
+        for (item in queue) {
+            Instana.userProfile.userName?.run { item.setUserName(this) }
+            Instana.userProfile.userId?.run { item.setUserId(this) }
+            Instana.userProfile.userEmail?.run { item.setUserEmail(this) }
+        }
     }
 
     /**
      * On app start check if crash exists and send it to work manager
      */
-    private fun checkIfUnSendCrashExistAndAddToQueue() {
+    private fun addUnsentCrashesToQueue() {
         val tag = CrashEventStore.tag
         val json = CrashEventStore.serialized
         if (tag.isNotEmpty() && json.isNotEmpty()) {
@@ -125,7 +142,7 @@ class InstanaWorkManager(
     fun send(beacon: Beacon) {
         eventQueue.apply {
             this.add(beacon)
-            if (this.size == configuration.eventsBufferSize) {
+            if (isInitialDelayComplete && this.size == configuration.eventsBufferSize) {
                 addToManagerAndClear()
             }
         }

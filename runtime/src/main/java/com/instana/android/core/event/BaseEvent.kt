@@ -13,7 +13,3 @@ abstract class Payload {
     var timestamp: Long = 0L
     var durationMs: Long? = 0L
 }
-
-abstract class AlertPayload(
-        var timestamp: Long = 0L
-)
