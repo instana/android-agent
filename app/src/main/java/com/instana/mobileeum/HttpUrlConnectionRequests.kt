@@ -30,6 +30,7 @@ object HttpUrlConnectionRequests {
             }
             urlConnection.requestMethod = "GET"
             urlConnection.setRequestProperty("Accept", "application/json")
+            urlConnection.setRequestProperty("Accept-Encoding", "gzip,deflate")
             urlConnection.doOutput = true
             urlConnection.connect()
             val responseCode = urlConnection.responseCode

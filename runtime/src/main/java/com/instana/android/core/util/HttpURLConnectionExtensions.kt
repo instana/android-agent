@@ -2,6 +2,7 @@ package com.instana.android.core.util
 
 import android.os.Build
 import java.net.HttpURLConnection
+import java.util.zip.GZIPInputStream
 
 fun HttpURLConnection.isSuccessful(): Boolean =
     try {
@@ -18,6 +19,13 @@ fun HttpURLConnection.encodedResponseSizeOrNull(): Long? {
         size = null
     }
     return size
+}
+
+fun HttpURLConnection.decodedResponseSizeOrNull(): Int? {
+    if ("gzip".equals(contentEncoding, ignoreCase = true)) {
+        GZIPInputStream(inputStream.clone()).use { return it.readBytes().size }
+    }
+    return null
 }
 
 fun HttpURLConnection.responseCodeOrNull(): Int? =

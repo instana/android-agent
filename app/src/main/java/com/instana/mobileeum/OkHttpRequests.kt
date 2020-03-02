@@ -27,6 +27,8 @@ object OkHttpRequests {
         }
         val requestBuilder = Request.Builder()
             .url(url)
+            .addHeader("Accept", "application/json")
+            .addHeader("Accept-Encoding", "gzip,deflate")
             .get()
 
         tracker?.let {

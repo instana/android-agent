@@ -35,7 +35,7 @@ public aspect UrlConnectionAspect {
     }
 
     pointcut disconnectMethodCall(HttpURLConnection connection): target(connection) && call(* java.net.HttpURLConnection.disconnect());
-    after(HttpURLConnection connection): disconnectMethodCall(connection) {
+    before(HttpURLConnection connection): disconnectMethodCall(connection) {
         Logger.i("HttpURLConnection: intercepting disconnect");
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();

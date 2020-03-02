@@ -59,8 +59,7 @@ class RemoteCallMarker(
         stopWatch.stop()
         val requestSize = response.request().body()?.contentLength()
         val encodedResponseSize = response.body()?.contentLength()
-
-        //TODO provide decodedResponseSize: https://github.com/square/okhttp/blob/master/okhttp-logging-interceptor/src/main/java/okhttp3/logging/HttpLoggingInterceptor.kt
+        val decodedResponseSize = response.decodedContentLength()
 
         if (sessionId == null) {
             Logger.e("Tried to end RemoteCallMarker with null sessionId")
@@ -79,6 +78,7 @@ class RemoteCallMarker(
             responseCode = response.code(),
             requestSizeBytes = requestSize,
             encodedResponseSizeBytes = encodedResponseSize,
+            decodedResponseSizeBytes = decodedResponseSize,
             backendTraceId = getBackendTraceId(response),
             error = null
         )
@@ -109,6 +109,7 @@ class RemoteCallMarker(
             responseCode = null,
             requestSizeBytes = requestSize,
             encodedResponseSizeBytes = null,
+            decodedResponseSizeBytes = null,
             backendTraceId = null,
             error = error.toString()
         )
@@ -122,6 +123,7 @@ class RemoteCallMarker(
     fun endedWith(connection: HttpURLConnection) {
         stopWatch.stop()
         val encodedResponseSize = connection.encodedResponseSizeOrNull()
+        val decodedResponseSize = connection.decodedResponseSizeOrNull()?.toLong()
         val responseCode = connection.responseCodeOrNull()
         val errorMessage = connection.errorMessageOrNull()
 
@@ -142,6 +144,7 @@ class RemoteCallMarker(
             responseCode = responseCode,
             requestSizeBytes = null,
             encodedResponseSizeBytes = encodedResponseSize,
+            decodedResponseSizeBytes = decodedResponseSize,
             backendTraceId = getBackendTraceId(connection),
             error = errorMessage
         )
@@ -170,6 +173,7 @@ class RemoteCallMarker(
             responseCode = connection.responseCode,
             requestSizeBytes = null,
             encodedResponseSizeBytes = null,
+            decodedResponseSizeBytes = null,
             backendTraceId = getBackendTraceId(connection),
             error = error.message
         )
