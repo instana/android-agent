@@ -11,7 +11,7 @@ class DemoAppKotlin : Application() {
         Instana.setup(
             this,
             InstanaConfig(
-                reportingUrl = "REPLACE_WITH_YOUR_INSTANA_REPORTING_URL",
+                reportingURL = "REPLACE_WITH_YOUR_INSTANA_REPORTING_URL",
                 key = "REPLACE_WITH_YOUR_INSTANA_KEY"
             )
         )

@@ -5,7 +5,7 @@ import com.instana.android.instrumentation.HTTPCaptureConfig
 
 class InstanaConfig
 @JvmOverloads constructor(
-    val reportingUrl: String,
+    val reportingURL: String,
     val key: String,
     var httpCaptureConfig: HTTPCaptureConfig = HTTPCaptureConfig.AUTO,
 

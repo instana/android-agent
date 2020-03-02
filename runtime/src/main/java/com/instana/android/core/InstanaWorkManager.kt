@@ -96,10 +96,10 @@ class InstanaWorkManager(
     }
 
     private fun checkConfigurationParameters(instanaConfig: InstanaConfig) {
-        if (instanaConfig.reportingUrl.isEmpty()) {
+        if (instanaConfig.reportingURL.isEmpty()) {
             throw IllegalArgumentException("Reporting Server url cannot be blank!")
         }
-        if (!URLUtil.isValidUrl(instanaConfig.reportingUrl)) {
+        if (!URLUtil.isValidUrl(instanaConfig.reportingURL)) {
             throw IllegalArgumentException("Please provide a valid server url!")
         }
         if (instanaConfig.key.isEmpty()) {

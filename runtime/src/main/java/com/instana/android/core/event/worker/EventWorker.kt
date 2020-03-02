@@ -42,7 +42,7 @@ open class EventWorker(
         var request: Request?
         eventsJson.let {
             request = Request.Builder()
-                .url(Instana.config.reportingUrl)
+                .url(Instana.config.reportingURL)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Accept-Encoding", "gzip")
                 .post(RequestBody.create(TEXT_PLAIN, it!!))

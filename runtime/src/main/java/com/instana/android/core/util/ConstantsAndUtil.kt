@@ -134,7 +134,7 @@ object ConstantsAndUtil {
     fun isNotLibraryCallBoolean(url: String?): Boolean = if (url == null) {
         false
     } else {
-        !url.contains(Instana.config.reportingUrl)
+        !url.contains(Instana.config.reportingURL)
     }
 
     @JvmStatic
