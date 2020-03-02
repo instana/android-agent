@@ -2,7 +2,7 @@ package com.instana.android.crash
 
 import android.app.Application
 import android.util.Log
-import com.instana.android.core.InstanaConfiguration
+import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaMonitor
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.EventFactory
@@ -17,7 +17,7 @@ import java.util.concurrent.LinkedBlockingDeque
 class CrashService(
     private val app: Application,
     private val manager: InstanaWorkManager,
-    private val configuration: InstanaConfiguration,
+    private val config: InstanaConfig,
     defaultThreadHandler: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler()
 ) : InstanaMonitor {
 
@@ -28,7 +28,7 @@ class CrashService(
         if (defaultThreadHandler != null) {
             handler = ExceptionHandler(this, defaultThreadHandler)
         }
-        if (configuration.enableCrashReporting) {
+        if (config.enableCrashReporting) {
             handler?.enable()
         } else {
             handler?.disable()
@@ -36,25 +36,25 @@ class CrashService(
     }
 
     override fun enable() {
-        configuration.enableCrashReporting = true
+        config.enableCrashReporting = true
         handler?.enable()
     }
 
     override fun disable() {
-        configuration.enableCrashReporting = false
+        config.enableCrashReporting = false
         handler?.disable()
         breadCrumbs.clear()
     }
 
     fun changeBufferSize(size: Int) {
         // TODO should this not just remove the first X elements (if necessary)?
-        configuration.breadcrumbsBufferSize = size
+        config.breadcrumbsBufferSize = size
         breadCrumbs.clear()
     }
 
     fun leave(breadCrumb: String) {
         breadCrumbs.add(breadCrumb)
-        if (breadCrumbs.size > configuration.breadcrumbsBufferSize) {
+        if (breadCrumbs.size > config.breadcrumbsBufferSize) {
             breadCrumbs.poll()
         }
     }

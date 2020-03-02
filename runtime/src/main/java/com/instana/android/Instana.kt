@@ -6,7 +6,7 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import com.instana.android.alerts.AlertService
-import com.instana.android.core.InstanaConfiguration
+import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.CustomEventService
@@ -35,8 +35,6 @@ object Instana {
     private lateinit var app: Application
     private lateinit var sessionService: SessionService
     private var lifeCycle: InstanaLifeCycle? = null
-
-    lateinit var configuration: InstanaConfiguration
 
     @JvmField
     var customEvents: CustomEventService? = null
@@ -67,15 +65,21 @@ object Instana {
     }
 
     /**
+     * Instana configuration object
+     */
+    @JvmStatic
+    lateinit var config: InstanaConfig
+
+    /**
      * Initialize Instana
      */
     @JvmStatic
-    fun setup(app: Application, configuration: InstanaConfiguration) {
+    fun setup(app: Application, config: InstanaConfig) {
         initProfiles(app)
         initStoreAndLifecycle(app)
-        this.configuration = configuration
+        this.config = config
         Logger.i("Starting Instana agent")
-        initWorkManager(Instana.configuration)
+        initWorkManager(Instana.config)
     }
 
     private fun initStoreAndLifecycle(app: Application) {
@@ -107,17 +111,17 @@ object Instana {
         )
     }
 
-    private fun initWorkManager(configuration: InstanaConfiguration) {
-        InstanaWorkManager(configuration).also {
-            crashReporting = CrashService(app, it, configuration)
+    private fun initWorkManager(config: InstanaConfig) {
+        InstanaWorkManager(config).also {
+            crashReporting = CrashService(app, it, config)
             sessionService = SessionService(app, it)
             customEvents = CustomEventService(
                 manager = it,
                 cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!!, //TODO don't force-cast
                 tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!
             ) //TODO don't force-cast
-            remoteCallInstrumentation = InstrumentationService(app, it, configuration)
-            alert = AlertService(app, configuration.alerts, lifeCycle!!) //TODO don't force-cast
+            remoteCallInstrumentation = InstrumentationService(app, it, config)
+            alert = AlertService(app, config.alerts, lifeCycle!!) //TODO don't force-cast
             viewChangeService = ViewChangeService(app, it)
         }
     }

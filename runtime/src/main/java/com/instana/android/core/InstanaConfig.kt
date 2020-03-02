@@ -3,7 +3,7 @@ package com.instana.android.core
 import com.instana.android.alerts.AlertsConfiguration
 import com.instana.android.instrumentation.HTTPCaptureConfig
 
-class InstanaConfiguration
+class InstanaConfig
 @JvmOverloads constructor(
     val reportingUrl: String,
     val key: String,

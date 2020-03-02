@@ -3,7 +3,7 @@ package com.instana.android.instrumentation.okhttp
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.instana.android.BaseTest
 import com.instana.android.Instana
-import com.instana.android.core.InstanaConfiguration
+import com.instana.android.core.InstanaConfig
 import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import com.instana.android.instrumentation.okhttp3.OkHttp3GlobalInterceptor
@@ -25,7 +25,7 @@ class OkHttp3GlobalInterceptorShould : BaseTest() {
 
     @Before
     fun setUp() {
-        Instana.setup(app, InstanaConfiguration("http://10.0.2.2:3000/v1/api", "42"))
+        Instana.setup(app, InstanaConfig("http://10.0.2.2:3000/v1/api", "42"))
     }
 
     @Test

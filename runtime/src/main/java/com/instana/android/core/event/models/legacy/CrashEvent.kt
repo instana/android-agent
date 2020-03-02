@@ -21,7 +21,7 @@ class CrashEvent(var crash: CrashPayload) : BaseEvent() {
         crash.threadsDump?.let { sb.append("p\t$it\n") } //TODO
 
         sb.append("ti\t${System.currentTimeMillis()}\n")
-        sb.append("k\t${Instana.configuration.key}\n")
+        sb.append("k\t${Instana.config.key}\n")
 //        sb.append("t\tsessionStart\n") //TODO
         sb.append("d\t0\n")
         sb.append("ec\t0\n")

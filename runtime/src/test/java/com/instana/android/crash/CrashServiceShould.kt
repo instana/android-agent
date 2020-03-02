@@ -3,7 +3,7 @@ package com.instana.android.crash
 import com.instana.android.BaseTest
 import com.instana.android.InstanaShould.Companion.API_KEY
 import com.instana.android.InstanaShould.Companion.SERVER_URL
-import com.instana.android.core.InstanaConfiguration
+import com.instana.android.core.InstanaConfig
 import com.instana.android.core.event.models.legacy.CrashEvent
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
@@ -14,7 +14,7 @@ import org.junit.Test
 
 class CrashServiceShould : BaseTest() {
 
-    private val configuration = InstanaConfiguration(SERVER_URL, API_KEY)
+    private val configuration = InstanaConfig(SERVER_URL, API_KEY)
     private val mockHandler = mock<Thread.UncaughtExceptionHandler>()
 
     private val crashReporting = CrashService(app, mockWorkManager, configuration, mockHandler)

@@ -3,7 +3,7 @@ package com.instana.android.instrumentation
 import com.instana.android.BaseTest
 import com.instana.android.InstanaShould.Companion.API_KEY
 import com.instana.android.InstanaShould.Companion.FAKE_SERVER_URL
-import com.instana.android.core.InstanaConfiguration
+import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.BaseEvent
 import com.nhaarman.mockitokotlin2.any
@@ -16,7 +16,7 @@ class InstrumentationServiceShould : BaseTest() {
 
     private val managerMock: InstanaWorkManager = mock()
 
-    private val configuration = InstanaConfiguration(FAKE_SERVER_URL, API_KEY)
+    private val configuration = InstanaConfig(FAKE_SERVER_URL, API_KEY)
     private val instrumentationService = InstrumentationService(app, managerMock, configuration)
 
     @Test

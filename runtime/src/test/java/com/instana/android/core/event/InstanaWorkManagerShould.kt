@@ -5,7 +5,7 @@ import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.instana.android.BaseTest
 import com.instana.android.InstanaShould
-import com.instana.android.core.InstanaConfiguration
+import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.crash.CrashEventStore
 import com.nhaarman.mockitokotlin2.any
@@ -24,7 +24,7 @@ class InstanaWorkManagerShould : BaseTest() {
     init {
         CrashEventStore.init(app)
         WorkManagerTestInitHelper.initializeTestWorkManager(app)
-        manager = InstanaWorkManager(InstanaConfiguration(InstanaShould.SERVER_URL, InstanaShould.API_KEY, eventsBufferSize = 2), mockManager)
+        manager = InstanaWorkManager(InstanaConfig(InstanaShould.SERVER_URL, InstanaShould.API_KEY, eventsBufferSize = 2), mockManager)
     }
 
     @Test
@@ -42,7 +42,7 @@ class InstanaWorkManagerShould : BaseTest() {
 
     @Test
     fun saveAndSendCrash() {
-        val instanaWorkManager = InstanaWorkManager(InstanaConfiguration(InstanaShould.SERVER_URL, InstanaShould.API_KEY, eventsBufferSize = 2), mockManager)
+        val instanaWorkManager = InstanaWorkManager(InstanaConfig(InstanaShould.SERVER_URL, InstanaShould.API_KEY, eventsBufferSize = 2), mockManager)
         val crash = EventFactory.createCrash("VERSION", "200", emptyList(), "stacktrace", hashMapOf())
         instanaWorkManager.persistCrash(crash)
         assertTrue(CrashEventStore.serialized.contains(crash.sessionId))
@@ -50,7 +50,7 @@ class InstanaWorkManagerShould : BaseTest() {
         assertTrue(CrashEventStore.serialized.contains("VERSION"))
         assertTrue(IdProvider.sessionId == crash.sessionId)
 
-        InstanaWorkManager(InstanaConfiguration(InstanaShould.SERVER_URL, InstanaShould.API_KEY, eventsBufferSize = 2), mockManager)
+        InstanaWorkManager(InstanaConfig(InstanaShould.SERVER_URL, InstanaShould.API_KEY, eventsBufferSize = 2), mockManager)
         verify(mockManager).enqueueUniqueWork(any(), any(), any<OneTimeWorkRequest>())
     }
 }

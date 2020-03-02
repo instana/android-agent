@@ -3,14 +3,14 @@ package com.instana.android.instrumentation
 import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
-import com.instana.android.core.InstanaConfiguration
+import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 
 
 class InstrumentationService(
     context: Context,
     private val manager: InstanaWorkManager,
-    private val configuration: InstanaConfiguration
+    private val config: InstanaConfig
 ) {
 
     private val tagSet = hashSetOf<String>()
@@ -27,7 +27,7 @@ class InstrumentationService(
 
     fun setType(type: HTTPCaptureConfig) {
         // change instrumentation type
-        configuration.httpCaptureConfig = type
+        config.httpCaptureConfig = type
     }
 
     fun markCall(url: String, method: String): RemoteCallMarker = RemoteCallMarker(url, method, manager)

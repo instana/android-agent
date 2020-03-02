@@ -31,7 +31,7 @@ class ViewChangeService(
             effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(cm, tm)
         )
         val view = Beacon.newViewChange(
-            appKey = Instana.configuration.key,
+            appKey = Instana.config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,

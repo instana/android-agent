@@ -66,7 +66,7 @@ class RemoteCallMarker(
             return
         }
         val beacon = Beacon.newHttpRequest(
-            appKey = Instana.configuration.key,
+            appKey = Instana.config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
@@ -85,7 +85,7 @@ class RemoteCallMarker(
         )
 
         Instana.remoteCallInstrumentation?.removeTag(markerId)
-        if (Instana.configuration.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+        if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }
     }
@@ -100,7 +100,7 @@ class RemoteCallMarker(
             return
         }
         val beacon = Beacon.newHttpRequest(
-            appKey = Instana.configuration.key,
+            appKey = Instana.config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
@@ -119,7 +119,7 @@ class RemoteCallMarker(
         )
 
         Instana.remoteCallInstrumentation?.removeTag(markerId)
-        if (Instana.configuration.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+        if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }
     }
@@ -138,7 +138,7 @@ class RemoteCallMarker(
             return
         }
         val beacon = Beacon.newHttpRequest(
-            appKey = Instana.configuration.key,
+            appKey = Instana.config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
@@ -157,7 +157,7 @@ class RemoteCallMarker(
         )
 
         Instana.remoteCallInstrumentation?.removeTag(markerId)
-        if (Instana.configuration.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+        if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }
     }
@@ -170,7 +170,7 @@ class RemoteCallMarker(
             return
         }
         val beacon = Beacon.newHttpRequest(
-            appKey = Instana.configuration.key,
+            appKey = Instana.config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
@@ -189,7 +189,7 @@ class RemoteCallMarker(
         )
 
         Instana.remoteCallInstrumentation?.removeTag(markerId)
-        if (Instana.configuration.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+        if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }
     }

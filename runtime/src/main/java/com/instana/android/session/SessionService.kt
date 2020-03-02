@@ -33,7 +33,7 @@ class SessionService(
             effectiveConnectionType = if (cm != null && tm != null) getCellularConnectionType(cm, tm) else null
         )
         val session = Beacon.newSessionStart(
-            appKey = Instana.configuration.key,
+            appKey = Instana.config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,

@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class InstanaWorkManager(
-    private val configuration: InstanaConfiguration,
+    private val config: InstanaConfig,
     private val manager: WorkManager = WorkManager.getInstance()
 ) {
 
@@ -27,13 +27,13 @@ class InstanaWorkManager(
     private var isInitialDelayComplete = false
 
     init {
-        checkConfigurationParameters(configuration)
-        constraints = configureWorkManager(configuration)
+        checkConfigurationParameters(config)
+        constraints = configureWorkManager(config)
         Executors.newScheduledThreadPool(1).schedule({
             updateQueueItems(eventQueue)
             startPeriodicEventDump(10, TimeUnit.SECONDS)
             isInitialDelayComplete = true
-        }, configuration.initialBeaconDelay, TimeUnit.SECONDS)
+        }, config.initialBeaconDelay, TimeUnit.SECONDS)
 
         addUnsentCrashesToQueue()
     }
@@ -64,12 +64,12 @@ class InstanaWorkManager(
     /**
      * Set constraints based on configuration
      */
-    private fun configureWorkManager(instanaConfiguration: InstanaConfiguration): Constraints {
+    private fun configureWorkManager(instanaConfig: InstanaConfig): Constraints {
         //TODO review these. Right now cellular is not sent until I connect to wifi...
         val networkType: NetworkType
         val lowBattery: Boolean
 
-        when (instanaConfiguration.suspendReportingReporting) {
+        when (instanaConfig.suspendReportingReporting) {
             SuspendReportingType.NEVER -> {
                 networkType = NetworkType.CONNECTED
                 lowBattery = false
@@ -95,14 +95,14 @@ class InstanaWorkManager(
             .build()
     }
 
-    private fun checkConfigurationParameters(instanaConfiguration: InstanaConfiguration) {
-        if (instanaConfiguration.reportingUrl.isEmpty()) {
+    private fun checkConfigurationParameters(instanaConfig: InstanaConfig) {
+        if (instanaConfig.reportingUrl.isEmpty()) {
             throw IllegalArgumentException("Reporting Server url cannot be blank!")
         }
-        if (!URLUtil.isValidUrl(instanaConfiguration.reportingUrl)) {
+        if (!URLUtil.isValidUrl(instanaConfig.reportingUrl)) {
             throw IllegalArgumentException("Please provide a valid server url!")
         }
-        if (instanaConfiguration.key.isEmpty()) {
+        if (instanaConfig.key.isEmpty()) {
             throw IllegalArgumentException("Api key cannot be blank!")
         }
     }
@@ -143,7 +143,7 @@ class InstanaWorkManager(
     fun send(beacon: Beacon) {
         eventQueue.apply {
             this.add(beacon)
-            if (isInitialDelayComplete && this.size == configuration.eventsBufferSize) {
+            if (isInitialDelayComplete && this.size == config.eventsBufferSize) {
                 addToManagerAndClear()
             }
         }

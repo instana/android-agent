@@ -2,7 +2,7 @@ package com.instana.mobileeum
 
 import android.app.Application
 import com.instana.android.Instana
-import com.instana.android.core.InstanaConfiguration
+import com.instana.android.core.InstanaConfig
 
 class DemoAppKotlin : Application() {
 
@@ -10,7 +10,7 @@ class DemoAppKotlin : Application() {
         super.onCreate()
         Instana.setup(
             this,
-            InstanaConfiguration(
+            InstanaConfig(
                 reportingUrl = "REPLACE_WITH_YOUR_INSTANA_REPORTING_URL",
                 key = "REPLACE_WITH_YOUR_INSTANA_KEY"
             )

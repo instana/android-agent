@@ -1,7 +1,7 @@
 package com.instana.android
 
 import androidx.work.testing.WorkManagerTestInitHelper
-import com.instana.android.core.InstanaConfiguration
+import com.instana.android.core.InstanaConfig
 import org.junit.Test
 
 class InstanaShould : BaseTest() {
@@ -12,7 +12,7 @@ class InstanaShould : BaseTest() {
 
     @Test
     fun init() {
-        Instana.setup(app, InstanaConfiguration(SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfig(SERVER_URL, API_KEY))
         checkNotNull(Instana.alert)
         checkNotNull(Instana.crashReporting)
         checkNotNull(Instana.remoteCallInstrumentation)
@@ -20,34 +20,34 @@ class InstanaShould : BaseTest() {
 
     @Test(expected = IllegalArgumentException::class)
     fun initWithFakeServerUrl() {
-        Instana.setup(app, InstanaConfiguration(FAKE_SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfig(FAKE_SERVER_URL, API_KEY))
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun initWithEmptyServerUrl() {
-        Instana.setup(app, InstanaConfiguration("", API_KEY))
+        Instana.setup(app, InstanaConfig("", API_KEY))
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun initWithEmptyApiKey() {
-        Instana.setup(app, InstanaConfiguration(SERVER_URL, ""))
+        Instana.setup(app, InstanaConfig(SERVER_URL, ""))
     }
 
     @Test
     fun getCrashReporting() {
-        Instana.setup(app, InstanaConfiguration(SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfig(SERVER_URL, API_KEY))
         checkNotNull(Instana.crashReporting)
     }
 
     @Test
     fun getAlert() {
-        Instana.setup(app, InstanaConfiguration(SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfig(SERVER_URL, API_KEY))
         checkNotNull(Instana.alert)
     }
 
     @Test
     fun getRemoteCallInstrumentation() {
-        Instana.setup(app, InstanaConfiguration(SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfig(SERVER_URL, API_KEY))
         checkNotNull(Instana.remoteCallInstrumentation)
     }
 

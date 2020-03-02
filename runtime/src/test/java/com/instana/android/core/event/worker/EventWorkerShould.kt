@@ -9,7 +9,7 @@ import com.instana.android.BaseTest
 import com.instana.android.Instana
 import com.instana.android.InstanaShould.Companion.API_KEY
 import com.instana.android.InstanaShould.Companion.SERVER_URL
-import com.instana.android.core.InstanaConfiguration
+import com.instana.android.core.InstanaConfig
 import com.instana.android.core.event.EventFactory
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.equalTo
@@ -32,7 +32,7 @@ class EventWorkerShould : BaseTest() {
 
         // Initialize WorkManager for instrumentation tests.
         WorkManagerTestInitHelper.initializeTestWorkManager(app, configuration)
-        Instana.setup(app, InstanaConfiguration(SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfig(SERVER_URL, API_KEY))
     }
 
     @Test
