@@ -33,7 +33,7 @@ class RemoteCallMarker(
 
     init {
         stopWatch.start()
-        sessionId = Instana.currentSessionId
+        sessionId = Instana.sessionId
         connectionProfile = ConnectionProfile(
             carrierName = Instana.remoteCallInstrumentation?.run { getCarrierName(getConnectionManager(), getTelephonyManager()) },
             connectionType = Instana.remoteCallInstrumentation?.run { getConnectionType(getConnectionManager()) },

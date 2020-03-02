@@ -42,7 +42,7 @@ class SessionService(
             view = Instana.view
         )
 
-        Instana.currentSessionId = sessionId
+        Instana.sessionId = sessionId
 
         manager.send(session)
     }

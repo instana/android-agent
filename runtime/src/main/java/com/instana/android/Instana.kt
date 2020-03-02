@@ -53,7 +53,6 @@ object Instana {
     lateinit var appProfile: AppProfile
     lateinit var deviceProfile: DeviceProfile
     val userProfile = UserProfile(null, null, null)
-    var currentSessionId: String? = null
     val ignoreURLs = mutableListOf<Regex>()
     var firstView: String? = null
     var view by Delegates.observable<String?>(null) { _, oldValue, newValue ->
@@ -63,6 +62,11 @@ object Instana {
             viewChangeService?.sendViewChange(newValue)
         }
     }
+
+    /**
+     * Unique ID assigned by Instana to current session
+     */
+    var sessionId: String? = null
 
     /**
      * Instana configuration object

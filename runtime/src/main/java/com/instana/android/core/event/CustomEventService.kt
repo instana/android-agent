@@ -33,7 +33,7 @@ class CustomEventService(
     }
 
     fun submit(name: String, startTime: Long, duration: Long, meta: Map<String, String>) {
-        val sessionId = Instana.currentSessionId
+        val sessionId = Instana.sessionId
         if (sessionId == null) {
             Logger.e("Tried send CustomEvent with null sessionId")
             return

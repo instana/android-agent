@@ -20,7 +20,7 @@ class ViewChangeService(
     private val tm: TelephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
     fun sendViewChange(viewName: String) {
-        val sessionId = Instana.currentSessionId
+        val sessionId = Instana.sessionId
         if (sessionId == null) {
             Logger.e("Tried send CustomEvent with null sessionId")
             return
