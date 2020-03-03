@@ -21,6 +21,7 @@ import java.util.*
  */
 class HTTPMarker(
     private val url: String,
+    private val viewName: String?,
     private val manager: InstanaWorkManager
 ) {
 
@@ -35,7 +36,7 @@ class HTTPMarker(
 
     init {
         stopWatch.start()
-        sessionId = Instana.sessionId // TODO check existence of sessionId here, and throw error if it isn't set
+        sessionId = Instana.sessionId
         connectionProfile = ConnectionProfile(
             carrierName = Instana.instrumentationService?.run { getCarrierName(connectivityManager, telephonyManager) },
             connectionType = Instana.instrumentationService?.run { getConnectionType(connectivityManager) },
@@ -51,14 +52,45 @@ class HTTPMarker(
     fun cancel() {
         stopWatch.stop()
         Instana.instrumentationService?.removeTag(markerId)
+
+        if (sessionId == null) {
+            Logger.e("Tried to end HTTPMarker with null sessionId")
+            return
+        }
+
+        val errorMessage = "Cancelled request"
+
+        val beacon = Beacon.newHttpRequest(
+            appKey = Instana.config.key,
+            appProfile = Instana.appProfile,
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = connectionProfile,
+            userProfile = Instana.userProfile,
+            sessionId = sessionId,
+            view = viewName,
+            duration = stopWatch.totalTimeMillis,
+            method = null,
+            url = url,
+            responseCode = null,
+            requestSizeBytes = null,
+            encodedResponseSizeBytes = null,
+            decodedResponseSizeBytes = null,
+            backendTraceId = null,
+            error = errorMessage
+        )
+
+        if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+            manager.send(beacon)
+        }
     }
 
     //region OkHttp
     fun finish(response: Response) {
         stopWatch.stop()
+        Instana.instrumentationService?.removeTag(markerId)
 
         if (sessionId == null) {
-            Logger.e("Tried to end RemoteCallMarker with null sessionId")
+            Logger.e("Tried to end HTTPMarker with null sessionId")
             return
         }
 
@@ -74,7 +106,7 @@ class HTTPMarker(
             connectionProfile = connectionProfile,
             userProfile = Instana.userProfile,
             sessionId = sessionId,
-            view = Instana.view,
+            view = viewName,
             duration = stopWatch.totalTimeMillis,
             method = method,
             url = url,
@@ -86,7 +118,6 @@ class HTTPMarker(
             error = null
         )
 
-        Instana.instrumentationService?.removeTag(markerId)
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }
@@ -94,9 +125,10 @@ class HTTPMarker(
 
     fun finish(request: Request, error: Throwable) {
         stopWatch.stop()
+        Instana.instrumentationService?.removeTag(markerId)
 
         if (sessionId == null) {
-            Logger.e("Tried to end RemoteCallMarker with null sessionId")
+            Logger.e("Tried to end HTTPMarker with null sessionId")
             return
         }
 
@@ -110,7 +142,7 @@ class HTTPMarker(
             connectionProfile = connectionProfile,
             userProfile = Instana.userProfile,
             sessionId = sessionId,
-            view = Instana.view,
+            view = viewName,
             duration = stopWatch.totalTimeMillis,
             method = method,
             url = url,
@@ -122,7 +154,6 @@ class HTTPMarker(
             error = error.toString()
         )
 
-        Instana.instrumentationService?.removeTag(markerId)
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }
@@ -132,9 +163,10 @@ class HTTPMarker(
     //region HttpUrlConnection
     fun finish(connection: HttpURLConnection) {
         stopWatch.stop()
+        Instana.instrumentationService?.removeTag(markerId)
 
         if (sessionId == null) {
-            Logger.e("Tried to end RemoteCallMarker with null sessionId")
+            Logger.e("Tried to end HTTPMarker with null sessionId")
             return
         }
 
@@ -151,7 +183,7 @@ class HTTPMarker(
             connectionProfile = connectionProfile,
             userProfile = Instana.userProfile,
             sessionId = sessionId,
-            view = Instana.view,
+            view = viewName,
             duration = stopWatch.totalTimeMillis,
             method = method,
             url = url,
@@ -163,7 +195,6 @@ class HTTPMarker(
             error = errorMessage
         )
 
-        Instana.instrumentationService?.removeTag(markerId)
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }
@@ -171,9 +202,10 @@ class HTTPMarker(
 
     fun finish(connection: HttpURLConnection, error: Throwable) {
         stopWatch.stop()
+        Instana.instrumentationService?.removeTag(markerId)
 
         if (sessionId == null) {
-            Logger.e("Tried to end RemoteCallMarker with null sessionId")
+            Logger.e("Tried to end HTTPMarker with null sessionId")
             return
         }
 
@@ -186,7 +218,7 @@ class HTTPMarker(
             connectionProfile = connectionProfile,
             userProfile = Instana.userProfile,
             sessionId = sessionId,
-            view = Instana.view,
+            view = viewName,
             duration = stopWatch.totalTimeMillis,
             method = method,
             url = url,
@@ -198,7 +230,6 @@ class HTTPMarker(
             error = error.message
         )
 
-        Instana.instrumentationService?.removeTag(markerId)
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }

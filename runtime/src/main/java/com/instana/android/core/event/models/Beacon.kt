@@ -518,7 +518,7 @@ class Beacon private constructor(
             sessionId: String,
             view: String?,
             duration: Long,
-            method: String,
+            method: String?,
             url: String,
             backendTraceId: String?,
             responseCode: Int?,
@@ -531,7 +531,7 @@ class Beacon private constructor(
             return Beacon(BeaconType.HTTP_REQUEST, duration, appKey, sessionId, errorCount, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     view?.run { setView(this) }
-                    setHttpCallMethod(method)
+                    method?.run { setHttpCallMethod(this) }
                     setHttpCallUrl(url)
                     responseCode?.run { setHttpCallStatus(this) }
                     encodedResponseSizeBytes?.run { setEncodedBodySize(this) }

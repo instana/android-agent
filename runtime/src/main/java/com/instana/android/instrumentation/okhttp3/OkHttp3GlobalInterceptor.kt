@@ -35,7 +35,7 @@ class OkHttp3GlobalInterceptor private constructor() : Interceptor {
 
         if (isAutoEnabled && !hasTrackingHeader(header) && !isBlacklistedURL(url)) {
             if (!checkTag(header) && isNotLibraryCallBoolean(url)) {
-                marker = Instana.instrumentationService?.markCall(url)!!
+                marker = Instana.startCapture(url)!!
                 request = chain.request().newBuilder().header(marker.headerKey(), marker.headerValue()).build()
             } else {
                 request = intercepted

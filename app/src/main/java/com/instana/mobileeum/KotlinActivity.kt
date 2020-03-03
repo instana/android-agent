@@ -36,6 +36,11 @@ class KotlinActivity : AppCompatActivity() {
                 OkHttpRequests.executeGetIgnored()
             }.start()
         }
+        ok_http_get_cancelled.setOnClickListener {
+            Thread {
+                OkHttpRequests.executeGetCancelled()
+            }.start()
+        }
         ok_http_get_failure.setOnClickListener {
             Thread {
                 OkHttpRequests.executeGetFailure()

@@ -19,6 +19,7 @@ import com.instana.android.core.util.Logger
 import com.instana.android.core.util.RootCheck
 import com.instana.android.crash.CrashEventStore
 import com.instana.android.crash.CrashService
+import com.instana.android.instrumentation.HTTPMarker
 import com.instana.android.instrumentation.InstrumentationService
 import com.instana.android.session.SessionService
 import com.instana.android.view.ViewChangeService
@@ -40,10 +41,9 @@ object Instana {
     internal lateinit var deviceProfile: DeviceProfile
     internal var firstView: String? = null
 
-    internal var alertService: AlertService? = null
-    @JvmField
-    public var instrumentationService: InstrumentationService? = null
-    internal var viewChangeService: ViewChangeService? = null
+    private var alertService: AlertService? = null
+    private var viewChangeService: ViewChangeService? = null
+    internal var instrumentationService: InstrumentationService? = null
 
     @JvmField
     var customEvents: CustomEventService? = null
@@ -77,6 +77,14 @@ object Instana {
     @JvmStatic
     lateinit var config: InstanaConfig
         internal set
+
+    /**
+     * Mark the start of a Http Request
+     */
+    @JvmStatic
+    @JvmOverloads
+    fun startCapture(url: String, viewName: String? = view): HTTPMarker? =
+        instrumentationService?.markCall(url, viewName)
 
     /**
      * Initialize Instana

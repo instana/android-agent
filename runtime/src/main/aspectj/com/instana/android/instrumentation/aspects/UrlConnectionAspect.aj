@@ -29,7 +29,7 @@ public aspect UrlConnectionAspect {
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();
         if (isAutoEnabled() && !checkTag(header) && isNotLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
-            HTTPMarker marker = Instana.instrumentationService.markCall(url);
+            HTTPMarker marker = Instana.startCapture(url);
             connection.setRequestProperty(marker.headerKey(), marker.headerValue());
             remoteMarkers.add(marker);
         }

@@ -2,7 +2,6 @@ package com.instana.mobileeum
 
 import android.util.Log
 import com.instana.android.Instana
-import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
 import com.instana.android.instrumentation.HTTPMarker
 import java.io.IOException
 import java.io.OutputStreamWriter
@@ -25,7 +24,7 @@ object HttpUrlConnectionRequests {
         try {
             urlConnection = URL(desiredUrl).openConnection() as HttpsURLConnection
             if (enableManual) {
-                marker = Instana.instrumentationService!!.markCall(desiredUrl)
+                marker = Instana.startCapture(desiredUrl)
             }
             urlConnection.requestMethod = "GET"
             urlConnection.setRequestProperty("Accept", "application/json")
@@ -39,9 +38,6 @@ object HttpUrlConnectionRequests {
             marker?.finish(urlConnection!!, e)
             return false
         } finally {
-            urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {
-                Log.e(TAG, this)
-            }
             urlConnection?.disconnect()
         }
     }
@@ -56,7 +52,7 @@ object HttpUrlConnectionRequests {
         try {
             urlConnection = URL(desiredUrl).openConnection() as HttpURLConnection
             if (enableManual) {
-                marker = Instana.instrumentationService!!.markCall(desiredUrl)
+                marker = Instana.startCapture(desiredUrl)
             }
             urlConnection.doOutput = true
             urlConnection.requestMethod = "POST"
@@ -77,9 +73,6 @@ object HttpUrlConnectionRequests {
             marker?.finish(urlConnection!!, e)
             return false
         } finally {
-            urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {
-                Log.e(TAG, this)
-            }
             urlConnection?.disconnect()
         }
     }
@@ -93,7 +86,7 @@ object HttpUrlConnectionRequests {
         try {
             urlConnection = URL(desiredUrl).openConnection() as HttpURLConnection
             if (enableManual) {
-                marker = Instana.instrumentationService!!.markCall(desiredUrl)
+                marker = Instana.startCapture(desiredUrl)
             }
             urlConnection.requestMethod = "DELETE"
             urlConnection.connect()
@@ -106,9 +99,6 @@ object HttpUrlConnectionRequests {
             marker?.finish(urlConnection!!, e)
             return false
         } finally {
-            urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {
-                Log.e(TAG, this)
-            }
             urlConnection?.disconnect()
         }
     }
@@ -123,7 +113,7 @@ object HttpUrlConnectionRequests {
         try {
             urlConnection = URL(desiredUrl).openConnection() as HttpURLConnection
             if (enableManual) {
-                marker = Instana.instrumentationService!!.markCall(desiredUrl)
+                marker = Instana.startCapture(desiredUrl)
             }
             urlConnection.doOutput = true
             urlConnection.requestMethod = "PUT"
@@ -144,9 +134,6 @@ object HttpUrlConnectionRequests {
             marker?.finish(urlConnection!!, e)
             return false
         } finally {
-            urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {
-                Log.e(TAG, this)
-            }
             urlConnection?.disconnect()
         }
     }

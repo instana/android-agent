@@ -70,6 +70,13 @@
             android:text="OkHttp get ignored (constructor)" />
 
         <Button
+            android:id="@+id/ok_http_get_cancelled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="OkHttp get cancelled (constructor)" />
+
+        <Button
             android:id="@+id/ok_http_post_success"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
