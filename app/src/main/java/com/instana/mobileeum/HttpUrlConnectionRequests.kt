@@ -30,7 +30,6 @@ object HttpUrlConnectionRequests {
             urlConnection.requestMethod = "GET"
             urlConnection.setRequestProperty("Accept", "application/json")
             urlConnection.setRequestProperty("Accept-Encoding", "gzip,deflate")
-            urlConnection.doOutput = true
             urlConnection.connect()
             val responseCode = urlConnection.responseCode
             marker?.finish(urlConnection)
@@ -96,7 +95,6 @@ object HttpUrlConnectionRequests {
             if (enableManual) {
                 marker = Instana.instrumentationService!!.markCall(desiredUrl)
             }
-            urlConnection.doOutput = true
             urlConnection.requestMethod = "DELETE"
             urlConnection.connect()
 
