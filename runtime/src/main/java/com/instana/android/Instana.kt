@@ -35,13 +35,15 @@ object Instana {
     private lateinit var app: Application
     private lateinit var sessionService: SessionService
     private var lifeCycle: InstanaLifeCycle? = null
-    private var alertService: AlertService? = null
-    private var instrumentationService: InstrumentationService? = null
-    private var viewChangeService: ViewChangeService? = null
 
     internal lateinit var appProfile: AppProfile
     internal lateinit var deviceProfile: DeviceProfile
     internal var firstView: String? = null
+
+    internal var alertService: AlertService? = null
+    @JvmField
+    public var instrumentationService: InstrumentationService? = null
+    internal var viewChangeService: ViewChangeService? = null
 
     @JvmField
     var customEvents: CustomEventService? = null

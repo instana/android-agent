@@ -19,9 +19,8 @@ import java.util.*
  * Use for manual instrumentation, called over instrumentation service instance
  * Instana.instrumentationService.markCall(...) returns this object instance
  */
-class RemoteCallMarker(
+class HTTPMarker(
     private val url: String,
-    private var method: String = EMPTY_STR,
     private val manager: InstanaWorkManager
 ) {
 
@@ -31,40 +30,43 @@ class RemoteCallMarker(
     private var connectionProfile: ConnectionProfile
     private val sessionId: String?
 
+    fun headerKey(): String = TRACKING_HEADER_KEY
+    fun headerValue(): String = markerId
+
     init {
         stopWatch.start()
-        sessionId = Instana.sessionId
+        sessionId = Instana.sessionId // TODO check existence of sessionId here, and throw error if it isn't set
         connectionProfile = ConnectionProfile(
-            carrierName = Instana.remoteCallInstrumentation?.run { getCarrierName(getConnectionManager(), getTelephonyManager()) },
-            connectionType = Instana.remoteCallInstrumentation?.run { getConnectionType(getConnectionManager()) },
-            effectiveConnectionType = Instana.remoteCallInstrumentation?.run { getCellularConnectionType(getConnectionManager(), getTelephonyManager()) }
+            carrierName = Instana.instrumentationService?.run { getCarrierName(connectivityManager, telephonyManager) },
+            connectionType = Instana.instrumentationService?.run { getConnectionType(connectivityManager) },
+            effectiveConnectionType = Instana.instrumentationService?.run { getCellularConnectionType(connectivityManager, telephonyManager) }
         )
-        Instana.remoteCallInstrumentation?.run {
-            carrierName = getTelephonyManager().networkOperatorName
+        Instana.instrumentationService?.run {
+            carrierName = telephonyManager.networkOperatorName
             if (carrierName == EMPTY_STR) carrierName = null
             addTag(markerId)
         }
     }
 
-    fun headerKey(): String = TRACKING_HEADER_KEY
-    fun headerValue(): String = markerId
-
-    fun canceled() {
+    fun cancel() {
         stopWatch.stop()
-        Instana.remoteCallInstrumentation?.removeTag(markerId)
+        Instana.instrumentationService?.removeTag(markerId)
     }
 
     //region OkHttp
-    fun endedWith(response: Response) {
+    fun finish(response: Response) {
         stopWatch.stop()
-        val requestSize = response.request().body()?.contentLength()
-        val encodedResponseSize = response.body()?.contentLength()
-        val decodedResponseSize = response.decodedContentLength()
 
         if (sessionId == null) {
             Logger.e("Tried to end RemoteCallMarker with null sessionId")
             return
         }
+
+        val method = response.request().method()
+        val requestSize = response.request().body()?.contentLength()
+        val encodedResponseSize = response.body()?.contentLength()
+        val decodedResponseSize = response.decodedContentLength()
+
         val beacon = Beacon.newHttpRequest(
             appKey = Instana.config.key,
             appProfile = Instana.appProfile,
@@ -84,21 +86,23 @@ class RemoteCallMarker(
             error = null
         )
 
-        Instana.remoteCallInstrumentation?.removeTag(markerId)
+        Instana.instrumentationService?.removeTag(markerId)
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }
     }
 
-    fun endedWith(request: Request, error: Throwable) {
+    fun finish(request: Request, error: Throwable) {
         stopWatch.stop()
-
-        val requestSize = request.body()?.contentLength()
 
         if (sessionId == null) {
             Logger.e("Tried to end RemoteCallMarker with null sessionId")
             return
         }
+
+        val method = request.method()
+        val requestSize = request.body()?.contentLength()
+
         val beacon = Beacon.newHttpRequest(
             appKey = Instana.config.key,
             appProfile = Instana.appProfile,
@@ -118,7 +122,7 @@ class RemoteCallMarker(
             error = error.toString()
         )
 
-        Instana.remoteCallInstrumentation?.removeTag(markerId)
+        Instana.instrumentationService?.removeTag(markerId)
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }
@@ -126,17 +130,20 @@ class RemoteCallMarker(
     //endregion
 
     //region HttpUrlConnection
-    fun endedWith(connection: HttpURLConnection) {
+    fun finish(connection: HttpURLConnection) {
         stopWatch.stop()
-        val encodedResponseSize = connection.encodedResponseSizeOrNull()
-        val decodedResponseSize = connection.decodedResponseSizeOrNull()?.toLong()
-        val responseCode = connection.responseCodeOrNull()
-        val errorMessage = connection.errorMessageOrNull()
 
         if (sessionId == null) {
             Logger.e("Tried to end RemoteCallMarker with null sessionId")
             return
         }
+
+        val method = connection.requestMethod
+        val encodedResponseSize = connection.encodedResponseSizeOrNull()
+        val decodedResponseSize = connection.decodedResponseSizeOrNull()?.toLong()
+        val responseCode = connection.responseCodeOrNull()
+        val errorMessage = connection.errorMessageOrNull()
+
         val beacon = Beacon.newHttpRequest(
             appKey = Instana.config.key,
             appProfile = Instana.appProfile,
@@ -156,19 +163,22 @@ class RemoteCallMarker(
             error = errorMessage
         )
 
-        Instana.remoteCallInstrumentation?.removeTag(markerId)
+        Instana.instrumentationService?.removeTag(markerId)
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }
     }
 
-    fun endedWith(connection: HttpURLConnection, error: Throwable) {
+    fun finish(connection: HttpURLConnection, error: Throwable) {
         stopWatch.stop()
 
         if (sessionId == null) {
             Logger.e("Tried to end RemoteCallMarker with null sessionId")
             return
         }
+
+        val method = connection.requestMethod
+
         val beacon = Beacon.newHttpRequest(
             appKey = Instana.config.key,
             appProfile = Instana.appProfile,
@@ -188,7 +198,7 @@ class RemoteCallMarker(
             error = error.message
         )
 
-        Instana.remoteCallInstrumentation?.removeTag(markerId)
+        Instana.instrumentationService?.removeTag(markerId)
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             manager.send(beacon)
         }
@@ -196,7 +206,6 @@ class RemoteCallMarker(
     //endregion
 
     private fun getBackendTraceId(connection: HttpURLConnection): String? {
-        //Server-Timing: intid;desc=bd777df70e5e5356
         return connection.getHeaderField(backendTraceIdHeaderKey)?.let { it ->
             backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
         }
@@ -209,7 +218,7 @@ class RemoteCallMarker(
     }
 
     companion object {
-        const val backendTraceIdHeaderKey = "Server-Timing"
-        val backendTraceIdParser = "^intid;desc=(.*)\$".toRegex() //TODO check whether we can restrict the match pattern a bit more
+        private const val backendTraceIdHeaderKey = "Server-Timing"
+        private val backendTraceIdParser = "^intid;desc=(.*)\$".toRegex() //TODO check whether we can restrict the match pattern a bit more
     }
 }

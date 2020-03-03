@@ -3,7 +3,7 @@ package com.instana.mobileeum
 import android.util.Log
 import com.instana.android.Instana
 import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
-import com.instana.android.instrumentation.RemoteCallMarker
+import com.instana.android.instrumentation.HTTPMarker
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -22,9 +22,9 @@ object OkHttpRequests {
     fun executeGetException() = executeGet("https://httpstat-nonexistingurlhere.us/200", false)
 
     private fun executeGet(url: String = "https://httpstat.us/404", enableManual: Boolean): Boolean {
-        var tracker: RemoteCallMarker? = null
+        var tracker: HTTPMarker? = null
         if (enableManual) {
-            tracker = Instana.remoteCallInstrumentation?.markCall(url, "GET")
+            tracker = Instana.instrumentationService?.markCall(url)
         }
         val requestBuilder = Request.Builder()
             .url(url)
@@ -41,11 +41,11 @@ object OkHttpRequests {
         return try {
             val client = OkHttpClient()
             val response = client.newCall(request).execute()
-            tracker?.endedWith(response)
+            tracker?.finish(response)
             true
         } catch (e: Exception) {
             e.printStackTrace()
-            tracker?.endedWith(request, e)
+            tracker?.finish(request, e)
             false
         } finally {
             request.header(TRACKING_HEADER_KEY)?.run {
@@ -62,9 +62,9 @@ object OkHttpRequests {
         enableManual: Boolean
     ): Boolean {
         val body = RequestBody.create(contentType, json)
-        var tracker: RemoteCallMarker? = null
+        var tracker: HTTPMarker? = null
         if (enableManual) {
-            tracker = Instana.remoteCallInstrumentation?.markCall(url, "POST")
+            tracker = Instana.instrumentationService?.markCall(url)
         }
         val requestBuilder = Request.Builder()
             .url(url)
@@ -78,11 +78,11 @@ object OkHttpRequests {
 
         return try {
             val response = okHttpClient.newCall(request).execute()
-            tracker?.endedWith(response)
+            tracker?.finish(response)
             true
         } catch (e: Exception) {
             e.printStackTrace()
-            tracker?.endedWith(request, e)
+            tracker?.finish(request, e)
             false
         } finally {
             request.header(TRACKING_HEADER_KEY)?.run {
@@ -92,9 +92,9 @@ object OkHttpRequests {
     }
 
     fun executeDelete(url: String = "https://reqres.in/api/users/2", enableManual: Boolean): Boolean {
-        var tracker: RemoteCallMarker? = null
+        var tracker: HTTPMarker? = null
         if (enableManual) {
-            tracker = Instana.remoteCallInstrumentation?.markCall(url, "DELETE")
+            tracker = Instana.instrumentationService?.markCall(url)
         }
         val requestBuilder = Request.Builder()
             .url(url)
@@ -107,11 +107,11 @@ object OkHttpRequests {
 
         return try {
             val response = okHttpClient.newCall(request).execute()
-            tracker?.endedWith(response)
+            tracker?.finish(response)
             true
         } catch (e: Exception) {
             e.printStackTrace()
-            tracker?.endedWith(request, e)
+            tracker?.finish(request, e)
             false
         } finally {
             request.header(TRACKING_HEADER_KEY)?.run {
@@ -126,9 +126,9 @@ object OkHttpRequests {
         enableManual: Boolean
     ): Boolean {
         val body = RequestBody.create(contentType, json)
-        var tracker: RemoteCallMarker? = null
+        var tracker: HTTPMarker? = null
         if (enableManual) {
-            tracker = Instana.remoteCallInstrumentation?.markCall(url, "PUT")
+            tracker = Instana.instrumentationService?.markCall(url)
         }
         val requestBuilder = Request.Builder()
             .url(url)
@@ -142,11 +142,11 @@ object OkHttpRequests {
 
         return try {
             val response = okHttpClient.newCall(request).execute()
-            tracker?.endedWith(response)
+            tracker?.finish(response)
             true
         } catch (e: Exception) {
             e.printStackTrace()
-            tracker?.endedWith(request, e)
+            tracker?.finish(request, e)
             false
         } finally {
             request.header(TRACKING_HEADER_KEY)?.run {

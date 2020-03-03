@@ -2,7 +2,7 @@ package com.instana.android.instrumentation.aspects;
 
 import com.instana.android.Instana;
 import com.instana.android.core.util.Logger;
-import com.instana.android.instrumentation.RemoteCallMarker;
+import com.instana.android.instrumentation.HTTPMarker;
 
 import org.aspectj.lang.JoinPoint;
 
@@ -21,7 +21,7 @@ import static com.instana.android.core.util.ConstantsAndUtil.isBlacklistedURL;
 import static com.instana.android.core.util.ConstantsAndUtil.isNotLibraryCallBoolean;
 
 public aspect UrlConnectionAspect {
-    private final List<RemoteCallMarker> remoteMarkers = new LinkedList<>();
+    private final List<HTTPMarker> remoteMarkers = new LinkedList<>();
 
     pointcut openConnectionMethodCall(): call(* java.net.URL.openConnection());
     after() returning(HttpURLConnection connection): openConnectionMethodCall() {
@@ -29,7 +29,7 @@ public aspect UrlConnectionAspect {
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();
         if (isAutoEnabled() && !checkTag(header) && isNotLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
-            RemoteCallMarker marker = Instana.remoteCallInstrumentation.markCall(url, connection.getRequestMethod());
+            HTTPMarker marker = Instana.instrumentationService.markCall(url);
             connection.setRequestProperty(marker.headerKey(), marker.headerValue());
             remoteMarkers.add(marker);
         }
@@ -42,8 +42,8 @@ public aspect UrlConnectionAspect {
         String url = connection.getURL().toString();
         if (isAutoEnabled() && isNotLibraryCallBoolean(url) && checkTag(header)) {
             try {
-                RemoteCallMarker marker = findFirst(remoteMarkers, header);
-                marker.endedWith(connection);
+                HTTPMarker marker = findFirst(remoteMarkers, header);
+                marker.finish(connection);
                 remoteMarkers.remove(marker);
             } catch (NoSuchElementException ignored) {
                 // swallow exception
@@ -79,8 +79,8 @@ public aspect UrlConnectionAspect {
             String url = urlConnection.getURL().toString();
             if (isAutoEnabled() && hasTrackingHeader(header) && isNotLibraryCallBoolean(url) && checkTag(header)) {
                 try {
-                    RemoteCallMarker marker = findFirst(remoteMarkers, header);
-                    marker.endedWith(urlConnection, e);
+                    HTTPMarker marker = findFirst(remoteMarkers, header);
+                    marker.finish(urlConnection, e);
                     remoteMarkers.remove(marker);
                 } catch (NoSuchElementException ignored) {
                     // swallow exception
@@ -89,8 +89,8 @@ public aspect UrlConnectionAspect {
         }
     }
 
-    private RemoteCallMarker findFirst(List<RemoteCallMarker> list, String tag) throws NoSuchElementException {
-        for (RemoteCallMarker remoteMarker : list) {
+    private HTTPMarker findFirst(List<HTTPMarker> list, String tag) throws NoSuchElementException {
+        for (HTTPMarker remoteMarker : list) {
             if (remoteMarker.headerValue().equals(tag)) {
                 return remoteMarker;
             }

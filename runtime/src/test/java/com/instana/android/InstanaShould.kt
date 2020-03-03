@@ -15,7 +15,7 @@ class InstanaShould : BaseTest() {
         Instana.setup(app, InstanaConfig(SERVER_URL, API_KEY))
         checkNotNull(Instana.alert)
         checkNotNull(Instana.crashReporting)
-        checkNotNull(Instana.remoteCallInstrumentation)
+        checkNotNull(Instana.instrumentationService)
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -46,9 +46,9 @@ class InstanaShould : BaseTest() {
     }
 
     @Test
-    fun getRemoteCallInstrumentation() {
+    fun getinstrumentationService() {
         Instana.setup(app, InstanaConfig(SERVER_URL, API_KEY))
-        checkNotNull(Instana.remoteCallInstrumentation)
+        checkNotNull(Instana.instrumentationService)
     }
 
     companion object {

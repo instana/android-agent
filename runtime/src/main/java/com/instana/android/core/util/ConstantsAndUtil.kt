@@ -125,7 +125,7 @@ object ConstantsAndUtil {
     @JvmStatic
     fun checkTag(header: String?): Boolean =
         if (header != null) {
-            Instana.remoteCallInstrumentation?.hasTag(header) ?: false
+            Instana.instrumentationService?.hasTag(header) ?: false
         } else {
             false
         }

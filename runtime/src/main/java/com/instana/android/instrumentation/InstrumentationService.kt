@@ -13,32 +13,25 @@ class InstrumentationService(
     private val config: InstanaConfig
 ) {
 
-    private val tagSet = hashSetOf<String>()
-    private val cm: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val tm: TelephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+    private val tags = mutableSetOf<String>()
 
-    fun getConnectionManager(): ConnectivityManager {
-        return cm
-    }
-
-    fun getTelephonyManager(): TelephonyManager {
-        return tm
-    }
+    val connectivityManager: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val telephonyManager: TelephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
     fun setType(type: HTTPCaptureConfig) {
         // change instrumentation type
         config.httpCaptureConfig = type
     }
 
-    fun markCall(url: String, method: String): RemoteCallMarker = RemoteCallMarker(url, method, manager)
+    fun markCall(url: String): HTTPMarker = HTTPMarker(url, manager)
 
-    fun hasTag(header: String): Boolean = tagSet.contains(header)
+    fun hasTag(header: String): Boolean = tags.contains(header)
 
     fun addTag(tag: String) {
-        tagSet.add(tag)
+        tags.add(tag)
     }
 
     fun removeTag(tag: String) {
-        tagSet.remove(tag)
+        tags.remove(tag)
     }
 }

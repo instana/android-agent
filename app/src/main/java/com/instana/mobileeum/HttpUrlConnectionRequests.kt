@@ -3,7 +3,7 @@ package com.instana.mobileeum
 import android.util.Log
 import com.instana.android.Instana
 import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
-import com.instana.android.instrumentation.RemoteCallMarker
+import com.instana.android.instrumentation.HTTPMarker
 import java.io.IOException
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
@@ -17,16 +17,15 @@ object HttpUrlConnectionRequests {
     private const val ERROR = "error"
 
     fun doGet(
-        desiredUrl: String = "https://sesandbox-instana.instana.io",
+        desiredUrl: String = "https://www.4rtstudio.com",
         enableManual: Boolean
     ): Boolean {
         var urlConnection: HttpsURLConnection? = null
-        var marker: RemoteCallMarker? = null
+        var marker: HTTPMarker? = null
         try {
             urlConnection = URL(desiredUrl).openConnection() as HttpsURLConnection
             if (enableManual) {
-                marker = Instana.remoteCallInstrumentation!!.markCall(desiredUrl, "GET")
-                urlConnection.setRequestProperty(marker.headerKey(), marker.headerValue())
+                marker = Instana.instrumentationService!!.markCall(desiredUrl)
             }
             urlConnection.requestMethod = "GET"
             urlConnection.setRequestProperty("Accept", "application/json")
@@ -34,11 +33,11 @@ object HttpUrlConnectionRequests {
             urlConnection.doOutput = true
             urlConnection.connect()
             val responseCode = urlConnection.responseCode
-            marker?.endedWith(urlConnection)
+            marker?.finish(urlConnection)
             return responseCode == HttpsURLConnection.HTTP_OK
         } catch (e: IOException) {
             Log.e(TAG, ERROR, e)
-            marker?.endedWith(urlConnection!!, e)
+            marker?.finish(urlConnection!!, e)
             return false
         } finally {
             urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {
@@ -54,12 +53,11 @@ object HttpUrlConnectionRequests {
         enableManual: Boolean
     ): Boolean {
         var urlConnection: HttpURLConnection? = null
-        var marker: RemoteCallMarker? = null
+        var marker: HTTPMarker? = null
         try {
             urlConnection = URL(desiredUrl).openConnection() as HttpURLConnection
             if (enableManual) {
-                marker = Instana.remoteCallInstrumentation!!.markCall(desiredUrl, "POST")
-                urlConnection.setRequestProperty(marker.headerKey(), marker.headerValue())
+                marker = Instana.instrumentationService!!.markCall(desiredUrl)
             }
             urlConnection.doOutput = true
             urlConnection.requestMethod = "POST"
@@ -73,11 +71,11 @@ object HttpUrlConnectionRequests {
             outputStream.close()
 
             val responseCode = urlConnection.responseCode
-            marker?.endedWith(urlConnection)
+            marker?.finish(urlConnection)
             return responseCode == HttpsURLConnection.HTTP_OK
         } catch (e: IOException) {
             Log.e(TAG, ERROR, e)
-            marker?.endedWith(urlConnection!!, e)
+            marker?.finish(urlConnection!!, e)
             return false
         } finally {
             urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {
@@ -92,23 +90,22 @@ object HttpUrlConnectionRequests {
         enableManual: Boolean
     ): Boolean {
         var urlConnection: HttpURLConnection? = null
-        var marker: RemoteCallMarker? = null
+        var marker: HTTPMarker? = null
         try {
             urlConnection = URL(desiredUrl).openConnection() as HttpURLConnection
             if (enableManual) {
-                marker = Instana.remoteCallInstrumentation!!.markCall(desiredUrl, "DELETE")
-                urlConnection.setRequestProperty(marker.headerKey(), marker.headerValue())
+                marker = Instana.instrumentationService!!.markCall(desiredUrl)
             }
             urlConnection.doOutput = true
             urlConnection.requestMethod = "DELETE"
             urlConnection.connect()
 
             val responseCode = urlConnection.responseCode
-            marker?.endedWith(urlConnection)
+            marker?.finish(urlConnection)
             return responseCode == HttpsURLConnection.HTTP_OK
         } catch (e: IOException) {
             Log.e(TAG, ERROR, e)
-            marker?.endedWith(urlConnection!!, e)
+            marker?.finish(urlConnection!!, e)
             return false
         } finally {
             urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {
@@ -124,12 +121,11 @@ object HttpUrlConnectionRequests {
         enableManual: Boolean
     ): Boolean {
         var urlConnection: HttpURLConnection? = null
-        var marker: RemoteCallMarker? = null
+        var marker: HTTPMarker? = null
         try {
             urlConnection = URL(desiredUrl).openConnection() as HttpURLConnection
             if (enableManual) {
-                marker = Instana.remoteCallInstrumentation!!.markCall(desiredUrl, "PUT")
-                urlConnection.setRequestProperty(marker.headerKey(), marker.headerValue())
+                marker = Instana.instrumentationService!!.markCall(desiredUrl)
             }
             urlConnection.doOutput = true
             urlConnection.requestMethod = "PUT"
@@ -143,11 +139,11 @@ object HttpUrlConnectionRequests {
             outputStream.close()
 
             val responseCode = urlConnection.responseCode
-            marker?.endedWith(urlConnection)
+            marker?.finish(urlConnection)
             return responseCode == HttpsURLConnection.HTTP_OK
         } catch (e: IOException) {
             Log.e(TAG, ERROR, e)
-            marker?.endedWith(urlConnection!!, e)
+            marker?.finish(urlConnection!!, e)
             return false
         } finally {
             urlConnection?.getRequestProperty(TRACKING_HEADER_KEY)?.run {

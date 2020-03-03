@@ -23,7 +23,7 @@ class JsonUtilShould : BaseTest() {
                 "reportingUrl": "http://10.0.2.2:3000/v1/api",
                 "alertFrameRateDipThreshold": 30,
                 "alertApplicationNotRespondingThreshold": 3,
-                "remoteCallInstrumentationType": 0,
+                "instrumentationServiceType": 0,
                 "suspendReporting": false,
                 "key": "42",
                 "eventsBufferSize": 200,

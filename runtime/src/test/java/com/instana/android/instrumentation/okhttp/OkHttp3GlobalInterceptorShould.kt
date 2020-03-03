@@ -38,7 +38,7 @@ class OkHttp3GlobalInterceptorShould : BaseTest() {
 
     @Test
     fun notInterceptCallDisabled() {
-        Instana.remoteCallInstrumentation?.setType(HTTPCaptureConfig.NONE)
+        Instana.instrumentationService?.setType(HTTPCaptureConfig.NONE)
         val client = OkHttpClient().newBuilder().addInterceptor(interceptor).build()
         val request = Request.Builder().url("https://www.google.com").get().build()
         val response = client.newCall(request).execute()
@@ -47,7 +47,7 @@ class OkHttp3GlobalInterceptorShould : BaseTest() {
 
     @Test
     fun notInterceptCallManual() {
-        Instana.remoteCallInstrumentation?.setType(HTTPCaptureConfig.MANUAL)
+        Instana.instrumentationService?.setType(HTTPCaptureConfig.MANUAL)
         val client = OkHttpClient().newBuilder().addInterceptor(interceptor).build()
         val request = Request.Builder().url("https://www.google.com").get().build()
         val response = client.newCall(request).execute()

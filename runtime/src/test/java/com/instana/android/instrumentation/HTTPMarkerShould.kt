@@ -12,20 +12,20 @@ import org.junit.Test
 import java.io.IOException
 import java.net.HttpURLConnection
 
-class RemoteCallMarkerShould {
+class HTTPMarkerShould {
 
     private val mockManager = mock<InstanaWorkManager>()
 
     @Test
     fun createMarker() {
-        val remoteCallMarker = RemoteCallMarker(URL, METHOD, mockManager)
+        val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
         assert(remoteCallMarker.headerKey() == ConstantsAndUtil.TRACKING_HEADER_KEY)
     }
 
     @Test
     fun endedWithThrowable() {
-        val remoteCallMarker = RemoteCallMarker(URL, METHOD, mockManager)
-        remoteCallMarker.endedWith(IOException("error"))
+        val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
+        remoteCallMarker.finish(IOException("error"))
         verify(mockManager).send(any<BaseEvent>())
     }
 
@@ -34,8 +34,8 @@ class RemoteCallMarkerShould {
         val mockConnection = mock<HttpURLConnection> {
             on { requestMethod } doReturn METHOD
         }
-        val remoteCallMarker = RemoteCallMarker(URL, METHOD, mockManager)
-        remoteCallMarker.endedWith(mockConnection, IOException("error"))
+        val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
+        remoteCallMarker.finish(mockConnection, IOException("error"))
         verify(mockManager).send(any<BaseEvent>())
     }
 
@@ -45,15 +45,15 @@ class RemoteCallMarkerShould {
             on { requestMethod } doReturn METHOD
             on { responseCode } doReturn 200
         }
-        val remoteCallMarker = RemoteCallMarker(URL, METHOD, mockManager)
-        remoteCallMarker.endedWith(0, 0, mockConnection)
+        val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
+        remoteCallMarker.finish(0, 0, mockConnection)
         verify(mockManager).send(any<BaseEvent>())
     }
 
     @Test
     fun endedWithSuccessAndResponseCode() {
-        val remoteCallMarker = RemoteCallMarker(URL, METHOD, mockManager)
-        remoteCallMarker.endedWith(0, 0, 200)
+        val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
+        remoteCallMarker.finish(0, 0, 200)
         verify(mockManager).send(any<BaseEvent>())
     }
 
@@ -61,40 +61,40 @@ class RemoteCallMarkerShould {
     fun endedWithOkHttpResponse() {
         val response = Response.Builder().protocol(Protocol.HTTP_1_1)
                 .message("bla").request(Request.Builder().url(URL).get().build()).code(200).build()
-        val remoteCallMarker = RemoteCallMarker(URL, METHOD, mockManager)
-        remoteCallMarker.endedWith(response)
+        val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
+        remoteCallMarker.finish(response)
         verify(mockManager).send(any<BaseEvent>())
     }
 
     @Test
     fun endedWithSuccessResponse() {
-        val remoteCallMarker = RemoteCallMarker(URL, METHOD, mockManager)
+        val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
         assertNotNull(remoteCallMarker)
-        remoteCallMarker.endedWith(200)
+        remoteCallMarker.finish(200)
         verify(mockManager).send(any())
         verifyNoMoreInteractions(mockManager)
     }
 
     @Test
     fun endedWithSuccessErrorResponse() {
-        val remoteCallMarker = RemoteCallMarker(URL, METHOD, mockManager)
+        val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
         assertNotNull(remoteCallMarker)
-        remoteCallMarker.endedWith(400)
+        remoteCallMarker.finish(400)
         verify(mockManager).send(any())
         verifyNoMoreInteractions(mockManager)
     }
 
     @Test
     fun canceled() {
-        val remoteCallMarker = RemoteCallMarker(URL, METHOD, mockManager)
+        val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
         assertNotNull(remoteCallMarker)
-        remoteCallMarker.canceled()
+        remoteCallMarker.cancel()
         verifyNoMoreInteractions(mockManager)
     }
 
     @Test
     fun getHeaders() {
-        val remoteCallMarker = RemoteCallMarker(URL, METHOD, mockManager)
+        val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
         assertNotNull(remoteCallMarker)
         assertNotNull(remoteCallMarker.headerKey())
         assert(remoteCallMarker.headerKey().isNotEmpty())
@@ -105,9 +105,9 @@ class RemoteCallMarkerShould {
 
     @Test
     fun endedWithThrownError() {
-        val remoteCallMarker = RemoteCallMarker(URL, METHOD, mockManager)
+        val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
         assertNotNull(remoteCallMarker)
-        remoteCallMarker.endedWith(IOException())
+        remoteCallMarker.finish(IOException())
         verify(mockManager).send(any())
         verifyNoMoreInteractions(mockManager)
     }

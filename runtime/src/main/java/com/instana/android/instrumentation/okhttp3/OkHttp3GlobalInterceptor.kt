@@ -7,7 +7,7 @@ import com.instana.android.core.util.ConstantsAndUtil.hasTrackingHeader
 import com.instana.android.core.util.ConstantsAndUtil.isAutoEnabled
 import com.instana.android.core.util.ConstantsAndUtil.isBlacklistedURL
 import com.instana.android.core.util.ConstantsAndUtil.isNotLibraryCallBoolean
-import com.instana.android.instrumentation.RemoteCallMarker
+import com.instana.android.instrumentation.HTTPMarker
 import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
@@ -31,11 +31,11 @@ class OkHttp3GlobalInterceptor private constructor() : Interceptor {
         val url = intercepted.url().toString()
 
         val request: Request
-        var marker: RemoteCallMarker? = null
+        var marker: HTTPMarker? = null
 
         if (isAutoEnabled && !hasTrackingHeader(header) && !isBlacklistedURL(url)) {
             if (!checkTag(header) && isNotLibraryCallBoolean(url)) {
-                marker = Instana.remoteCallInstrumentation?.markCall(url, intercepted.method())!!
+                marker = Instana.instrumentationService?.markCall(url)!!
                 request = chain.request().newBuilder().header(marker.headerKey(), marker.headerValue()).build()
             } else {
                 request = intercepted
@@ -46,10 +46,10 @@ class OkHttp3GlobalInterceptor private constructor() : Interceptor {
 
         return try {
             val response = chain.proceed(request)
-            marker?.endedWith(response)
+            marker?.finish(response)
             response
         } catch (e: Exception) {
-            marker?.endedWith(request, e)
+            marker?.finish(request, e)
             chain.proceed(chain.request())
         }
     }
