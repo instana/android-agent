@@ -18,6 +18,7 @@ class DemoAppKotlin : Application() {
         Instana.userId = "1234567890"
         Instana.userEmail = "instana@example.com"
         Instana.userName = "instana android agent demo"
+        Instana.meta.put("testKey", "testValue")
         Instana.ignoreURLs.add("""^.*google\.com$""".toRegex())
     }
 }

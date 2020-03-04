@@ -16,6 +16,7 @@ import com.instana.android.core.event.models.Platform
 import com.instana.android.core.event.models.UserProfile
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
+import com.instana.android.core.util.MaxCapacityMap
 import com.instana.android.core.util.RootCheck
 import com.instana.android.crash.CrashEventStore
 import com.instana.android.crash.CrashService
@@ -53,6 +54,11 @@ object Instana {
     @JvmField
     var crashReporting: CrashService? = null
     val ignoreURLs = mutableListOf<Regex>()
+
+    /**
+     * Map of  ID which all new beacons will be associated with
+     */
+    val meta = MaxCapacityMap<String, String>(50)
 
     /**
      * User ID which all new beacons will be associated with

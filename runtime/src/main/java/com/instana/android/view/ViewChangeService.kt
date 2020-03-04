@@ -37,7 +37,8 @@ class ViewChangeService(
             connectionProfile = connectionProfile,
             userProfile = Instana.userProfile,
             sessionId = sessionId,
-            view = viewName
+            view = viewName,
+            meta = Instana.meta.getAll()
         )
 
         manager.send(view)

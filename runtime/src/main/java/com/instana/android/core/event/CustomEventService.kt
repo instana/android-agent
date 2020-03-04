@@ -38,6 +38,8 @@ class CustomEventService(
             Logger.e("Tried send CustomEvent with null sessionId")
             return
         }
+
+        val mergedMeta = Instana.meta.clone().apply { putAll(meta) }
         val connectionProfile = ConnectionProfile(
             carrierName = ConstantsAndUtil.getCarrierName(cm, tm),
             connectionType = ConstantsAndUtil.getConnectionType(cm),
@@ -54,7 +56,7 @@ class CustomEventService(
             startTime = startTime,
             duration = duration,
             name = name,
-            meta = meta
+            meta = mergedMeta.getAll()
         )
         submit(beacon)
     }
