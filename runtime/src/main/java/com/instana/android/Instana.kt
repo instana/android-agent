@@ -39,6 +39,7 @@ object Instana {
 
     internal lateinit var appProfile: AppProfile
     internal lateinit var deviceProfile: DeviceProfile
+    internal val userProfile = UserProfile(null, null, null)
     internal var firstView: String? = null
 
     private var alertService: AlertService? = null
@@ -48,11 +49,37 @@ object Instana {
     @JvmField
     var customEvents: CustomEventService? = null
 
+
     @JvmField
     var crashReporting: CrashService? = null
-
-    val userProfile = UserProfile(null, null, null)
     val ignoreURLs = mutableListOf<Regex>()
+
+    /**
+     * User ID
+     */
+    var userId: String?
+        get() = userProfile.userId
+        set(value) {
+            userProfile.userId = value
+        }
+
+    /**
+     * User name
+     */
+    var userName: String?
+        get() = userProfile.userName
+        set(value) {
+            userProfile.userName = value
+        }
+
+    /**
+     * User email
+     */
+    var userEmail: String?
+        get() = userProfile.userEmail
+        set(value) {
+            userProfile.userEmail = value
+        }
 
     /**
      * Human-readable name of logical view to which beacons will be associated
