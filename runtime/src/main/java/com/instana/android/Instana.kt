@@ -55,7 +55,7 @@ object Instana {
     val ignoreURLs = mutableListOf<Regex>()
 
     /**
-     * User ID
+     * User ID which all new beacons will be associated with
      */
     var userId: String?
         get() = userProfile.userId
@@ -64,7 +64,7 @@ object Instana {
         }
 
     /**
-     * User name
+     * User name which all new beacons will be associated with
      */
     var userName: String?
         get() = userProfile.userName
@@ -73,7 +73,7 @@ object Instana {
         }
 
     /**
-     * User email
+     * User email which all new beacons will be associated with
      */
     var userEmail: String?
         get() = userProfile.userEmail
