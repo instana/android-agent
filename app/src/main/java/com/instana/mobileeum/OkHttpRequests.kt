@@ -18,7 +18,7 @@ object OkHttpRequests {
     fun executeGetSuccess() = executeGet("https://sesandbox-instana.instana.io", false)
     fun executeGetFailure() = executeGet("https://httpstat.us/404", false)
     fun executeGetException() = executeGet("https://httpstat-nonexistingurlhere.us/200", false)
-    fun executeGetCancelled() = executeGetCancelled("https://httpstat.us/200", true)
+    fun executeGetCancelled() = executeGetCancelled("https://httpstat.us/200", false)
 
     private fun executeGet(url: String = "https://httpstat.us/404", enableManual: Boolean): Boolean {
         var tracker: HTTPMarker? = null

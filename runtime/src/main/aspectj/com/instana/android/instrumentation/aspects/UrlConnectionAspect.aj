@@ -21,7 +21,7 @@ import static com.instana.android.core.util.ConstantsAndUtil.isBlacklistedURL;
 import static com.instana.android.core.util.ConstantsAndUtil.isNotLibraryCallBoolean;
 
 public aspect UrlConnectionAspect {
-    private final List<HTTPMarker> remoteMarkers = new LinkedList<>();
+    private final List<HTTPMarker> httpMarkers = new LinkedList<>();
 
     pointcut openConnectionMethodCall(): call(* java.net.URL.openConnection());
     after() returning(HttpURLConnection connection): openConnectionMethodCall() {
@@ -31,7 +31,7 @@ public aspect UrlConnectionAspect {
         if (isAutoEnabled() && !checkTag(header) && isNotLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
             HTTPMarker marker = Instana.startCapture(url);
             connection.setRequestProperty(marker.headerKey(), marker.headerValue());
-            remoteMarkers.add(marker);
+            httpMarkers.add(marker);
         }
     }
 
@@ -42,9 +42,9 @@ public aspect UrlConnectionAspect {
         String url = connection.getURL().toString();
         if (isAutoEnabled() && isNotLibraryCallBoolean(url) && checkTag(header)) {
             try {
-                HTTPMarker marker = findFirst(remoteMarkers, header);
+                HTTPMarker marker = findFirst(httpMarkers, header);
                 marker.finish(connection);
-                remoteMarkers.remove(marker);
+                httpMarkers.remove(marker);
             } catch (NoSuchElementException ignored) {
                 // swallow exception
             }
@@ -79,9 +79,9 @@ public aspect UrlConnectionAspect {
             String url = urlConnection.getURL().toString();
             if (isAutoEnabled() && hasTrackingHeader(header) && isNotLibraryCallBoolean(url) && checkTag(header)) {
                 try {
-                    HTTPMarker marker = findFirst(remoteMarkers, header);
+                    HTTPMarker marker = findFirst(httpMarkers, header);
                     marker.finish(urlConnection, e);
-                    remoteMarkers.remove(marker);
+                    httpMarkers.remove(marker);
                 } catch (NoSuchElementException ignored) {
                     // swallow exception
                 }

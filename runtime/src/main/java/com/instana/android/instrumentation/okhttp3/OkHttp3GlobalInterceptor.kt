@@ -17,12 +17,9 @@ import java.io.IOException
  * This interceptor will be added automatically by plugin and OkHttpAspect
  * Also you can add this interceptor to your OkHttp client builder manually
  */
-class OkHttp3GlobalInterceptor private constructor() : Interceptor {
+object OkHttp3GlobalInterceptor : Interceptor {
 
-    companion object {
-        @JvmField
-        val INSTANCE = OkHttp3GlobalInterceptor()
-    }
+    private val httpMarkers = mutableListOf<HTTPMarker>()
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -36,6 +33,7 @@ class OkHttp3GlobalInterceptor private constructor() : Interceptor {
         if (isAutoEnabled && !hasTrackingHeader(header) && !isBlacklistedURL(url)) {
             if (!checkTag(header) && isNotLibraryCallBoolean(url)) {
                 marker = Instana.startCapture(url)!!
+                httpMarkers.add(marker)
                 request = chain.request().newBuilder().header(marker.headerKey(), marker.headerValue()).build()
             } else {
                 request = intercepted
@@ -47,10 +45,19 @@ class OkHttp3GlobalInterceptor private constructor() : Interceptor {
         return try {
             val response = chain.proceed(request)
             marker?.finish(response)
+            httpMarkers.remove(marker)
             response
         } catch (e: Exception) {
             marker?.finish(request, e)
+            httpMarkers.remove(marker)
             chain.proceed(chain.request())
         }
+    }
+
+    fun cancel(request: Request) {
+        val marker = httpMarkers.firstOrNull { it.headerValue() == request.header(it.headerKey()) }
+            ?: Instana.startCapture(request.url().toString())
+        marker?.cancel()
+        httpMarkers.remove(marker)
     }
 }
