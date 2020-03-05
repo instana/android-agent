@@ -11,9 +11,10 @@ data class DeviceProfile (
     val deviceManufacturer: String,
     val deviceModel: String,
     val deviceHardware: String,
-    val googlePlayServicesAvailable: Boolean,
     val rooted: Boolean,
     val locale: Locale,
     val viewportWidth: Int,
     val viewportHeight: Int
-)
+) {
+    var googlePlayServicesMissing: Boolean? = null
+}

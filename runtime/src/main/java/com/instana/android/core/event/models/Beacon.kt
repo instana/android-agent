@@ -43,7 +43,7 @@ class Beacon private constructor(
         setDeviceManufacturer(deviceProfile.deviceManufacturer)
         setDeviceModel(deviceProfile.deviceModel)
         setDeviceHardware(deviceProfile.deviceHardware)
-        setGooglePlayServicesMissing(deviceProfile.googlePlayServicesAvailable.not())
+        deviceProfile.googlePlayServicesMissing?.run { setGooglePlayServicesMissing(this) }
         setRooted(deviceProfile.rooted)
         setUserLanguages(listOf(deviceProfile.locale))
         setViewportWidth(deviceProfile.viewportWidth)
@@ -299,7 +299,6 @@ class Beacon private constructor(
      * Google Play Services are definitely missing. False indicates that it isn't applicable or that they are installed.
      */
     fun setGooglePlayServicesMissing(value: Boolean) {
-        //TODO this requires 2 pretty heavy dependencies. Do we really need it?
         booleanMap["gpsm"] = value
     }
 

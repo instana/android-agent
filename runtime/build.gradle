@@ -37,10 +37,6 @@ dependencies {
     implementation 'android.arch.work:work-runtime-ktx:1.0.0'
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
 
-    // Check for Google Play Services availability
-    implementation 'com.google.android.gms:play-services-basement:8.4.0'
-    implementation 'com.google.android.gms:play-services-base:8.4.0'
-
     testImplementation 'junit:junit:4.13'
     testImplementation 'androidx.arch.core:core-testing:2.0.1'
     testImplementation 'androidx.test:core:1.2.0'

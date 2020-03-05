@@ -1,6 +1,8 @@
 package com.instana.mobileeum
 
 import android.app.Application
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 
@@ -20,5 +22,6 @@ class DemoAppKotlin : Application() {
         Instana.userName = "instana android agent demo"
         Instana.meta.put("testKey", "testValue")
         Instana.ignoreURLs.add("""^.*google\.com$""".toRegex())
+        Instana.googlePlayServicesMissing = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS
     }
 }

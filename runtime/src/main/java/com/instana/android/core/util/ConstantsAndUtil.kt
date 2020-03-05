@@ -10,8 +10,6 @@ import android.telephony.TelephonyManager
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.annotation.RestrictTo
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.instana.android.Instana
 import com.instana.android.core.event.models.ConnectionType
 import com.instana.android.core.event.models.EffectiveConnectionType
@@ -146,9 +144,5 @@ object ConstantsAndUtil {
         return Instana.ignoreURLs.any {
             it.matches(url) || it.matches(url.removeTrailing("/"))
         }
-    }
-
-    fun isGooglePlayServicesAvailable(context: Context): Boolean {
-        return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS
     }
 }

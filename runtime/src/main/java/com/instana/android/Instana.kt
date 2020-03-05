@@ -88,6 +88,16 @@ object Instana {
         }
 
     /**
+     * Indicate whether Google Play Services are missing or not, so this information is associated with all new beacons
+     */
+    var googlePlayServicesMissing: Boolean?
+        get() = deviceProfile.googlePlayServicesMissing
+        set(value) {
+            deviceProfile.googlePlayServicesMissing = value
+        }
+
+
+    /**
      * Human-readable name of logical view to which beacons will be associated
      */
     var view by Delegates.observable<String?>(null) { _, oldValue, newValue ->
@@ -148,7 +158,6 @@ object Instana {
             deviceManufacturer = Build.MANUFACTURER ?: ConstantsAndUtil.EMPTY_STR,
             deviceModel = Build.MODEL ?: ConstantsAndUtil.EMPTY_STR,
             deviceHardware = Build.HARDWARE,
-            googlePlayServicesAvailable = ConstantsAndUtil.isGooglePlayServicesAvailable(app),
             rooted = RootCheck.isDeviceRooted(),
             locale = Locale.getDefault(),
             viewportWidth = viewportWidthAndHeight.first,
