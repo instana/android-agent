@@ -75,8 +75,8 @@ class MaxCapacityMap<K, V>(
      * Creates a copy of the map, with the same content and maxCapacity
      */
     fun clone(): MaxCapacityMap<K, V> {
-        return MaxCapacityMap<K, V>(maxCapacity).apply {
-            putAll(map)
-        }
+        val newMap = MaxCapacityMap<K, V>(maxCapacity)
+        newMap.putAll(map)
+        return newMap
     }
 }
