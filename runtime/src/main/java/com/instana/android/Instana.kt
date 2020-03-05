@@ -53,6 +53,10 @@ object Instana {
 
     @JvmField
     var crashReporting: CrashService? = null
+
+    /**
+     * List of URLs which will not be tracked by Instana, defined by a list of Regex(Kotlin) or Pattern(Java)
+     */
     val ignoreURLs = mutableListOf<Regex>()
 
     /**
