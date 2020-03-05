@@ -39,12 +39,12 @@ class InstanaWorkManager(
     }
 
     private fun updateQueueItems(queue: Queue<Beacon>) {
-        //TODO handle other user-set values (GooglePlayServicesMissing, ie)
         for (item in queue) {
             Instana.userProfile.userName?.run { item.setUserName(this) }
             Instana.userProfile.userId?.run { item.setUserId(this) }
             Instana.userProfile.userEmail?.run { item.setUserEmail(this) }
             if (item.getView() == null) Instana.firstView?.run { item.setView(this) }
+            if (item.getGooglePlayServicesMissing() == null) Instana.googlePlayServicesMissing?.run { item.setGooglePlayServicesMissing(this) }
             Instana.meta.getAll().forEach {
                 if (item.getMeta(it.key) == null) item.setMeta(it.key, it.value)
             }
