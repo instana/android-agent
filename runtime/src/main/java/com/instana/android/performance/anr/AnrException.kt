@@ -1,4 +1,4 @@
-package com.instana.android.alerts.anr
+package com.instana.android.performance.anr
 
 import com.instana.android.core.util.Logger
 import java.io.ByteArrayOutputStream

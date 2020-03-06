@@ -1,4 +1,4 @@
-package com.instana.android.alerts.anr
+package com.instana.android.performance.anr
 
 /**
  * A [Runnable] which calls [.notifyAll] when run.

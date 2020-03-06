@@ -1,28 +1,25 @@
-package com.instana.android.alerts.mem
+package com.instana.android.performance.mem
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
 import android.content.res.Configuration
 import com.instana.android.Instana
-import com.instana.android.alerts.AlertsConfiguration
+import com.instana.android.performance.PerformanceMonitor
 import com.instana.android.core.InstanaLifeCycle
-import com.instana.android.core.InstanaMonitor
 import com.instana.android.core.util.ConstantsAndUtil
-import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
+import kotlin.properties.Delegates
 
 class LowMemoryMonitor(
     private val app: Application,
-    private val alertsConfiguration: AlertsConfiguration,
     private val lifeCycle: InstanaLifeCycle
-) : ComponentCallbacks2, InstanaMonitor {
+) : ComponentCallbacks2, PerformanceMonitor {
 
-    private var enabled: Boolean = alertsConfiguration.reportingEnabled && alertsConfiguration.lowMemory
-
-    init {
-        if (enabled) {
-            app.registerComponentCallbacks(this)
+    override var enabled by Delegates.observable(false) { _, oldValue, newValue ->
+        when {
+            oldValue == newValue -> Unit
+            newValue -> app.registerComponentCallbacks(this)
+            newValue.not() -> app.unregisterComponentCallbacks(this)
         }
     }
 
@@ -34,10 +31,9 @@ class LowMemoryMonitor(
         // implement if needed info on configuration change
     }
 
-    @SuppressLint("SwitchIntDef")
     override fun onTrimMemory(level: Int) {
         if (level == TRIM_MEMORY_RUNNING_CRITICAL) {
-            val activityName = lifeCycle.activityName ?: EMPTY_STR
+            val activityName = lifeCycle.activityName ?: ""
             sendLowMemoryEvent(activityName)
         }
     }
@@ -60,22 +56,6 @@ class LowMemoryMonitor(
                 "usedMb" to usedInMb.toString()
             )
         )
-    }
-
-    override fun enable() {
-        if (!enabled) {
-            app.registerComponentCallbacks(this)
-        }
-        enabled = true
-        alertsConfiguration.lowMemory = true
-    }
-
-    override fun disable() {
-        if (enabled) {
-            app.unregisterComponentCallbacks(this)
-        }
-        enabled = false
-        alertsConfiguration.lowMemory = false
     }
 
     companion object {

@@ -302,6 +302,10 @@ class Beacon private constructor(
         booleanMap["gpsm"] = value
     }
 
+    fun getGooglePlayServicesMissing(): Boolean? {
+        return booleanMap["gpsm"]
+    }
+
     /**
      * Device screen width in pixels
      *

@@ -2,7 +2,8 @@ package com.instana.android.alerts.mem
 
 import android.content.ComponentCallbacks2
 import com.instana.android.BaseTest
-import com.instana.android.alerts.AlertsConfiguration
+import com.instana.android.performance.PerformanceMonitorConfiguration
+import com.instana.android.performance.mem.LowMemoryMonitor
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyZeroInteractions
@@ -12,7 +13,7 @@ import org.junit.Test
 
 class LowMemoryMonitorShould : BaseTest() {
 
-    private val configuration = AlertsConfiguration(true)
+    private val configuration = PerformanceMonitorConfiguration(true)
 
     @Test
     fun onTrimMemoryCritical() {
@@ -32,7 +33,8 @@ class LowMemoryMonitorShould : BaseTest() {
 
     @Test
     fun enable() {
-        val lowMemoryMonitor = LowMemoryMonitor(app, configuration, mockWorkManager, mockInstanaLifeCycle)
+        val lowMemoryMonitor =
+            LowMemoryMonitor(app, configuration, mockWorkManager, mockInstanaLifeCycle)
         lowMemoryMonitor.enable()
         app.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
         verify(mockWorkManager).send(any())
@@ -42,7 +44,8 @@ class LowMemoryMonitorShould : BaseTest() {
 
     @Test
     fun disable() {
-        val lowMemoryMonitor = LowMemoryMonitor(app, configuration, mockWorkManager, mockInstanaLifeCycle)
+        val lowMemoryMonitor =
+            LowMemoryMonitor(app, configuration, mockWorkManager, mockInstanaLifeCycle)
         lowMemoryMonitor.disable()
         app.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
         verifyZeroInteractions(mockWorkManager)

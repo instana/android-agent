@@ -1,21 +1,41 @@
-package com.instana.android.alerts.frame
+package com.instana.android.performance.frame
 
 import android.os.SystemClock
 import android.view.Choreographer
-import androidx.annotation.VisibleForTesting
 import com.instana.android.Instana
-import com.instana.android.alerts.AlertsConfiguration
+import com.instana.android.performance.PerformanceMonitor
+import com.instana.android.performance.PerformanceMonitorConfiguration
 import com.instana.android.core.InstanaLifeCycle
-import com.instana.android.core.InstanaMonitor
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
+import kotlin.properties.Delegates
 
 class FrameSkipMonitor(
-    private val alertsConfiguration: AlertsConfiguration,
+    private val performanceMonitorConfiguration: PerformanceMonitorConfiguration,
     private val lifeCycle: InstanaLifeCycle,
     private val choreographer: Choreographer = Choreographer.getInstance()
-) : Choreographer.FrameCallback, InstanaMonitor {
+) : Choreographer.FrameCallback, PerformanceMonitor {
 
-    private var enabled: Boolean = alertsConfiguration.reportingEnabled
+    override var enabled by Delegates.observable(false) { _, oldValue, newValue ->
+        when {
+            oldValue == newValue -> Unit
+            newValue -> choreographer.postFrameCallbackDelayed(this,
+                START_DELAY_TIME_MS
+            )
+            newValue.not() -> choreographer.removeFrameCallback(this)
+        }
+    }
+
+    var appInBackground by Delegates.observable(false) { _, oldValue, newValue ->
+        when {
+            oldValue == newValue -> Unit
+            enabled.not() -> Unit
+            newValue.not() -> choreographer.postFrameCallbackDelayed(this,
+                START_DELAY_TIME_MS
+            )
+            newValue -> choreographer.removeFrameCallback(this)
+        }
+    }
+
     private var dipActive: Boolean = false
 
     private var lastFrameTime: Long? = null
@@ -24,16 +44,10 @@ class FrameSkipMonitor(
 
     private var frames = mutableListOf<Long>()
 
-    init {
-        if (enabled) {
-            choreographer.postFrameCallbackDelayed(this, START_DELAY_TIME_MS)
-        }
-    }
-
     override fun doFrame(frameTimeNanos: Long) {
         lastFrameTime = if (lastFrameTime != null) {
             val frameRate = calculateFPS()
-            if (frameRate.toInt() < alertsConfiguration.frameRateDipThreshold) {
+            if (frameRate.toInt() < performanceMonitorConfiguration.frameRateDipThreshold) {
                 frames.add(frameRate)
                 if (!dipActive) {
                     startTime = System.currentTimeMillis()
@@ -80,30 +94,10 @@ class FrameSkipMonitor(
     private fun calculateFPS(): Long {
         val elapsedTime = SystemClock.elapsedRealtime() - lastFrameTime!!
         return if (elapsedTime == 0L) {
-            alertsConfiguration.frameRateDipThreshold.toLong()
+            performanceMonitorConfiguration.frameRateDipThreshold.toLong()
         } else {
             (1000 / elapsedTime)
         }
-    }
-
-    override fun enable() {
-        if (!enabled) {
-            choreographer.postFrameCallbackDelayed(this, START_DELAY_TIME_MS)
-        }
-        enabled = true
-    }
-
-    @VisibleForTesting
-    fun enableWithNoDelay() {
-        enabled = true
-        choreographer.postFrameCallback(this)
-    }
-
-    override fun disable() {
-        if (enabled) {
-            choreographer.removeFrameCallback(this)
-        }
-        enabled = false
     }
 
     companion object {

@@ -5,7 +5,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
 import android.telephony.TelephonyManager
-import com.instana.android.alerts.AlertService
+import com.instana.android.performance.PerformanceService
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.InstanaWorkManager
@@ -43,16 +43,19 @@ object Instana {
     internal val userProfile = UserProfile(null, null, null)
     internal var firstView: String? = null
 
-    private var alertService: AlertService? = null
     private var viewChangeService: ViewChangeService? = null
     internal var instrumentationService: InstrumentationService? = null
-
     @JvmField
     var customEvents: CustomEventService? = null
 
-
     @JvmField
     var crashReporting: CrashService? = null
+
+    /**
+     * Service containing a number of Monitors capable of detecting and transmitting Performance Alerts
+     */
+    var performanceService: PerformanceService? = null
+        private set
 
     /**
      * List of URLs which will not be tracked by Instana, defined by a list of Regex(Kotlin) or Pattern(Java)
@@ -183,7 +186,7 @@ object Instana {
                 tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!
             ) //TODO don't force-cast
             instrumentationService = InstrumentationService(app, it, config)
-            alertService = AlertService(app, config.alerts, lifeCycle!!) //TODO don't force-cast
+            performanceService = PerformanceService(app, config.performanceMonitor, lifeCycle!!) //TODO don't force-cast
             viewChangeService = ViewChangeService(app, it)
         }
     }

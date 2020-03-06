@@ -23,5 +23,9 @@ class DemoAppKotlin : Application() {
         Instana.meta.put("testKey", "testValue")
         Instana.ignoreURLs.add("""^.*google\.com$""".toRegex())
         Instana.googlePlayServicesMissing = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS
+
+        Instana.performanceService?.anrMonitor?.enabled = true
+        Instana.performanceService?.frameSkipMonitor?.enabled = true
+        Instana.performanceService?.lowMemoryMonitor?.enabled = true
     }
 }

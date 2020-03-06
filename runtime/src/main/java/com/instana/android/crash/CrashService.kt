@@ -3,7 +3,6 @@ package com.instana.android.crash
 import android.app.Application
 import android.util.Log
 import com.instana.android.core.InstanaConfig
-import com.instana.android.core.InstanaMonitor
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.EventFactory
 import com.instana.android.core.util.ConstantsAndUtil.getAppVersionNameAndVersionCode
@@ -19,7 +18,7 @@ class CrashService(
     private val manager: InstanaWorkManager,
     private val config: InstanaConfig,
     defaultThreadHandler: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler()
-) : InstanaMonitor {
+) {
 
     private var breadCrumbs: Queue<String> = LinkedBlockingDeque()
     private var handler: ExceptionHandler? = null
@@ -33,17 +32,6 @@ class CrashService(
         } else {
             handler?.disable()
         }
-    }
-
-    override fun enable() {
-        config.enableCrashReporting = true
-        handler?.enable()
-    }
-
-    override fun disable() {
-        config.enableCrashReporting = false
-        handler?.disable()
-        breadCrumbs.clear()
     }
 
     fun changeBufferSize(size: Int) {

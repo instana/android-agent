@@ -3,7 +3,6 @@ package com.instana.android.core.event
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import com.instana.android.Instana
-import com.instana.android.core.InstanaMonitor
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
@@ -14,23 +13,7 @@ class CustomEventService(
     private val manager: InstanaWorkManager,
     private val cm: ConnectivityManager,
     private val tm: TelephonyManager
-) : InstanaMonitor {
-
-    private var enabled: Boolean = true
-
-    override fun enable() {
-        enabled = true
-    }
-
-    override fun disable() {
-        enabled = false
-    }
-
-    private fun submit(beacon: Beacon) {
-        if (enabled) {
-            manager.send(beacon)
-        }
-    }
+) {
 
     fun submit(name: String, startTime: Long, duration: Long, meta: Map<String, String>) {
         val sessionId = Instana.sessionId
@@ -58,6 +41,7 @@ class CustomEventService(
             name = name,
             meta = mergedMeta.getAll()
         )
-        submit(beacon)
+
+        manager.send(beacon)
     }
 }
