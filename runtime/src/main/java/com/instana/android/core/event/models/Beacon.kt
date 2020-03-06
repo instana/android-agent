@@ -490,9 +490,9 @@ class Beacon private constructor(
 
     @VisibleForTesting
     private fun String.escape(): String =
-        replace("""\\""", """\\\\""")
-            .replace("""\n""", """\\n""")
-            .replace("""\t""", """\\t""")
+        replace("\\", "\\\\")
+            .replace("\n", "\\n")
+            .replace("\t", "\\t")
 
     companion object {
         fun newSessionStart(
