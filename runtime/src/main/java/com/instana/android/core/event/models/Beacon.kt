@@ -36,6 +36,7 @@ class Beacon private constructor(
         // App
         setAppVersion(appProfile.appVersion)
         setAppBuild(appProfile.appBuild)
+        appProfile.appId?.run { setBundleIdentifier(this) }
 
         // Device
         setPlatform(deviceProfile.platform)
@@ -212,7 +213,6 @@ class Beacon private constructor(
      * (e.g. .test or .dev).
      */
     fun setBundleIdentifier(@Size(max = 128) value: String) {
-        //TODO is this meant to be set automatically by the agent (accessing the info in the app) or set by the developer?
         stringMap["bi"] = value
     }
 

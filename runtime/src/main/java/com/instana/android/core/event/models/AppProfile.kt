@@ -3,7 +3,9 @@
  */
 package com.instana.android.core.event.models
 
-data class AppProfile (
+data class AppProfile(
     val appVersion: String,
     val appBuild: String
-)
+) {
+    var appId: String? = null
+}

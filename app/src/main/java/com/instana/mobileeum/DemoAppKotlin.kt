@@ -17,6 +17,7 @@ class DemoAppKotlin : Application() {
                 key = "REPLACE_WITH_YOUR_INSTANA_KEY"
             )
         )
+        Instana.applicationId = BuildConfig.APPLICATION_ID
         Instana.userId = "1234567890"
         Instana.userEmail = "instana@example.com"
         Instana.userName = "instana android agent demo"

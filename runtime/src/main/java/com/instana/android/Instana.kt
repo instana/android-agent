@@ -52,6 +52,19 @@ object Instana {
     var crashReporting: CrashService? = null
 
     /**
+     * Application ID ("Bundle ID" in Instana dashboard) which all new beacons will be associated with
+     *
+     * Uniquely identifies each app. To avoid conflicts, developers should use reverse domain name notation for choosing an app's bundle identifier
+     * (e.g. com.instana.demoapp.android). The bundle identifier can contain a suffix for the staging environment
+     * (e.g. .test or .dev).
+     */
+    var applicationId: String?
+        get() = appProfile.appId
+        set(value) {
+            appProfile.appId = value
+        }
+
+    /**
      * Service containing a number of Monitors capable of detecting and transmitting Performance Alerts
      */
     var performanceService: PerformanceService? = null
@@ -186,7 +199,7 @@ object Instana {
                 tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!
             ) //TODO don't force-cast
             instrumentationService = InstrumentationService(app, it, config)
-            performanceService = PerformanceService(app, config.performanceMonitor, lifeCycle!!) //TODO don't force-cast
+            performanceService = PerformanceService(app, config.performanceMonitorConfig, lifeCycle!!) //TODO don't force-cast
             viewChangeService = ViewChangeService(app, it)
         }
     }

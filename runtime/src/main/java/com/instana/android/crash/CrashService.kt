@@ -34,12 +34,6 @@ class CrashService(
         }
     }
 
-    fun changeBufferSize(size: Int) {
-        // TODO should this not just remove the first X elements (if necessary)?
-        config.breadcrumbsBufferSize = size
-        breadCrumbs.clear()
-    }
-
     fun leave(breadCrumb: String) {
         breadCrumbs.add(breadCrumb)
         if (breadCrumbs.size > config.breadcrumbsBufferSize) {

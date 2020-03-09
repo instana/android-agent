@@ -9,10 +9,12 @@ class InstanaConfig
     val key: String,
     var httpCaptureConfig: HTTPCaptureConfig = HTTPCaptureConfig.AUTO,
 
+    var applicationId: String? = null,
     var suspendReportingReporting: SuspendReportingType = SuspendReportingType.LOW_BATTERY_AND_CELLULAR_CONNECTION,
-    var enableCrashReporting: Boolean = false,
-    var performanceMonitor: PerformanceMonitorConfiguration = PerformanceMonitorConfiguration(),
-    var eventsBufferSize: Int = 1, // TODO find good value
-    var breadcrumbsBufferSize: Int = 20,
+    var performanceMonitorConfig: PerformanceMonitorConfiguration = PerformanceMonitorConfiguration(),
     var initialBeaconDelay: Long = 5
-)
+) {
+    val enableCrashReporting: Boolean = false
+    val eventsBufferSize: Int = 1 // TODO find good value
+    val breadcrumbsBufferSize: Int = 20
+}
