@@ -45,8 +45,7 @@ object Instana {
 
     private var viewChangeService: ViewChangeService? = null
     internal var instrumentationService: InstrumentationService? = null
-    @JvmField
-    var customEvents: CustomEventService? = null
+    internal var customEvents: CustomEventService? = null
 
     @JvmField
     var crashReporting: CrashService? = null
