@@ -87,7 +87,7 @@ class CrashService(
     }
 
     private fun getAppThreads(): Array<Thread?> {
-        val rootGroup = currentThread().threadGroup
+        val rootGroup = currentThread().threadGroup ?: return emptyArray()
 
         var threadList = arrayOfNulls<Thread>(rootGroup.activeCount())
         while (rootGroup.enumerate(threadList, false) == threadList.size) {
