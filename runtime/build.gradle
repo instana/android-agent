@@ -3,6 +3,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.archinamon.aspectj'
 apply plugin: 'digital.wup.android-maven-publish'
 
+version '0.9'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -31,6 +33,11 @@ android {
     }
 }
 
+repositories {
+    google()
+    jcenter()
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -53,7 +60,7 @@ publishing {
         mavenAar(MavenPublication) {
             groupId = 'com.instana.android'
             artifactId = 'android-agent'
-            version = '0.2.1-SNAPSHOT'
+            version = "$version"
 
             from components.android
         }

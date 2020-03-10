@@ -1,0 +1,36 @@
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'groovy'
+apply plugin: 'maven-publish'
+
+group 'com.instana.android'
+version '1.0.0'
+
+compileGroovy {
+    sourceCompatibility = '1.6'
+    targetCompatibility = '1.6'
+}
+
+repositories {
+    google()
+    jcenter()
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation "com.android.tools.build:gradle:$buildtools_version"
+    implementation "com.android.tools.build:gradle-api:$buildtools_version"
+
+    runtime "com.archinamon:android-gradle-aspectj:$aspectj_version"
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId "$group"
+            artifactId 'plugin'
+            version "$version"
+            artifact jar
+        }
+    }
+}

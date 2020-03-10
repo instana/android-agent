@@ -1,2 +1,3 @@
 include ':app', ':runtime'
 rootProject.name='android-agent'
+include ':plugin'

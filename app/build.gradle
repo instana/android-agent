@@ -1,12 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.archinamon.aspectj'
-
-aspectj {
-    debugInfo true
-    includeAspectsFromJar 'runtime'
-}
+apply plugin: 'com.instana.android.plugin'
 
 android {
     compileSdkVersion 29
@@ -48,6 +43,9 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+
+    implementation 'com.instana.android:android-agent:0.9'
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
@@ -61,5 +59,4 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testImplementation 'junit:junit:4.12'
-    implementation project(path: ':runtime')
 }
