@@ -95,9 +95,9 @@ class HTTPMarker(
             return
         }
 
-        val method = response.request().method()
-        val requestSize = response.request().body()?.contentLength()
-        val encodedResponseSize = response.body()?.contentLength()
+        val method = response.request.method
+        val requestSize = response.request.body?.contentLength()
+        val encodedResponseSize = response.body?.contentLength()
         val decodedResponseSize = response.decodedContentLength()
 
         val beacon = Beacon.newHttpRequest(
@@ -112,7 +112,7 @@ class HTTPMarker(
             duration = stopWatch.totalTimeMillis,
             method = method,
             url = url,
-            responseCode = response.code(),
+            responseCode = response.code,
             requestSizeBytes = requestSize,
             encodedResponseSizeBytes = encodedResponseSize,
             decodedResponseSizeBytes = decodedResponseSize,
@@ -134,8 +134,8 @@ class HTTPMarker(
             return
         }
 
-        val method = request.method()
-        val requestSize = request.body()?.contentLength()
+        val method = request.method
+        val requestSize = request.body?.contentLength()
 
         val beacon = Beacon.newHttpRequest(
             appKey = Instana.config.key,

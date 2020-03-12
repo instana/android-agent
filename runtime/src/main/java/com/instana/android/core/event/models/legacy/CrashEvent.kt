@@ -13,12 +13,12 @@ class CrashEvent(var crash: CrashPayload) : BaseEvent() {
         sessionId.let { sb.append("sid\t$it\n") }
         sb.append("bid\t${UUID.randomUUID()}\n")
 
-        crash.appVersion?.let { sb.append("p\t$it\n") } //TODO
-        crash.appBuildNumber?.let { sb.append("p\t$it\n") } //TODO
-        crash.type?.let { sb.append("p\t$it\n") } //TODO
-        crash.breadCrumbs?.let { sb.append("p\t$it\n") } //TODO
-        crash.report?.let { sb.append("p\t$it\n") } //TODO
-        crash.threadsDump?.let { sb.append("p\t$it\n") } //TODO
+        crash.appVersion.let { sb.append("p\t$it\n") } //TODO
+        crash.appBuildNumber.let { sb.append("p\t$it\n") } //TODO
+        crash.type.let { sb.append("p\t$it\n") } //TODO
+        crash.breadCrumbs.let { sb.append("p\t$it\n") } //TODO
+        crash.report.let { sb.append("p\t$it\n") } //TODO
+        crash.threadsDump.let { sb.append("p\t$it\n") } //TODO
 
         sb.append("ti\t${System.currentTimeMillis()}\n")
         sb.append("k\t${Instana.config.key}\n")

@@ -3,15 +3,17 @@ package com.instana.mobileeum
 import com.instana.android.Instana
 import com.instana.android.instrumentation.HTTPMarker
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 object OkHttpRequests {
 
     private const val TAG = "OkHttpRequests"
 
-    private val contentType = MediaType.get("application/json; charset=utf-8")
+    private val contentType = "application/json; charset=utf-8".toMediaType()
     private val okHttpClient = OkHttpClient.Builder().build()
 
     fun executeGetIgnored() = executeGet("https://www.google.com", false)
@@ -74,7 +76,7 @@ object OkHttpRequests {
         json: String = """{"name": "morpheus","job": "leader"}""",
         enableManual: Boolean
     ): Boolean {
-        val body = RequestBody.create(contentType, json)
+        val body = json.toRequestBody(contentType)
         var tracker: HTTPMarker? = null
         if (enableManual) {
             tracker = Instana.startCapture(url)
@@ -121,7 +123,7 @@ object OkHttpRequests {
         json: String = """{"name": "morpheus","job": "zion resident"}""",
         enableManual: Boolean
     ): Boolean {
-        val body = RequestBody.create(contentType, json)
+        val body = json.toRequestBody(contentType)
         var tracker: HTTPMarker? = null
         if (enableManual) {
             tracker = Instana.startCapture(url)

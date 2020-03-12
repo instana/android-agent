@@ -8,8 +8,10 @@ import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 import com.instana.android.crash.CrashEventStore
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -45,7 +47,7 @@ open class EventWorker(
                 .url(Instana.config.reportingURL)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Accept-Encoding", "gzip")
-                .post(RequestBody.create(TEXT_PLAIN, it!!))
+                .post(it!!.toRequestBody(TEXT_PLAIN))
                 .build()
         }
 
@@ -55,7 +57,7 @@ open class EventWorker(
                 Result.failure()
             }
             response = ConstantsAndUtil.client.newCall(request!!).execute()
-            if (response.code() == HttpURLConnection.HTTP_OK) {
+            if (response.code == HttpURLConnection.HTTP_OK) {
                 Result.success()
             } else {
                 Result.failure()
@@ -99,8 +101,8 @@ open class EventWorker(
             .addTag(tag)
             .build()
 
-        val JSON = MediaType.parse("application/json; charset=utf-8")
-        val TEXT_PLAIN = MediaType.parse("text/plain; charset=utf-8")
+        val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
+        val TEXT_PLAIN = "text/plain; charset=utf-8".toMediaTypeOrNull()
 
         const val EVENT_JSON_STRING = "event_string"
     }

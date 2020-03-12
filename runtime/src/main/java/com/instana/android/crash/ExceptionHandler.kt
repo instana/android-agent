@@ -26,7 +26,7 @@ class ExceptionHandler(
         }
     }
 
-    override fun uncaughtException(thread: Thread?, throwable: Throwable?) {
+    override fun uncaughtException(thread: Thread, throwable: Throwable) {
         if (Looper.getMainLooper().thread === Thread.currentThread()) {
             crashService.submitCrash(thread, throwable)
         } else {
