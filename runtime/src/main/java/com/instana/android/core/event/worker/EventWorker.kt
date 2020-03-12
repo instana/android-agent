@@ -35,10 +35,6 @@ open class EventWorker(
             Logger.e("crash")
             eventsJson = CrashEventStore.serialized
             CrashEventStore.clear()
-        } else {
-            eventsJson?.let {
-                Logger.e(it)
-            }
         }
 
         var request: Request?
