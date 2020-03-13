@@ -214,6 +214,8 @@ class HTTPMarker(
         }
 
         val method = connection.requestMethod
+        val responseCode = connection.responseCodeOrNull()
+        val errorMessage = error.message
 
         val beacon = Beacon.newHttpRequest(
             appKey = Instana.config.key,
@@ -227,12 +229,12 @@ class HTTPMarker(
             duration = stopWatch.totalTimeMillis,
             method = method,
             url = url,
-            responseCode = connection.responseCode,
+            responseCode = responseCode,
             requestSizeBytes = null,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
             backendTraceId = getBackendTraceId(connection),
-            error = error.message
+            error = errorMessage
         )
 
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
