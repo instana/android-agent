@@ -14,5 +14,5 @@ class PerformanceMonitorConfiguration
      *
      * Defined in Frames per second
      */
-    val frameRateDipThreshold: Int = 20
+    val frameRateDipThreshold: Int = 15
 )
