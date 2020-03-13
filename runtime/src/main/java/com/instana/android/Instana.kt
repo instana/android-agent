@@ -46,9 +46,7 @@ object Instana {
     private var viewChangeService: ViewChangeService? = null
     internal var instrumentationService: InstrumentationService? = null
     internal var customEvents: CustomEventService? = null
-
-    @JvmField
-    var crashReporting: CrashService? = null
+    internal var crashReporting: CrashService? = null
 
     /**
      * Application ID ("Bundle ID" in Instana dashboard) which all new beacons will be associated with
