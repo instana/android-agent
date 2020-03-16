@@ -13,8 +13,8 @@ class DemoApp : Application() {
         Instana.setup(
             this,
             InstanaConfig(
-                reportingURL = "REPLACE_WITH_YOUR_INSTANA_REPORTING_URL",
-                key = "REPLACE_WITH_YOUR_INSTANA_KEY"
+                reportingURL = BuildConfig.INSTANA_REPORTING_URL,
+                key = BuildConfig.INSTANA_KEY
             )
         )
         Instana.applicationId = BuildConfig.APPLICATION_ID

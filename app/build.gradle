@@ -12,6 +12,12 @@ android {
         versionName "5.0"
         versionCode 1
         vectorDrawables.useSupportLibrary = true
+
+        def instanaProperties = new Properties()
+        instanaProperties.load(new FileInputStream("$project.projectDir/instana.properties"))
+        buildConfigField 'String', 'INSTANA_KEY', "${instanaProperties["instana.key"]}"
+        buildConfigField 'String', 'INSTANA_REPORTING_URL', "${instanaProperties["instana.reportingURL"]}"
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
