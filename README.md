@@ -71,6 +71,14 @@ class MyApplication : Application() {
 }
 ```
 
+### Supported network clients
+
+Instana Android Agent is currently capable of automatically tracking events for the following network clients:
+- [OkHttp3](https://github.com/square/okhttp/)
+- [HttpURLConnection](https://developer.android.com/reference/java/net/HttpURLConnection)
+
+You can use *manual tracking* to add support for any client yourself, or please consider [contributing](#contributing) to the project.
+
 ### Additional configuration settings
 
 The configuration described in `Step 3` is the minimum configuration you must provide to Instana Agent to function. 
@@ -84,6 +92,18 @@ Please check for additional options in the [Android API documentation](https://d
 - `app`: demo app covering (most of) the usage scenarios of the Agent 
 - `plugin`: gradle plugin to simplify configuration for apps
 - `runtime`: weaving logic, instrumentation, beacon handling, ...
+
+### Configure `app`
+
+Replace the placeholders in `app/instana.properties` with your Instana *app key* and your *reporting url*. If you don't have any, please [create a Trial account](https://www.instana.com/trial/)
+
+Review and tweak Instana configuration in `app/src/main/java/com/instana/mobileeum/DemoApp.kt`.
+
+### Build types
+
+The `app` module currently has 2 build types:
+- `debug`: debuggable, allows the use of user certificates installed in your device to proxy all request/responses (both encrypted and unencrypted)
+- `release`: obfuscated and shrunk using R8
 
 ### Compile
 
