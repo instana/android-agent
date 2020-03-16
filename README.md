@@ -95,7 +95,7 @@ Please check for additional options in the [Android API documentation](https://d
 
 ### Configure `app`
 
-Replace the placeholders in `app/instana.properties` with your Instana *app key* and your *reporting url*. If you don't have any, please [create a Trial account](https://www.instana.com/trial/)
+Copy `app/instana.properties.example` to `app/instana.properties` and replace the placeholders in `app/instana.properties` with your Instana *app key* and your *reporting url*. If you don't have any Instana credentials, please [create a Trial account](https://www.instana.com/trial/)
 
 Review and tweak Instana configuration in `app/src/main/java/com/instana/mobileeum/DemoApp.kt`.
 
