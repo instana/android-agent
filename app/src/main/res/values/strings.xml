@@ -1,3 +1,18 @@
 <resources>
-  <string name="app_name">MobileEum</string>
+    <string name="app_name">Instana Demo</string>
+
+    <!-- Navigation -->
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_okhttp3">OkHttp3</string>
+    <string name="title_httpurlconnection">HttpURLConnection</string>
+    <string name="title_performance">Performance</string>
+
+    <!-- Request -->
+    <string name="request_parameters">Request parameters</string>
+    <string name="request_method">method</string>
+    <string name="request_url">URL</string>
+    <string name="request_body">body</string>
+    <string name="request_run">Run request</string>
+
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin scelerisque tincidunt tincidunt. Praesent fringilla massa in dolor accumsan, id scelerisque ipsum placerat. Donec condimentum nibh ac enim accumsan lacinia. Phasellus dignissim augue non purus laoreet posuere. Praesent commodo eleifend volutpat. Duis ut lobortis nisl. Sed rutrum sit amet tellus at cursus. Mauris cursus odio sed nibh dignissim vehicula. Fusce viverra lobortis ullamcorper.\nNunc sit amet diam dictum, pulvinar augue at, condimentum metus. Pellentesque laoreet efficitur lacus, nec tristique ante auctor nec. Mauris hendrerit accumsan mattis. Curabitur sodales orci nec tellus mollis, a maximus leo iaculis. Praesent at ornare nibh, eget pulvinar lorem. Morbi laoreet eros quis urna sodales, in ultrices sem facilisis. Morbi posuere, lectus eu maximus fermentum, urna quam ultrices lorem, quis elementum leo enim sollicitudin nisl.</string>
 </resources>

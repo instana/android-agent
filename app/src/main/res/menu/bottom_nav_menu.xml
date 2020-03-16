@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_okhttp3"
+        android:icon="@drawable/ic_okhttp3_black_24dp"
+        android:title="@string/title_okhttp3" />
+
+    <item
+        android:id="@+id/navigation_httpurlconnection"
+        android:icon="@drawable/ic_java_black_24dp"
+        android:title="@string/title_httpurlconnection" />
+
+    <item
+        android:id="@+id/navigation_performance"
+        android:icon="@drawable/ic_timer_black_24dp"
+        android:title="@string/title_performance" />
+
+</menu>

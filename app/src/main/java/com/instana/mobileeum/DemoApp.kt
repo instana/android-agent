@@ -6,7 +6,7 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 
-class DemoAppKotlin : Application() {
+class DemoApp : Application() {
 
     override fun onCreate() {
         super.onCreate()

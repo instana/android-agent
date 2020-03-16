@@ -1,15 +1,17 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.akaita.android.easylauncher'
 apply plugin: 'com.instana.android.plugin'
 
 android {
     compileSdkVersion 29
 
     defaultConfig {
-        minSdkVersion 24
-        versionName "4.3"
-        versionCode 600
+        minSdkVersion 16
+        versionName "5.0"
+        versionCode 1
+        vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -35,28 +37,58 @@ android {
         }
         release {
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
     }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'android.arch.work:work-runtime-ktx:1.0.1'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.navigation:navigation-fragment:2.2.1'
+    implementation 'androidx.navigation:navigation-ui:2.2.1'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.2.1'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.2.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.3.1'
+
+    // Instana Agent
     implementation 'com.instana.android:android-agent:0.9'
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
-    implementation 'android.arch.work:work-runtime-ktx:1.0.0'
-
     // Check for Google Play Services availability
-    implementation 'com.google.android.gms:play-services-basement:8.4.0'
-    implementation 'com.google.android.gms:play-services-base:8.4.0'
+    implementation 'com.google.android.gms:play-services-basement:17.1.1'
+    implementation 'com.google.android.gms:play-services-base:17.1.0'
 
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
+}
+
+easylauncher {
+    foregroundIconNames "@mipmap/ic_launcher_foreground"
+    buildTypes {
+        debug {
+            filters = greenRibbonFilter()
+        }
+        release {
+            filters = blueRibbonFilter()
+        }
+    }
 }
