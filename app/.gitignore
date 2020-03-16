@@ -1,3 +1,6 @@
 # Gradle files
 .gradle/
 build/
+
+# Private Instana credentials file
+instana.properties
