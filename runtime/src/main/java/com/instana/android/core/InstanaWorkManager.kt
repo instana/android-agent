@@ -33,7 +33,7 @@ class InstanaWorkManager(
             updateQueueItems(eventQueue)
             startPeriodicEventDump(10, TimeUnit.SECONDS)
             isInitialDelayComplete = true
-        }, config.initialBeaconDelay, TimeUnit.SECONDS)
+        }, config.initialBeaconDelayMs, TimeUnit.MILLISECONDS)
 
         addUnsentCrashesToQueue()
     }
