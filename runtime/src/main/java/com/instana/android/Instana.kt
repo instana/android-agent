@@ -5,7 +5,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
 import android.telephony.TelephonyManager
-import com.instana.android.performance.PerformanceService
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.InstanaWorkManager
@@ -22,6 +21,7 @@ import com.instana.android.crash.CrashEventStore
 import com.instana.android.crash.CrashService
 import com.instana.android.instrumentation.HTTPMarker
 import com.instana.android.instrumentation.InstrumentationService
+import com.instana.android.performance.PerformanceService
 import com.instana.android.session.SessionService
 import com.instana.android.view.ViewChangeService
 import java.util.*
@@ -47,19 +47,6 @@ object Instana {
     internal var instrumentationService: InstrumentationService? = null
     internal var customEvents: CustomEventService? = null
     internal var crashReporting: CrashService? = null
-
-    /**
-     * Application ID ("Bundle ID" in Instana dashboard) which all new beacons will be associated with
-     *
-     * Uniquely identifies each app. To avoid conflicts, developers should use reverse domain name notation for choosing an app's bundle identifier
-     * (e.g. com.instana.demoapp.android). The bundle identifier can contain a suffix for the staging environment
-     * (e.g. .test or .dev).
-     */
-    var applicationId: String?
-        get() = appProfile.appId
-        set(value) {
-            appProfile.appId = value
-        }
 
     /**
      * Service containing a number of Monitors capable of detecting and transmitting Performance Alerts
@@ -182,7 +169,8 @@ object Instana {
         )
         appProfile = AppProfile(
             appVersion = appAndBuildVersion.first,
-            appBuild = appAndBuildVersion.second
+            appBuild = appAndBuildVersion.second,
+            appId = app.packageName
         )
     }
 

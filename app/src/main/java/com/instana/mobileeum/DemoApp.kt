@@ -17,7 +17,6 @@ class DemoApp : Application() {
                 key = BuildConfig.INSTANA_KEY
             )
         )
-        Instana.applicationId = BuildConfig.APPLICATION_ID
         Instana.userId = "1234567890"
         Instana.userEmail = "instana@example.com"
         Instana.userName = "instana android agent demo"
