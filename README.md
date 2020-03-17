@@ -4,7 +4,7 @@
 
 ### Before beginning
 
-Make sure that the Google, Maven Central and JCenter's Maven repositories are included in you project-level `buil.gradle` file:
+Make sure that the Google, Maven Central and JCenter's Maven repositories are included in your project-level `build.gradle` file:
 
 ```groovy
 buildscript {
@@ -47,7 +47,6 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'digital.wup:android-maven-publish:3.6.2'
         classpath "com.instana.android:plugin:1.0.0"
     }
 }
@@ -55,7 +54,7 @@ buildscript {
 
 ### 3. Initialize Instana Agent when your app starts
 
-In your class extending `Application`, replacing `YOUR_REPORTING_URL` and `YOUR_APP_KEY` with the configuration values you'll find in your Instana Dashboard:
+In your class extending `Application`, replace `YOUR_REPORTING_URL` and `YOUR_APP_KEY` with the configuration values you'll find in your Instana Dashboard:
 ```kotlin
 class MyApplication : Application() {
     override fun onCreate() {
