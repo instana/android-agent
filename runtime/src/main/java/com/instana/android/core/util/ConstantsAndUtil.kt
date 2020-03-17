@@ -24,7 +24,7 @@ object ConstantsAndUtil {
 
     const val OS_TYPE = "android"
 
-    const val TRACKING_HEADER_KEY = "X-INSTANA-T"
+    const val TRACKING_HEADER_KEY = "X-INSTANA-ANDROID"
 
     val runtime: Runtime by lazy {
         Runtime.getRuntime()
