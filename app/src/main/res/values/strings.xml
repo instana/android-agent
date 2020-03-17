@@ -2,7 +2,6 @@
     <string name="app_name">Instana Demo</string>
 
     <!-- Navigation -->
-    <string name="title_activity_main">MainActivity</string>
     <string name="title_okhttp3">OkHttp3</string>
     <string name="title_httpurlconnection">HttpURLConnection</string>
     <string name="title_performance">Performance</string>

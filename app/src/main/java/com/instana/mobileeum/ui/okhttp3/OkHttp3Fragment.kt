@@ -43,7 +43,7 @@ class OkHttp3Fragment : Fragment() {
         okHttp3ViewModel.presets.observe(viewLifecycleOwner, Observer { list ->
             presets = list
             val spinnerOptions = list.map { it.name }.toMutableList().apply { add("CUSTOM") }
-            root.requestPresets.adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1, spinnerOptions)
+            root.requestPresets.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, spinnerOptions)
         })
         root.requestPresets.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) {}

@@ -36,7 +36,7 @@ class Beacon private constructor(
         // App
         setAppVersion(appProfile.appVersion)
         setAppBuild(appProfile.appBuild)
-        appProfile.appId?.run { setBundleIdentifier(this) }
+        setBundleIdentifier(appProfile.appId)
 
         // Device
         setPlatform(deviceProfile.platform)
@@ -121,7 +121,7 @@ class Beacon private constructor(
     }
 
     /**
-     * An unique UUID for each beaon.
+     * An unique UUID for each beacon.
      */
     fun setBeaconId(@Size(min = 1, max = 128) value: String) {
         stringMap["bid"] = value

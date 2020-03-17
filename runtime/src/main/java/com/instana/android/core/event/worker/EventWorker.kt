@@ -7,10 +7,8 @@ import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 import com.instana.android.crash.CrashEventStore
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
