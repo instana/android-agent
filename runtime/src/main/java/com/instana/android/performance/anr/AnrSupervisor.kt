@@ -1,6 +1,6 @@
 package com.instana.android.performance.anr
 
-import com.instana.android.performance.PerformanceMonitorConfiguration
+import com.instana.android.performance.PerformanceMonitorConfig
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -11,7 +11,7 @@ import java.util.concurrent.Executors
  */
 class AnrSupervisor
 internal constructor(
-    performanceMonitorConfiguration: PerformanceMonitorConfiguration,
+    performanceMonitorConfig: PerformanceMonitorConfig,
     callback: AnrCallback
 ) {
 
@@ -19,7 +19,7 @@ internal constructor(
      * The [AnrSupervisorRunnable] running on a separate thread
      */
     private val supervisor: AnrSupervisorRunnable =
-        AnrSupervisorRunnable(performanceMonitorConfiguration, callback)
+        AnrSupervisorRunnable(performanceMonitorConfig, callback)
 
     /**
      * The [ExecutorService] checking the UI thread

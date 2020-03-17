@@ -2,18 +2,18 @@ package com.instana.android.performance.anr
 
 import com.instana.android.Instana
 import com.instana.android.performance.PerformanceMonitor
-import com.instana.android.performance.PerformanceMonitorConfiguration
+import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
 import com.instana.android.core.util.stackTraceAsString
 import kotlin.properties.Delegates
 
 class ANRMonitor(
-    performanceMonitorConfiguration: PerformanceMonitorConfiguration,
+    performanceMonitorConfig: PerformanceMonitorConfig,
     private val lifeCycle: InstanaLifeCycle
 ) : AnrSupervisor.AnrCallback, PerformanceMonitor {
 
-    private val anrSupervisor = AnrSupervisor(performanceMonitorConfiguration, this)
+    private val anrSupervisor = AnrSupervisor(performanceMonitorConfig, this)
 
     override var enabled by Delegates.observable(false) { _, oldValue, newValue ->
         when {

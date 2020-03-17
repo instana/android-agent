@@ -8,7 +8,7 @@ import com.instana.android.core.InstanaLifeCycle
 
 class PerformanceService(
     app: Application,
-    performanceMonitorConfiguration: PerformanceMonitorConfiguration,
+    performanceMonitorConfig: PerformanceMonitorConfig,
     lifeCycle: InstanaLifeCycle
 ) : InstanaLifeCycle.AppStateCallback {
 
@@ -22,13 +22,13 @@ class PerformanceService(
      * Monitors FrameSkip events
      */
     val frameSkipMonitor: PerformanceMonitor =
-        FrameSkipMonitor(performanceMonitorConfiguration, lifeCycle)
+        FrameSkipMonitor(performanceMonitorConfig, lifeCycle)
 
     /**
      * Monitors ANR events
      */
     val anrMonitor: PerformanceMonitor =
-        ANRMonitor(performanceMonitorConfiguration, lifeCycle)
+        ANRMonitor(performanceMonitorConfig, lifeCycle)
 
     init {
         lifeCycle.registerCallback(this)

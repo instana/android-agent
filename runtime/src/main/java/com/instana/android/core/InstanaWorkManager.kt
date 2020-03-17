@@ -71,7 +71,7 @@ class InstanaWorkManager(
         val networkType: NetworkType
         val lowBattery: Boolean
 
-        when (instanaConfig.suspendReportingReporting) {
+        when (instanaConfig.suspendReporting) {
             SuspendReportingType.NEVER -> {
                 networkType = NetworkType.CONNECTED
                 lowBattery = false

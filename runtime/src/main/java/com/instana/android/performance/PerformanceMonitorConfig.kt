@@ -1,6 +1,6 @@
 package com.instana.android.performance
 
-class PerformanceMonitorConfiguration
+class PerformanceMonitorConfig
 @JvmOverloads constructor(
     /**
      * A `ANR` alert will be triggered whenever the app is unresponsive above the threshold.

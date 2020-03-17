@@ -2,7 +2,7 @@ package com.instana.android.alerts.mem
 
 import android.content.ComponentCallbacks2
 import com.instana.android.BaseTest
-import com.instana.android.performance.PerformanceMonitorConfiguration
+import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.performance.mem.LowMemoryMonitor
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.verify
@@ -13,7 +13,7 @@ import org.junit.Test
 
 class LowMemoryMonitorShould : BaseTest() {
 
-    private val configuration = PerformanceMonitorConfiguration(true)
+    private val configuration = PerformanceMonitorConfig(true)
 
     @Test
     fun onTrimMemoryCritical() {

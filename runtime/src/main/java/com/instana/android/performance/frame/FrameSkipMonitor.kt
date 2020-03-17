@@ -4,13 +4,13 @@ import android.os.SystemClock
 import android.view.Choreographer
 import com.instana.android.Instana
 import com.instana.android.performance.PerformanceMonitor
-import com.instana.android.performance.PerformanceMonitorConfiguration
+import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
 import kotlin.properties.Delegates
 
 class FrameSkipMonitor(
-    private val performanceMonitorConfiguration: PerformanceMonitorConfiguration,
+    private val performanceMonitorConfig: PerformanceMonitorConfig,
     private val lifeCycle: InstanaLifeCycle,
     private val choreographer: Choreographer = Choreographer.getInstance()
 ) : Choreographer.FrameCallback, PerformanceMonitor {
@@ -47,7 +47,7 @@ class FrameSkipMonitor(
     override fun doFrame(frameTimeNanos: Long) {
         lastFrameTime = if (lastFrameTime != null) {
             val frameRate = calculateFPS()
-            if (frameRate.toInt() < performanceMonitorConfiguration.frameRateDipThreshold) {
+            if (frameRate.toInt() < performanceMonitorConfig.frameRateDipThreshold) {
                 frames.add(frameRate)
                 if (!dipActive) {
                     startTime = System.currentTimeMillis()
@@ -94,7 +94,7 @@ class FrameSkipMonitor(
     private fun calculateFPS(): Long {
         val elapsedTime = SystemClock.elapsedRealtime() - lastFrameTime!!
         return if (elapsedTime == 0L) {
-            performanceMonitorConfiguration.frameRateDipThreshold.toLong()
+            performanceMonitorConfig.frameRateDipThreshold.toLong()
         } else {
             (1000 / elapsedTime)
         }

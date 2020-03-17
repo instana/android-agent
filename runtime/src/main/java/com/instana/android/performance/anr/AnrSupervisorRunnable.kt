@@ -2,7 +2,7 @@ package com.instana.android.performance.anr
 
 import android.os.Handler
 import android.os.Looper
-import com.instana.android.performance.PerformanceMonitorConfiguration
+import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.core.util.Logger
 import java.util.concurrent.TimeUnit
 
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 class AnrSupervisorRunnable
 internal constructor(
-    private val performanceMonitorConfiguration: PerformanceMonitorConfiguration,
+    private val performanceMonitorConfig: PerformanceMonitorConfig,
     private val anrCallback: AnrSupervisor.AnrCallback
 ) : Runnable {
 
@@ -52,7 +52,7 @@ internal constructor(
                 // the callback within alertsConfiguration.anrThreshold
                 synchronized(callback) {
                     this.handler.post(callback)
-                    (callback as java.lang.Object).wait(performanceMonitorConfiguration.anrThreshold)
+                    (callback as java.lang.Object).wait(performanceMonitorConfig.anrThreshold)
 
                     // Check if called
                     if (!callback.isCalled) {

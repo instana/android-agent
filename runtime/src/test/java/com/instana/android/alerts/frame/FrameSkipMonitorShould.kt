@@ -2,7 +2,7 @@ package com.instana.android.alerts.frame
 
 import android.view.Choreographer
 import com.instana.android.BaseTest
-import com.instana.android.performance.PerformanceMonitorConfiguration
+import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.performance.frame.FrameSkipMonitor
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -61,7 +61,7 @@ class FrameSkipMonitorShould : BaseTest() {
     @Test
     fun enable() {
         val frameMonitor = FrameSkipMonitor(
-            PerformanceMonitorConfiguration(false), mockWorkManager, mockInstanaLifeCycle, mockChoreographer
+            PerformanceMonitorConfig(false), mockWorkManager, mockInstanaLifeCycle, mockChoreographer
         )
         frameMonitor.enable()
         verify(mockChoreographer).postFrameCallbackDelayed(frameMonitor, 4000L)
@@ -70,7 +70,7 @@ class FrameSkipMonitorShould : BaseTest() {
     @Test
     fun disable() {
         val frameMonitor = FrameSkipMonitor(
-            PerformanceMonitorConfiguration(true), mockWorkManager, mockInstanaLifeCycle, mockChoreographer
+            PerformanceMonitorConfig(true), mockWorkManager, mockInstanaLifeCycle, mockChoreographer
         )
         frameMonitor.disable()
         verify(mockChoreographer).removeFrameCallback(frameMonitor)
