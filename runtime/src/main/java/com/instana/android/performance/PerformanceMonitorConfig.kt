@@ -7,7 +7,7 @@ class PerformanceMonitorConfig
      *
      * Defined in milliseconds
      */
-    val anrThreshold: Long = 3000L,
+    val anrThresholdMs: Long = 3000L,
 
     /**
      * A `frameDip` alert will be triggered whenever the app goes below the threshold.

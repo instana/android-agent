@@ -52,7 +52,7 @@ internal constructor(
                 // the callback within alertsConfiguration.anrThreshold
                 synchronized(callback) {
                     this.handler.post(callback)
-                    (callback as java.lang.Object).wait(performanceMonitorConfig.anrThreshold)
+                    (callback as java.lang.Object).wait(performanceMonitorConfig.anrThresholdMs)
 
                     // Check if called
                     if (!callback.isCalled) {
