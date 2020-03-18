@@ -23,10 +23,6 @@ class InstanaConfig
      */
     var suspendReporting: SuspendReportingType = SuspendReportingType.LOW_BATTERY_AND_CELLULAR_CONNECTION,
     /**
-     * Configuration of the Instana Performance Monitoring Service
-     */
-    var performanceMonitorConfig: PerformanceMonitorConfig = PerformanceMonitorConfig(),
-    /**
      * Delay after which the first beacon will be sent, in milliseconds
      *
      * This allows the client some time to configure additional parameters in the Agent
@@ -35,6 +31,10 @@ class InstanaConfig
      */
     var initialBeaconDelayMs: Long = 3000
 ) {
+    /**
+     * Configuration of the Instana Performance Monitoring Service
+     */
+    var performanceMonitorConfig: PerformanceMonitorConfig = PerformanceMonitorConfig()
     val enableCrashReporting: Boolean = false
     val eventsBufferSize: Int = 1 // TODO find good value
     val breadcrumbsBufferSize: Int = 20
