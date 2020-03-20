@@ -45,9 +45,9 @@ bintray {
         userOrg = 'instana'
         licenses = ['MIT']
         vcsUrl = 'https://github.com/instana/android-agent'
-    }
-    version {
-        name = "$lib_version"
-        released = new Date()
+        version {
+            name = "$lib_version"
+            released = new Date()
+        }
     }
 }
