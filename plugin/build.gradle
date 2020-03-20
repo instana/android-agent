@@ -2,7 +2,7 @@ apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
 
-group 'com.instana.android'
+group 'com.instana'
 version '1.0.0-SNAPSHOT'
 
 compileGroovy {
@@ -26,11 +26,10 @@ dependencies {
 
 publishing {
     publications {
-        maven(MavenPublication) {
+        pluginMaven(MavenPublication) {
             groupId "$group"
-            artifactId 'plugin'
+            artifactId 'android-agent-plugin'
             version "$version"
-            artifact jar
         }
     }
 }

@@ -58,8 +58,8 @@ dependencies {
 publishing {
     publications {
         mavenAar(MavenPublication) {
-            groupId = 'com.instana.android'
-            artifactId = 'android-agent'
+            groupId = 'com.instana'
+            artifactId = 'android-agent-runtime'
             version = "$version"
 
             from components.android

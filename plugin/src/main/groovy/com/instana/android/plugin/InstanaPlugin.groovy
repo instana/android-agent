@@ -22,6 +22,6 @@ class InstanaPlugin implements Plugin<Project> {
         }
 
         def aspectj = project.extensions.findByName("aspectj")
-        aspectj.includeAspectsFromJar 'runtime'
+        aspectj.includeAspectsFromJar 'android-agent-runtime'
     }
 }

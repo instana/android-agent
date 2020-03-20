@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.akaita.android.easylauncher'
-apply plugin: 'com.instana.android.plugin'
+apply plugin: 'com.instana.android-agent-plugin'
 
 android {
     compileSdkVersion 29
@@ -75,7 +75,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.3.1'
 
     // Instana Agent
-    implementation 'com.instana.android:android-agent:1.0.0-SNAPSHOT'
+    implementation 'com.instana:android-agent-runtime:1.0.0-SNAPSHOT'
 
     // Check for Google Play Services availability
     implementation 'com.google.android.gms:play-services-basement:17.1.1'
