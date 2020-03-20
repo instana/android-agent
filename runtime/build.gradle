@@ -2,8 +2,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'com.archinamon.aspectj'
 apply plugin: 'digital.wup.android-maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
-version '1.0.0-SNAPSHOT'
+ext.lib_version = "$agent_version"
+ext.lib_group_id = "com.instana"
+ext.lib_artifact_id = "android-agent-runtime"
 
 android {
     compileSdkVersion 29
@@ -13,7 +16,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
-        versionName "0.9"
+        versionName "1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'proguard-rules.pro'
@@ -55,14 +58,41 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
 
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+}
+task androidJavadocsJar(type: Jar) {
+    archiveClassifier.set('javadoc')
+    from androidJavadocs.destinationDir
+}
 publishing {
     publications {
         mavenAar(MavenPublication) {
-            groupId = 'com.instana'
-            artifactId = 'android-agent-runtime'
-            version = "$version"
+            groupId = "$lib_group_id"
+            artifactId = "$lib_artifact_id"
+            version = "$lib_version"
 
             from components.android
+            artifact tasks.androidJavadocsJar
+            artifact tasks.androidSourcesJar
         }
+    }
+}
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_API_KEY')
+    pkg {
+        repo = 'public-maven'
+        name = "$lib_artifact_id"
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/instana/android-agent'
+    }
+    version {
+        name = "$lib_version"
+        released = new Date()
     }
 }
