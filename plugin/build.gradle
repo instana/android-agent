@@ -49,5 +49,6 @@ bintray {
             name = "$lib_version"
             released = new Date()
         }
+        publish = true
     }
 }
