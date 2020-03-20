@@ -88,6 +88,7 @@ bintray {
     pkg {
         repo = 'public-maven'
         name = "$lib_artifact_id"
+        userOrg = 'instana'
         licenses = ['MIT']
         vcsUrl = 'https://github.com/instana/android-agent'
     }
