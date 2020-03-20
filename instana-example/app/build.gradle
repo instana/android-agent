@@ -61,6 +61,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
 
+    // Language and support
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'android.arch.work:work-runtime-ktx:1.0.1'
@@ -72,6 +73,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
     implementation 'androidx.navigation:navigation-fragment-ktx:2.2.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.1'
+
+    // Network clients
     implementation 'com.squareup.okhttp3:okhttp:4.3.1'
 
     // Instana Agent
@@ -80,13 +83,9 @@ dependencies {
     // Check for Google Play Services availability
     implementation 'com.google.android.gms:play-services-basement:17.1.1'
     implementation 'com.google.android.gms:play-services-base:17.1.0'
-
-    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.1', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    testImplementation 'junit:junit:4.13'
 }
 
+// Apply a different ribbon to the launcher of each app build type
 easylauncher {
     foregroundIconNames "@mipmap/ic_launcher_foreground"
     buildTypes {
