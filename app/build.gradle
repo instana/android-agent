@@ -75,7 +75,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.3.1'
 
     // Instana Agent
-    implementation 'com.instana.android:android-agent:0.9'
+    implementation 'com.instana.android:android-agent:1.0.0-SNAPSHOT'
 
     // Check for Google Play Services availability
     implementation 'com.google.android.gms:play-services-basement:17.1.1'

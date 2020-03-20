@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'com.archinamon.aspectj'
 apply plugin: 'digital.wup.android-maven-publish'
 
-version '0.9'
+version '1.0.0-SNAPSHOT'
 
 android {
     compileSdkVersion 29

@@ -3,7 +3,7 @@ apply plugin: 'groovy'
 apply plugin: 'maven-publish'
 
 group 'com.instana.android'
-version '1.0.0'
+version '1.0.0-SNAPSHOT'
 
 compileGroovy {
     sourceCompatibility = '1.6'
