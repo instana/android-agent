@@ -111,13 +111,14 @@ object ConstantsAndUtil {
         return Pair(version ?: EMPTY_STR, versionCode)
     }
 
-    fun getViewportWidthAndHeight(app: Application): Pair<Int, Int> {
+    fun getViewportWidthAndHeight(app: Application): Pair<Int?, Int?> {
+        val display = (app.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay
         return if (Build.VERSION.SDK_INT >= 17) {
             val displayMetrics = DisplayMetrics()
-            (app.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay?.getRealMetrics(displayMetrics)
+            display?.getRealMetrics(displayMetrics)
             displayMetrics.widthPixels to displayMetrics.heightPixels
         } else {
-            0 to 0 //TODO
+            display?.width to display?.height
         }
     }
 

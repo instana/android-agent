@@ -47,8 +47,8 @@ class Beacon private constructor(
         deviceProfile.googlePlayServicesMissing?.run { setGooglePlayServicesMissing(this) }
         setRooted(deviceProfile.rooted)
         setUserLanguages(listOf(deviceProfile.locale))
-        setViewportWidth(deviceProfile.viewportWidth)
-        setViewportHeight(deviceProfile.viewportHeight)
+        deviceProfile.viewportWidth?.run { setViewportWidth(this) }
+        deviceProfile.viewportHeight?.run { setViewportHeight(this) }
 
         // Connection
         connectionProfile.carrierName?.run { setCarrier(this) }
