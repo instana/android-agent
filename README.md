@@ -31,7 +31,7 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana.android:android-agent:0.9'
+    implementation 'com.instana:android-agent-runtime:1.0.0-SNAPSHOT'
 }
 ```
 
