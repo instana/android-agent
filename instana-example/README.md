@@ -1,37 +1,5 @@
-# Android Instana Agent 
+# Android Instana Agent example
 
-## Getting started
-
-Please head over to the [official Instana Mobile App Monitoring documentation](https://docs.instana.io/products/mobile_app_monitoring/) to get all the details about the usage of Instana Android Agent.
-
-For a quick start with a minimum configuration, the following steps shall suffice:
-
-### Before beginning
-
-Make sure that the Google, Maven Central and JCenter's Maven repositories are included in your project-level `build.gradle` file:
-
-```groovy
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        mavenCentral()
-    }
-}
-allprojects {
-    repositories {
-        google()
-        jcenter()
-        mavenCentral()
-    }
-}
-```
-
-### 1. Add Instana Agent SDK to your app
-In your module (app-level) Gradle file (usually `app/build.gradle`):
-```groovy
-dependencies {
-    implementation 'com.instana.android:android-agent:0.9'
 }
 ```
 
@@ -88,12 +56,6 @@ The configuration described in `Step 3` is the minimum configuration you must pr
 
 Please check for additional options in the [Android API documentation](https://documentation.link).
 
-## Examples
-
-Please head over to the [android-agent-examples repository](https://github.com/instana/android-agent-examples) to find multiple usage examples of the Instana Android Agent.
-
-You can also find an example in this repo's `instana-example` folder. Just please be aware that this is an example meant to be used during the development of the Android Agent, and therefore might contain usages of the Agent that are more complex that what you need for your situation.
-
 ## Contributing 
 
 ### Components
@@ -102,15 +64,23 @@ You can also find an example in this repo's `instana-example` folder. Just pleas
 - `plugin`: gradle plugin to simplify configuration for apps
 - `runtime`: weaving logic, instrumentation, beacon handling, ...
 
-### Building `instana-example`
+### Configure `app`
 
-Please head over to it's specific [README.md](instana-example/README.md) to learn how to build `instana-example`.
+Copy [app/instana.properties.example](app/instana.properties.example) to `app/instana.properties` and replace the placeholders in `app/instana.properties` with your Instana *app key* and your *reporting url*. If you don't have any Instana credentials, please [create a Trial account](https://www.instana.com/trial/)
 
-### Building Instana Android Agent
+Review and tweak Instana configuration in [app/src/main/java/com/instana/mobileeum/DemoApp.kt](app/src/main/java/com/instana/mobileeum/DemoApp.kt).
 
-You must use IntelliJ Ultimate IDE in order to compile the `plugin` and `runtime`.
+### Build types
 
-If you want to work on the `runtime` or `plugin` components of the Agent, you must publish them to your local maven repository so they can be found by your application.
+The `app` module currently has 2 build types:
+- `debug`: debuggable, allows the use of user certificates installed in your device to proxy all request/responses (both encrypted and unencrypted)
+- `release`: obfuscated and shrunk using R8
+
+### Compile
+
+You must use the full IntelliJ Ultimate IDE in order to compile the `plugin` and `runtime`.
+
+If you want to work on the `runtime` or `plugin` components of the Agent, you must publish them to your local maven repository so they can be found by the `app`.
 
 Relevant commands:
 - compile and publish `runtime` to local maven: 
@@ -120,4 +90,8 @@ gradlew :runtime::publishToMavenLocal
 - compile and publish `plugin` to local maven:
 ```shell script
 gradlew :plugin::publishToMavenLocal
+```
+- assemble `app`:
+```shell script
+:app::assemble
 ```
