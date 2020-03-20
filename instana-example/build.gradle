@@ -1,11 +1,14 @@
 buildscript {
     ext.kotlin_version = '1.3.61'
-    ext.agent_version = '1.0.0-SNAPSHOT'
+    ext.agent_version = '1.0.0'
     repositories {
         google() //required for plugin
         jcenter() //required for plugin
         mavenCentral() //for plugin in production
         mavenLocal() //only for plugin development
+        maven {
+            url  "https://dl.bintray.com/instana/public-maven"
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
@@ -21,6 +24,9 @@ allprojects {
         jcenter()
         mavenCentral() //for runtime in production
         mavenLocal() //only for runtime development
+        maven {
+            url  "https://dl.bintray.com/instana/public-maven"
+        }
     }
 }
 
