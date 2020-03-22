@@ -1,7 +1,7 @@
 package com.instana.android.core
 
-import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.instrumentation.HTTPCaptureConfig
+import com.instana.android.performance.PerformanceMonitorConfig
 
 class InstanaConfig
 @JvmOverloads constructor(
