@@ -74,6 +74,18 @@ class MyApplication : Application() {
 }
 ```
 
+### 4. Add Java 1.8 compatibility
+
+In your module (app-level) Gradle file (usually `app/build.gradle`):
+```groovy
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+```
+
 ### Supported network clients
 
 Instana Android Agent is currently capable of automatically tracking events for the following network clients:
