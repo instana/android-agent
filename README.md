@@ -76,6 +76,8 @@ class MyApplication : Application() {
 
 ### 4. Add Java 1.8 compatibility
 
+Note: this step is not required if your `minSdkVersion` is 24 or higher
+
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 android {
