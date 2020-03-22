@@ -21,7 +21,7 @@ class InstanaConfig
     /**
      * Determine in which conditions beacons will be transmitted or hold off
      */
-    var suspendReporting: SuspendReportingType = SuspendReportingType.LOW_BATTERY_AND_CELLULAR_CONNECTION,
+    var suspendReporting: SuspendReportingType = SuspendReportingType.LOW_BATTERY,
     /**
      * Delay after which the first beacon will be sent, in milliseconds
      *
