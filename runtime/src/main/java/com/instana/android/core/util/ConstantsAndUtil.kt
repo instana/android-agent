@@ -146,8 +146,9 @@ object ConstantsAndUtil {
 
     @JvmStatic
     fun isBlacklistedURL(url: String): Boolean {
-        return Instana.ignoreURLs.any {
-            it.matches(url) || it.matches(url.removeTrailing("/"))
-        }
+        return Instana.internalURLs.any { it.matches(url) } ||
+                Instana.ignoreURLs.any {
+                    it.matches(url) || it.matches(url.removeTrailing("/"))
+                }
     }
 }

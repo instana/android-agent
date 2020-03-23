@@ -48,6 +48,10 @@ object Instana {
     internal var customEvents: CustomEventService? = null
     internal var crashReporting: CrashService? = null
 
+    internal val internalURLs = listOf(
+        """^.*instana\.io[\\/].*${'$'}""".toRegex()
+    )
+
     /**
      * Service containing a number of Monitors capable of detecting and transmitting Performance Alerts
      */
