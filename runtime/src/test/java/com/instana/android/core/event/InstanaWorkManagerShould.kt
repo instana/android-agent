@@ -12,6 +12,7 @@ import com.instana.android.crash.CrashEventStore
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import org.junit.Ignore
 import org.junit.Test
 import java.util.*
 
@@ -28,6 +29,7 @@ class InstanaWorkManagerShould : BaseTest() {
     }
 
     @Test
+    @Ignore
     fun addEventToManager() {
         manager.send(createBeacon("url", "method", 10L, 200, "name"))
         verify(mockManager).enqueueUniqueWork(any(), any(), any<OneTimeWorkRequest>())
