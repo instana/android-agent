@@ -1,5 +1,9 @@
 # Android Instana Agent 
 
+## Requirements
+
+- Android Gradle Plugin: 3.5.x
+
 ## Getting started
 
 Please head over to the [official Instana Mobile App Monitoring documentation](https://docs.instana.io/products/mobile_app_monitoring/) to get all the details about the usage of Instana Android Agent.
