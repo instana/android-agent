@@ -81,8 +81,8 @@ dependencies {
     implementation "com.instana:android-agent-runtime:$agent_version"
 
     // Check for Google Play Services availability
-    implementation 'com.google.android.gms:play-services-basement:17.1.1'
-    implementation 'com.google.android.gms:play-services-base:17.1.0'
+    implementation 'com.google.android.gms:play-services-basement:17.2.0'
+    implementation 'com.google.android.gms:play-services-base:17.2.0'
 }
 
 // Apply a different ribbon to the launcher of each app build type
