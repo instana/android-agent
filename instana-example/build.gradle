@@ -5,9 +5,6 @@ buildscript {
         google() //required for plugin
         jcenter() //required for plugin
         mavenLocal() //only for plugin development
-        maven {
-            url  "https://dl.bintray.com/instana/public-maven"
-        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
@@ -22,9 +19,6 @@ allprojects {
         google()
         jcenter()
         mavenLocal() //only for runtime development
-        maven {
-            url  "https://dl.bintray.com/instana/public-maven"
-        }
     }
 }
 
