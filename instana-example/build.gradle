@@ -4,7 +4,6 @@ buildscript {
     repositories {
         google() //required for plugin
         jcenter() //required for plugin
-        mavenCentral() //for plugin in production
         mavenLocal() //only for plugin development
         maven {
             url  "https://dl.bintray.com/instana/public-maven"
@@ -22,7 +21,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-        mavenCentral() //for runtime in production
         mavenLocal() //only for runtime development
         maven {
             url  "https://dl.bintray.com/instana/public-maven"
