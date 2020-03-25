@@ -1,11 +1,9 @@
 package com.instana.android.core.util
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.annotation.RestrictTo
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
-@SuppressLint("LogNotTimber")
 object Logger {
 
     private const val LOG_TAG = "Instana"
@@ -13,45 +11,50 @@ object Logger {
     @Volatile
     var enabled = true
 
+    /**
+     * android.util.Log levels
+     */
+    var logLevel = Log.INFO
+
+    @JvmStatic
+    fun d(message: String) {
+        if (enabled && logLevel <= Log.DEBUG) {
+            Log.d(LOG_TAG, message)
+        }
+    }
+
     @JvmStatic
     fun i(message: String) {
-        if (enabled) {
+        if (enabled && logLevel <= Log.INFO) {
             Log.i(LOG_TAG, message)
         }
     }
 
     @JvmStatic
     fun w(message: String) {
-        if (enabled) {
+        if (enabled && logLevel <= Log.WARN) {
             Log.w(LOG_TAG, message)
         }
     }
 
     @JvmStatic
     fun w(message: String, throwable: Throwable) {
-        if (enabled) {
+        if (enabled && logLevel <= Log.WARN) {
             Log.w(LOG_TAG, message, throwable)
         }
     }
 
     @JvmStatic
     fun e(message: String) {
-        if (enabled) {
+        if (enabled && logLevel <= Log.ERROR) {
             Log.e(LOG_TAG, message)
         }
     }
 
     @JvmStatic
-    fun e(message: String, s: String) {
-        if (enabled) {
-            Log.e(s, message)
-        }
-    }
-
-    @JvmStatic
-    fun d(s: String) {
-        if (enabled) {
-            Log.d(LOG_TAG, s)
+    fun e(message: String, throwable: Throwable) {
+        if (enabled && logLevel <= Log.ERROR) {
+            Log.e(LOG_TAG, message, throwable)
         }
     }
 }

@@ -105,7 +105,7 @@ object ConstantsAndUtil {
                 packageInfo.versionCode.toString()
             }
         } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
+            Logger.e("Failed to detect app versionName and versionCode", e)
             return Pair(EMPTY_STR, EMPTY_STR)
         }
         return Pair(version ?: EMPTY_STR, versionCode)

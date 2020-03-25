@@ -101,6 +101,18 @@ object Instana {
         }
 
     /**
+     * Log level for Instana Android Agent
+     *
+     * android.util.Log levels are expected (android.util.Log.INFO, android.util.Log.ERROR, ...)
+     */
+    @JvmStatic
+    var logLevel: Int
+        get() = Logger.logLevel
+        set(value) {
+            Logger.logLevel = value
+        }
+
+    /**
      * Indicate whether Google Play Services are missing or not, so this information is associated with all new beacons
      */
     @JvmStatic
@@ -142,19 +154,22 @@ object Instana {
      */
     @JvmStatic
     @JvmOverloads
-    fun startCapture(url: String, viewName: String? = view): HTTPMarker? =
-        instrumentationService?.markCall(url, viewName)
+    fun startCapture(url: String, viewName: String? = view): HTTPMarker? {
+        if (instrumentationService == null) Logger.e("Tried to start capture before Instana agent initialized with: `url` $url")
+        return instrumentationService?.markCall(url, viewName)
+    }
 
     /**
      * Initialize Instana
      */
     @JvmStatic
     fun setup(app: Application, config: InstanaConfig) {
+        Logger.i("Configuring Instana agent")
         initProfiles(app)
         initLifecycle(app)
         this.config = config
-        Logger.i("Starting Instana agent")
         initWorkManager(Instana.config)
+        Logger.i("Instana agent started")
     }
 
     private fun initLifecycle(app: Application) {

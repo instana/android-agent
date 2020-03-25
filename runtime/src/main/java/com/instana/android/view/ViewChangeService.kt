@@ -41,6 +41,7 @@ class ViewChangeService(
             meta = Instana.meta.getAll()
         )
 
+        Logger.i("View changed with: `name` $viewName")
         manager.queue(view)
     }
 }

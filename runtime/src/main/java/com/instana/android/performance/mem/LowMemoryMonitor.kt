@@ -7,6 +7,7 @@ import android.content.res.Configuration
 import com.instana.android.Instana
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.util.ConstantsAndUtil
+import com.instana.android.core.util.Logger
 import com.instana.android.performance.PerformanceMonitor
 import kotlin.properties.Delegates
 
@@ -21,6 +22,7 @@ class LowMemoryMonitor(
             newValue -> app.registerComponentCallbacks(this)
             newValue.not() -> app.unregisterComponentCallbacks(this)
         }
+        Logger.i("LowMemoryMonitor enabled: $newValue")
     }
 
     override fun onLowMemory() {
@@ -39,6 +41,8 @@ class LowMemoryMonitor(
     }
 
     private fun sendLowMemoryEvent(activityName: String) {
+        Logger.d("LowMemory detected with: `activityName` $activityName")
+
         val maxMem = ConstantsAndUtil.runtime.maxMemory()
         val usedMem = ConstantsAndUtil.runtime.totalMemory() - ConstantsAndUtil.runtime.freeMemory()
         val availableMem = maxMem - usedMem

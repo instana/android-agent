@@ -12,6 +12,7 @@ import com.instana.android.core.event.models.ConnectionProfile
 import com.instana.android.core.util.ConstantsAndUtil.getCarrierName
 import com.instana.android.core.util.ConstantsAndUtil.getCellularConnectionType
 import com.instana.android.core.util.ConstantsAndUtil.getConnectionType
+import com.instana.android.core.util.Logger
 import java.util.*
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -45,6 +46,7 @@ class SessionService(
 
         Instana.sessionId = sessionId
 
+        Logger.i("Session started with: `id` $sessionId")
         manager.queue(session)
     }
 }

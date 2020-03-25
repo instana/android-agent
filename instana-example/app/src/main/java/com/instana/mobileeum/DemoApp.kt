@@ -1,6 +1,7 @@
 package com.instana.mobileeum
 
 import android.app.Application
+import android.util.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.instana.android.Instana
@@ -27,5 +28,7 @@ class DemoApp : Application() {
         Instana.performanceService?.anrMonitor?.enabled = true
         Instana.performanceService?.frameSkipMonitor?.enabled = true
         Instana.performanceService?.lowMemoryMonitor?.enabled = true
+
+        Instana.logLevel = Log.DEBUG
     }
 }

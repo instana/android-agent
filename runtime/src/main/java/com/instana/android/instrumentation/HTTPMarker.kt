@@ -81,6 +81,7 @@ class HTTPMarker(
         )
 
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+            Logger.i("HttpRequest cancelled with: `url` $url")
             manager.queue(beacon)
         }
     }
@@ -121,6 +122,7 @@ class HTTPMarker(
         )
 
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+            Logger.i("HttpRequest finished with: `url` $url")
             manager.queue(beacon)
         }
     }
@@ -158,6 +160,7 @@ class HTTPMarker(
         )
 
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+            Logger.i("HttpRequest finished with: `url` $url")
             manager.queue(beacon)
         }
     }
@@ -200,6 +203,7 @@ class HTTPMarker(
         )
 
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+            Logger.i("HttpRequest finished with: `url` $url")
             manager.queue(beacon)
         }
     }
@@ -238,6 +242,7 @@ class HTTPMarker(
         )
 
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+            Logger.i("HttpRequest finished with: `url` $url")
             manager.queue(beacon)
         }
     }

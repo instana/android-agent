@@ -5,6 +5,7 @@ import android.view.Choreographer
 import com.instana.android.Instana
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
+import com.instana.android.core.util.Logger
 import com.instana.android.performance.PerformanceMonitor
 import com.instana.android.performance.PerformanceMonitorConfig
 import kotlin.properties.Delegates
@@ -24,6 +25,7 @@ class FrameSkipMonitor(
             )
             newValue.not() -> choreographer.removeFrameCallback(this)
         }
+        Logger.i("FrameSkipMonitor enabled: $newValue")
     }
 
     var appInBackground by Delegates.observable(false) { _, oldValue, newValue ->
@@ -82,6 +84,7 @@ class FrameSkipMonitor(
 
     private fun sendFrameDipEvent(averageFrameRate: Long) {
         val activityName = lifeCycle.activityName ?: EMPTY_STR
+        Logger.d("FrameDip detected with: `activityName` $activityName, `avgFrameRate` $averageFrameRate")
         Instana.customEvents?.submit(
             name = "FrameDip",
             startTime = startTime,

@@ -19,7 +19,10 @@ open class EventWorker(
 
     override suspend fun doWork(): Result {
         val directoryAbsPath: String? = params.inputData.getString(DIRECTORY_ABS_PATH)
-        if (directoryAbsPath.isNullOrBlank()) return Result.failure()
+        if (directoryAbsPath.isNullOrBlank()) {
+            Logger.e("Tried to flush beacons with invalid directory path: $directoryAbsPath")
+            return Result.failure()
+        }
 
         val directory = File(directoryAbsPath)
         val (data, files) = readAllFiles(directory, batchLimit)
@@ -27,8 +30,13 @@ open class EventWorker(
             data.isBlank() -> Result.success()
             send(data) -> {
                 files.forEach { it.delete() }
-                if (files.size == batchLimit) Result.retry()
-                else Result.success()
+                if (files.size == batchLimit) {
+                    Logger.i("Beacon-batch reached limit. Will create a new batch")
+                    Result.retry()
+                } else {
+                    Logger.i("Beacon-batch sent with: `size` ${files.size}")
+                    Result.success()
+                }
             }
             else -> Result.retry()
         }
@@ -52,7 +60,7 @@ open class EventWorker(
             val response = ConstantsAndUtil.client.newCall(request).execute()
             response.isSuccessful
         } catch (e: IOException) {
-            Logger.e("Failed to send pending beacons to Instana: ${e.message}")
+            Logger.e("Failed to flush beacons to Instana", e)
             false
         }
     }

@@ -46,7 +46,9 @@ class InstanaWorkManager(
     }
 
     private fun updateQueueItems(queue: Queue<Beacon>) {
+        Logger.d("Updating ${queue.size} queue items")
         for (item in queue) {
+            Logger.d("Updating queue item with: `beaconId` ${item.getBeaconId()}")
             Instana.userProfile.userName?.run { item.setUserName(this) }
             Instana.userProfile.userId?.run { item.setUserId(this) }
             Instana.userProfile.userEmail?.run { item.setUserEmail(this) }
@@ -78,7 +80,7 @@ class InstanaWorkManager(
                 networkType = NetworkType.UNMETERED
                 lowBattery = false
             }
-            SuspendReportingType.LOW_BATTERY_AND_CELLULAR_CONNECTION -> {
+            SuspendReportingType.LOW_BATTERY_OR_CELLULAR_CONNECTION -> {
                 networkType = NetworkType.UNMETERED
                 lowBattery = true
             }
@@ -107,6 +109,7 @@ class InstanaWorkManager(
      * Send all beacons together once beacon-creation stops for 1s
      */
     private fun flush(directory: File) {
+        Logger.i("Flushing beacons")
         if (directory.isDirectoryEmpty()) return
 
         val tag = directory.absolutePath
@@ -125,6 +128,7 @@ class InstanaWorkManager(
     @Synchronized
     fun queue(beacon: Beacon) {
         val beaconId = beacon.getBeaconId()
+        Logger.d("Queueing beacon with: `beaconId` $beaconId")
         when {
             isInitialDelayComplete.not() -> initialDelayQueue.add(beacon)
             beaconId.isNullOrBlank() -> Logger.e("Tried to queue beacon with no beaconId: $beacon")

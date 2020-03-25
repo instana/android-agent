@@ -75,7 +75,7 @@ internal constructor(
                 // Sleep for next test
                 TimeUnit.SECONDS.sleep(TEST_TIMEOUT)
             } catch (e: InterruptedException) {
-                e.printStackTrace()
+                Logger.e("Failed to run ANRSupervisor", e)
                 break
             }
         }
