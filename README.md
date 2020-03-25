@@ -12,21 +12,19 @@ For a quick start with a minimum configuration, the following steps shall suffic
 
 ### Before beginning
 
-Make sure that the Google, Maven Central and JCenter's Maven repositories are included in your project-level `build.gradle` file:
+Make sure that the Google and JCenter's Maven repositories are included in your project-level `build.gradle` file:
 
 ```groovy
 buildscript {
     repositories {
         google()
         jcenter()
-        mavenCentral()
     }
 }
 allprojects {
     repositories {
         google()
         jcenter()
-        mavenCentral()
     }
 }
 ```
@@ -35,7 +33,7 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:1.0.0-SNAPSHOT'
+    implementation 'com.instana:android-agent-runtime:1.0.0'
 }
 ```
 
@@ -52,10 +50,9 @@ buildscript {
     repositories {
         google()
         jcenter()
-        mavenCentral()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:1.0.0-SNAPSHOT"
+        classpath "com.instana:android-agent-plugin:1.0.0"
     }
 }
 ```
