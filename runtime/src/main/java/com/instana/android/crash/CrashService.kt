@@ -4,7 +4,6 @@ import android.app.Application
 import android.util.Log
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
-import com.instana.android.core.event.EventFactory
 import com.instana.android.core.util.ConstantsAndUtil.getAppVersionNameAndVersionCode
 import java.lang.Thread.currentThread
 import java.util.*
@@ -60,12 +59,8 @@ class CrashService(
 
         val (versionCode: String, version: String) = getAppVersionNameAndVersionCode(app)
 
-        manager.persistCrash(
-            EventFactory.createCrash(
-                version, versionCode,
-                breadCrumbsCopy, stackTrace, appStackTraces
-            )
-        )
+        // TODO send crash
+
         breadCrumbs.clear()
     }
 

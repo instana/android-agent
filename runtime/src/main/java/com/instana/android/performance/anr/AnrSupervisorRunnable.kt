@@ -2,8 +2,8 @@ package com.instana.android.performance.anr
 
 import android.os.Handler
 import android.os.Looper
-import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.core.util.Logger
+import com.instana.android.performance.PerformanceMonitorConfig
 import java.util.concurrent.TimeUnit
 
 /**

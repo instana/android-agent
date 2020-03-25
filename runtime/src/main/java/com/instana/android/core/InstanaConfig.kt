@@ -36,6 +36,5 @@ class InstanaConfig
      */
     var performanceMonitorConfig: PerformanceMonitorConfig = PerformanceMonitorConfig()
     val enableCrashReporting: Boolean = false
-    val eventsBufferSize: Int = 1 // TODO find good value
     val breadcrumbsBufferSize: Int = 20
 }

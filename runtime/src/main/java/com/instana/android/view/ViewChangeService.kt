@@ -41,6 +41,6 @@ class ViewChangeService(
             meta = Instana.meta.getAll()
         )
 
-        manager.send(view)
+        manager.queue(view)
     }
 }

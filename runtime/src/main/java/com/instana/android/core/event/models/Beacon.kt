@@ -127,6 +127,8 @@ class Beacon private constructor(
         stringMap["bid"] = value
     }
 
+    fun getBeaconId(): String? = stringMap["bid"]
+
     /**
      * The backend exposes trace IDs via the Server-Timing HTTP response header.
      * The app needs to pick up the trace ID from this header and put it into this field.

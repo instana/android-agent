@@ -8,7 +8,6 @@ import com.instana.android.InstanaShould
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.*
-import com.instana.android.crash.CrashEventStore
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
@@ -23,15 +22,14 @@ class InstanaWorkManagerShould : BaseTest() {
     private var manager: InstanaWorkManager
 
     init {
-        CrashEventStore.init(app)
         WorkManagerTestInitHelper.initializeTestWorkManager(app)
-        manager = InstanaWorkManager(InstanaConfig(InstanaShould.SERVER_URL, InstanaShould.API_KEY, initialBeaconDelayMs = 0), mockManager)
+        manager = InstanaWorkManager(InstanaConfig(InstanaShould.SERVER_URL, InstanaShould.API_KEY, initialBeaconDelayMs = 0), app, mockManager)
     }
 
     @Test
     @Ignore
     fun addEventToManager() {
-        manager.send(createBeacon("url", "method", 10L, 200, "name"))
+        manager.queue(createBeacon("url", "method", 10L, 200, "name"))
         verify(mockManager).enqueueUniqueWork(any(), any(), any<OneTimeWorkRequest>())
     }
 

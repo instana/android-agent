@@ -1,11 +1,11 @@
 package com.instana.android.performance.anr
 
 import com.instana.android.Instana
-import com.instana.android.performance.PerformanceMonitor
-import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
 import com.instana.android.core.util.stackTraceAsString
+import com.instana.android.performance.PerformanceMonitor
+import com.instana.android.performance.PerformanceMonitorConfig
 import kotlin.properties.Delegates
 
 class ANRMonitor(

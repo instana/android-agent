@@ -17,7 +17,6 @@ import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.MaxCapacityMap
 import com.instana.android.core.util.RootCheck
-import com.instana.android.crash.CrashEventStore
 import com.instana.android.crash.CrashService
 import com.instana.android.instrumentation.HTTPMarker
 import com.instana.android.instrumentation.InstrumentationService
@@ -143,14 +142,13 @@ object Instana {
     @JvmStatic
     fun setup(app: Application, config: InstanaConfig) {
         initProfiles(app)
-        initStoreAndLifecycle(app)
+        initLifecycle(app)
         this.config = config
         Logger.i("Starting Instana agent")
         initWorkManager(Instana.config)
     }
 
-    private fun initStoreAndLifecycle(app: Application) {
-        CrashEventStore.init(app)
+    private fun initLifecycle(app: Application) {
         this.app = app
         if (lifeCycle == null) {
             lifeCycle = InstanaLifeCycle(app)
@@ -179,7 +177,7 @@ object Instana {
     }
 
     private fun initWorkManager(config: InstanaConfig) {
-        InstanaWorkManager(config).also {
+        InstanaWorkManager(config, app).also {
             crashReporting = CrashService(app, it, config)
             sessionService = SessionService(app, it)
             customEvents = CustomEventService(

@@ -5,9 +5,9 @@ import android.content.ComponentCallbacks2
 import android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL
 import android.content.res.Configuration
 import com.instana.android.Instana
-import com.instana.android.performance.PerformanceMonitor
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.util.ConstantsAndUtil
+import com.instana.android.performance.PerformanceMonitor
 import kotlin.properties.Delegates
 
 class LowMemoryMonitor(

@@ -43,7 +43,7 @@ class HTTPMarkerShould : BaseTest() {
         }
         val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
         remoteCallMarker.finish(mockConnection, IOException("error"))
-        verify(mockManager).send(any())
+        verify(mockManager).queue(any())
     }
 
     @Test
@@ -56,7 +56,7 @@ class HTTPMarkerShould : BaseTest() {
         }
         val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
         remoteCallMarker.finish(mockConnection)
-        verify(mockManager).send(any())
+        verify(mockManager).queue(any())
     }
 
     @Test
@@ -65,7 +65,7 @@ class HTTPMarkerShould : BaseTest() {
             .message("blah").request(Request.Builder().url(URL).get().build()).code(200).build()
         val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
         remoteCallMarker.finish(response)
-        verify(mockManager).send(any())
+        verify(mockManager).queue(any())
     }
 
     @Test
@@ -73,7 +73,7 @@ class HTTPMarkerShould : BaseTest() {
         val remoteCallMarker = HTTPMarker(URL, METHOD, mockManager)
         assertNotNull(remoteCallMarker)
         remoteCallMarker.cancel()
-        verify(mockManager).send(any())
+        verify(mockManager).queue(any())
     }
 
     @Test

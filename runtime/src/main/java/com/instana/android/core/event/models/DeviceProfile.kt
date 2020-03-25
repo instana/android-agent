@@ -5,7 +5,7 @@ package com.instana.android.core.event.models
 
 import java.util.*
 
-data class DeviceProfile (
+data class DeviceProfile(
     val platform: Platform,
     val osVersion: String,
     val deviceManufacturer: String,

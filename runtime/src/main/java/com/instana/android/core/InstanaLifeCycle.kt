@@ -11,7 +11,7 @@ import android.os.Bundle
  * Util class to get current activity data and memory alerts
  */
 class InstanaLifeCycle(
-        application: Application
+    application: Application
 ) : Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
 
     private var callback: AppStateCallback? = null

@@ -3,7 +3,7 @@
  */
 package com.instana.android.core.event.models
 
-data class UserProfile (
+data class UserProfile(
     var userId: String?,
     var userName: String?,
     var userEmail: String?

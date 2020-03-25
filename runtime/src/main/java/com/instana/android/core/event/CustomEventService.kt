@@ -42,6 +42,6 @@ class CustomEventService(
             meta = mergedMeta.getAll()
         )
 
-        manager.send(beacon)
+        manager.queue(beacon)
     }
 }

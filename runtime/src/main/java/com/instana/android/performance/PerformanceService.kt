@@ -1,10 +1,10 @@
 package com.instana.android.performance
 
 import android.app.Application
+import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.performance.anr.ANRMonitor
 import com.instana.android.performance.frame.FrameSkipMonitor
 import com.instana.android.performance.mem.LowMemoryMonitor
-import com.instana.android.core.InstanaLifeCycle
 
 class PerformanceService(
     app: Application,

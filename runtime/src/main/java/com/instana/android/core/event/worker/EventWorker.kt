@@ -3,101 +3,80 @@ package com.instana.android.core.event.worker
 import android.content.Context
 import androidx.work.*
 import com.instana.android.Instana
-import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
-import com.instana.android.crash.CrashEventStore
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.util.*
+import okio.IOException
+import java.io.File
+import java.util.concurrent.TimeUnit
 
 open class EventWorker(
     context: Context,
     private val params: WorkerParameters
 ) : CoroutineWorker(context, params) {
 
-    override suspend fun doWork(): Result = try {
+    override suspend fun doWork(): Result {
+        val directoryAbsPath: String? = params.inputData.getString(DIRECTORY_ABS_PATH)
+        if (directoryAbsPath.isNullOrBlank()) return Result.failure()
 
-        var eventsJson: String? = params.inputData.getString(EVENT_JSON_STRING)
-
-        if (eventsJson == null || eventsJson.isEmpty()) {
-            Result.failure()
-        }
-
-        if (eventsJson == CrashEventStore.tag) {
-            // due to the crash string size we log just "crash"
-            Logger.e("crash")
-            eventsJson = CrashEventStore.serialized
-            CrashEventStore.clear()
-        }
-
-        var request: Request?
-        eventsJson.let {
-            request = Request.Builder()
-                .url(Instana.config.reportingURL)
-                .addHeader("Content-Type", "application/json")
-                .addHeader("Accept-Encoding", "gzip")
-                .post(it!!.toRequestBody(TEXT_PLAIN))
-                .build()
-        }
-
-        var response: Response? = null
-        try {
-            if (request == null) {
-                Result.failure()
-            }
-            response = ConstantsAndUtil.client.newCall(request!!).execute()
-            if (response.code == HttpURLConnection.HTTP_OK) {
+        val directory = File(directoryAbsPath)
+        val (data, files) = readAllFiles(directory)
+        return when {
+            data.isBlank() -> Result.success()
+            send(data) -> {
+                files.forEach { it.delete() }
                 Result.success()
-            } else {
-                Result.failure()
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Result.failure()
-        } finally {
-            response?.close()
+            else -> Result.retry()
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
-        Result.failure()
+    }
+
+    private fun readAllFiles(directory: File): Pair<String, Array<File>> {
+        val files = directory.listFiles() ?: emptyArray()
+        val sb = StringBuffer()
+        files.forEach { sb.append("${it.readText(Charsets.UTF_8)}\n") }
+        return sb.toString() to files
+    }
+
+    private fun send(data: String): Boolean {
+        return try {
+            val request = Request.Builder()
+                .url(Instana.config.reportingURL)
+                .addHeader("Content-Type", "application/json") // TODO ??? it's def not json
+                .addHeader("Accept-Encoding", "gzip")
+                .post(data.toRequestBody(TEXT_PLAIN))
+                .build()
+            val response = ConstantsAndUtil.client.newCall(request).execute()
+            response.isSuccessful
+        } catch (e: IOException) {
+            Logger.e("Failed to send pending beacons to Instana: ${e.message}")
+            false
+        }
     }
 
     companion object {
 
         fun createWorkRequest(
             constraints: Constraints,
-            event: List<Beacon>,
-            tag: String = UUID.randomUUID().toString()
+            directory: File,
+            initialDelayMs: Long,
+            tag: String
         ): OneTimeWorkRequest {
-            val sb = StringBuffer()
-            event.forEach { sb.append("$it\n") }
-            val serialized = sb.toString()
-
-            val data = Data.Builder().putString(EVENT_JSON_STRING, serialized).build()
+            val data = Data.Builder()
+                .putString(DIRECTORY_ABS_PATH, directory.absolutePath)
+                .build()
             return OneTimeWorkRequest.Builder(EventWorker::class.java)
                 .setInputData(data)
                 .setConstraints(constraints)
+                .setInitialDelay(initialDelayMs, TimeUnit.MILLISECONDS)
                 .addTag(tag)
                 .build()
         }
 
-        fun createCrashWorkRequest(
-            constraints: Constraints,
-            tag: String
-        ): OneTimeWorkRequest = OneTimeWorkRequest.Builder(EventWorker::class.java)
-            .setInputData(Data.Builder().putString(EVENT_JSON_STRING, tag).build())
-            .setConstraints(constraints)
-            .addTag(tag)
-            .build()
+        private val TEXT_PLAIN = "text/plain; charset=utf-8".toMediaTypeOrNull()
 
-        val JSON = "application/json; charset=utf-8".toMediaTypeOrNull()
-        val TEXT_PLAIN = "text/plain; charset=utf-8".toMediaTypeOrNull()
-
-        const val EVENT_JSON_STRING = "event_string"
+        private const val DIRECTORY_ABS_PATH = "dir_abs_path"
     }
 }

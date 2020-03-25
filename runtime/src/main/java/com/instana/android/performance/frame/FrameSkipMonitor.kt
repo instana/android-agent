@@ -3,10 +3,10 @@ package com.instana.android.performance.frame
 import android.os.SystemClock
 import android.view.Choreographer
 import com.instana.android.Instana
-import com.instana.android.performance.PerformanceMonitor
-import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
+import com.instana.android.performance.PerformanceMonitor
+import com.instana.android.performance.PerformanceMonitorConfig
 import kotlin.properties.Delegates
 
 class FrameSkipMonitor(
@@ -18,7 +18,8 @@ class FrameSkipMonitor(
     override var enabled by Delegates.observable(false) { _, oldValue, newValue ->
         when {
             oldValue == newValue -> Unit
-            newValue -> choreographer.postFrameCallbackDelayed(this,
+            newValue -> choreographer.postFrameCallbackDelayed(
+                this,
                 START_DELAY_TIME_MS
             )
             newValue.not() -> choreographer.removeFrameCallback(this)
@@ -29,7 +30,8 @@ class FrameSkipMonitor(
         when {
             oldValue == newValue -> Unit
             enabled.not() -> Unit
-            newValue.not() -> choreographer.postFrameCallbackDelayed(this,
+            newValue.not() -> choreographer.postFrameCallbackDelayed(
+                this,
                 START_DELAY_TIME_MS
             )
             newValue -> choreographer.removeFrameCallback(this)

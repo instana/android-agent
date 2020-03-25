@@ -11,12 +11,12 @@ import java.util.*
  * [Thread]
  */
 class AnrException
-/**
- * Creates a new instance
- *
- * @param thread the [Thread] which is not responding
- */
-(thread: Thread) : Exception("ANR detected") {
+    /**
+     * Creates a new instance
+     *
+     * @param thread the [Thread] which is not responding
+     */
+    (thread: Thread) : Exception("ANR detected") {
 
     init {
         // Copy the Thread's stack,
@@ -66,11 +66,15 @@ class AnrException
         ps.println(String.format(l, "\t%s (%s)", thread.name, thread.state))
 
         for (element in stack) {
-            ps.println(String.format(l, "\t\t%s.%s(%s:%d)",
+            ps.println(
+                String.format(
+                    l, "\t\t%s.%s(%s:%d)",
                     element.className,
                     element.methodName,
                     element.fileName,
-                    element.lineNumber))
+                    element.lineNumber
+                )
+            )
 
         }
     }

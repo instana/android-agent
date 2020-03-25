@@ -44,8 +44,8 @@ class EventWorkerShould : BaseTest() {
             .setRequiresBatteryNotLow(true)
             .setRequiresCharging(false)
             .build()
-        val beacon = createBeacon("url", "post", 1000, 200, "view")
-        val workRequest: WorkRequest = EventWorker.createWorkRequest(workerConstraint, listOf(beacon), "tag")
+        val directory = app.filesDir
+        val workRequest: WorkRequest = EventWorker.createWorkRequest(workerConstraint, directory, "tag")
         val workSpec = workRequest.workSpec
 
         assertThat(workSpec.constraints.requiredNetworkType, `is`(equalTo(NetworkType.UNMETERED)))
@@ -56,8 +56,8 @@ class EventWorkerShould : BaseTest() {
     @Test
     @Ignore
     fun doWorkEnqueued() {
-        val beacon = createBeacon("url", "post", 1000, 400, "view")
-        val request = EventWorker.createWorkRequest(Constraints.NONE, listOf(beacon), "tag")
+        val directory = app.filesDir
+        val request = EventWorker.createWorkRequest(Constraints.NONE, directory, "tag")
         val workManager = WorkManager.getInstance()
         // Enqueue and wait for result.
         workManager.enqueue(request).result
@@ -66,26 +66,4 @@ class EventWorkerShould : BaseTest() {
         // Assert
         assertThat(workInfo.state, `is`(WorkInfo.State.ENQUEUED))
     }
-
-    private fun createBeacon(url: String, method: String, duration: Long, responseCode: Int, view: String) =
-        Beacon.newHttpRequest(
-            appKey = "Instana.config.key",
-            appProfile = AppProfile("version", "build", "id"),
-            deviceProfile = DeviceProfile(Platform.ANDROID, "1", "test", "test", "test", false, Locale.CANADA, 0, 0),
-            connectionProfile = ConnectionProfile(null, null, null),
-            userProfile = UserProfile(null, null, null),
-            sessionId = "sessionId",
-            view = view,
-            meta = emptyMap(),
-            duration = duration,
-            method = method,
-            url = url,
-            responseCode = responseCode,
-            requestSizeBytes = null,
-            encodedResponseSizeBytes = null,
-            decodedResponseSizeBytes = null,
-            backendTraceId = null,
-            error = null
-        )
-
 }

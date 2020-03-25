@@ -81,7 +81,7 @@ class HTTPMarker(
         )
 
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
-            manager.send(beacon)
+            manager.queue(beacon)
         }
     }
 
@@ -121,7 +121,7 @@ class HTTPMarker(
         )
 
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
-            manager.send(beacon)
+            manager.queue(beacon)
         }
     }
 
@@ -158,7 +158,7 @@ class HTTPMarker(
         )
 
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
-            manager.send(beacon)
+            manager.queue(beacon)
         }
     }
     //endregion
@@ -200,7 +200,7 @@ class HTTPMarker(
         )
 
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
-            manager.send(beacon)
+            manager.queue(beacon)
         }
     }
 
@@ -238,7 +238,7 @@ class HTTPMarker(
         )
 
         if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
-            manager.send(beacon)
+            manager.queue(beacon)
         }
     }
     //endregion

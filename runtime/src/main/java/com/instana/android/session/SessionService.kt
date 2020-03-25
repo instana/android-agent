@@ -45,6 +45,6 @@ class SessionService(
 
         Instana.sessionId = sessionId
 
-        manager.send(session)
+        manager.queue(session)
     }
 }

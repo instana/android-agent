@@ -10,8 +10,8 @@ import java.lang.Thread.UncaughtExceptionHandler
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class ExceptionHandler(
-        private val crashService: CrashService,
-        private val originalHandler: UncaughtExceptionHandler
+    private val crashService: CrashService,
+    private val originalHandler: UncaughtExceptionHandler
 ) : UncaughtExceptionHandler {
 
     fun enable() {
