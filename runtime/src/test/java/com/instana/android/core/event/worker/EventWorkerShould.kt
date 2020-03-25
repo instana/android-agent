@@ -45,7 +45,7 @@ class EventWorkerShould : BaseTest() {
             .setRequiresCharging(false)
             .build()
         val directory = app.filesDir
-        val workRequest: WorkRequest = EventWorker.createWorkRequest(workerConstraint, directory, "tag")
+        val workRequest: WorkRequest = EventWorker.createWorkRequest(workerConstraint, directory, 0L, "tag")
         val workSpec = workRequest.workSpec
 
         assertThat(workSpec.constraints.requiredNetworkType, `is`(equalTo(NetworkType.UNMETERED)))
@@ -57,7 +57,7 @@ class EventWorkerShould : BaseTest() {
     @Ignore
     fun doWorkEnqueued() {
         val directory = app.filesDir
-        val request = EventWorker.createWorkRequest(Constraints.NONE, directory, "tag")
+        val request = EventWorker.createWorkRequest(Constraints.NONE, directory, 0L, "tag")
         val workManager = WorkManager.getInstance()
         // Enqueue and wait for result.
         workManager.enqueue(request).result
