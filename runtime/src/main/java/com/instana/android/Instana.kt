@@ -54,22 +54,26 @@ object Instana {
     /**
      * Service containing a number of Monitors capable of detecting and transmitting Performance Alerts
      */
+    @JvmStatic
     var performanceService: PerformanceService? = null
         private set
 
     /**
      * List of URLs which will not be tracked by Instana, defined by a list of Regex(Kotlin) or Pattern(Java)
      */
+    @JvmStatic
     val ignoreURLs = mutableListOf<Regex>()
 
     /**
      * Map of  ID which all new beacons will be associated with
      */
+    @JvmStatic
     val meta = MaxCapacityMap<String, String>(50)
 
     /**
      * User ID which all new beacons will be associated with
      */
+    @JvmStatic
     var userId: String?
         get() = userProfile.userId
         set(value) {
@@ -79,6 +83,7 @@ object Instana {
     /**
      * User name which all new beacons will be associated with
      */
+    @JvmStatic
     var userName: String?
         get() = userProfile.userName
         set(value) {
@@ -88,6 +93,7 @@ object Instana {
     /**
      * User email which all new beacons will be associated with
      */
+    @JvmStatic
     var userEmail: String?
         get() = userProfile.userEmail
         set(value) {
@@ -97,6 +103,7 @@ object Instana {
     /**
      * Indicate whether Google Play Services are missing or not, so this information is associated with all new beacons
      */
+    @JvmStatic
     var googlePlayServicesMissing: Boolean?
         get() = deviceProfile.googlePlayServicesMissing
         set(value) {
@@ -107,6 +114,7 @@ object Instana {
     /**
      * Human-readable name of logical view to which beacons will be associated
      */
+    @JvmStatic
     var view by Delegates.observable<String?>(null) { _, oldValue, newValue ->
         if (firstView == null && newValue != null) {
             firstView = newValue
@@ -118,6 +126,7 @@ object Instana {
     /**
      * Unique ID assigned by Instana to current session
      */
+    @JvmStatic
     var sessionId: String? = null
         internal set
 
