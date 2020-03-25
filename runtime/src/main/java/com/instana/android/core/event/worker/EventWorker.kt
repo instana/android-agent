@@ -22,21 +22,22 @@ open class EventWorker(
         if (directoryAbsPath.isNullOrBlank()) return Result.failure()
 
         val directory = File(directoryAbsPath)
-        val (data, files) = readAllFiles(directory)
+        val (data, files) = readAllFiles(directory, batchLimit)
         return when {
             data.isBlank() -> Result.success()
             send(data) -> {
                 files.forEach { it.delete() }
-                Result.success()
+                if (files.size == batchLimit) Result.retry()
+                else Result.success()
             }
             else -> Result.retry()
         }
     }
 
-    private fun readAllFiles(directory: File): Pair<String, Array<File>> {
+    private fun readAllFiles(directory: File, limit: Int): Pair<String, Array<File>> {
         val files = directory.listFiles() ?: emptyArray()
         val sb = StringBuffer()
-        files.forEach { sb.append("${it.readText(Charsets.UTF_8)}\n") }
+        files.take(limit).forEach { sb.append("${it.readText(Charsets.UTF_8)}\n") }
         return sb.toString() to files
     }
 
@@ -57,6 +58,8 @@ open class EventWorker(
     }
 
     companion object {
+
+        private const val batchLimit = 100
 
         fun createWorkRequest(
             constraints: Constraints,
