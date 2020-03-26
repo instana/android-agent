@@ -12,35 +12,35 @@ class InstanaShould : BaseTest() {
 
     @Test
     fun init() {
-        Instana.setup(app, InstanaConfig(SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfig(API_KEY, SERVER_URL))
         checkNotNull(Instana.customEvents)
         checkNotNull(Instana.instrumentationService)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun initWithFakeServerUrl() {
-        Instana.setup(app, InstanaConfig(FAKE_SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfig(API_KEY, FAKE_SERVER_URL))
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun initWithEmptyServerUrl() {
-        Instana.setup(app, InstanaConfig("", API_KEY))
+        Instana.setup(app, InstanaConfig(API_KEY, ""))
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun initWithEmptyApiKey() {
-        Instana.setup(app, InstanaConfig(SERVER_URL, ""))
+        Instana.setup(app, InstanaConfig("", SERVER_URL))
     }
 
     @Test
     fun getCrashReporting() {
-        Instana.setup(app, InstanaConfig(SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfig(API_KEY, SERVER_URL))
         checkNotNull(Instana.crashReporting)
     }
 
     @Test
     fun getInstrumentationService() {
-        Instana.setup(app, InstanaConfig(SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfig(API_KEY, SERVER_URL))
         checkNotNull(Instana.instrumentationService)
     }
 

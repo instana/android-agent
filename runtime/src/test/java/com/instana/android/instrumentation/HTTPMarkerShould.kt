@@ -26,7 +26,7 @@ class HTTPMarkerShould : BaseTest() {
 
     @Before
     fun setUp() {
-        Instana.setup(app, InstanaConfig(SERVER_URL, API_KEY))
+        Instana.setup(app, InstanaConfig(API_KEY, SERVER_URL))
         Instana.sessionId = "sessionId"
     }
 

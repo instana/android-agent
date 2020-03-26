@@ -4,7 +4,6 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.instana.android.BaseTest
-import com.instana.android.InstanaShould
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.*
@@ -23,7 +22,7 @@ class InstanaWorkManagerShould : BaseTest() {
 
     init {
         WorkManagerTestInitHelper.initializeTestWorkManager(app)
-        manager = InstanaWorkManager(InstanaConfig(InstanaShould.SERVER_URL, InstanaShould.API_KEY, initialBeaconDelayMs = 0), app, mockManager)
+        manager = InstanaWorkManager(InstanaConfig(API_KEY, SERVER_URL, initialBeaconDelayMs = 0), app, mockManager)
     }
 
     @Test
@@ -54,4 +53,8 @@ class InstanaWorkManagerShould : BaseTest() {
             error = null
         )
 
+    companion object {
+        const val API_KEY = "QPOEWIRJQPOIEWJF=-098767ALDJIFJASP"
+        const val SERVER_URL = "https://www.google.com"
+    }
 }

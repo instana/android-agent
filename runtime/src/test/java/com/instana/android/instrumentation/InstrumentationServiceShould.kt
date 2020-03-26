@@ -13,7 +13,7 @@ class InstrumentationServiceShould : BaseTest() {
 
     private val managerMock: InstanaWorkManager = mock()
 
-    private val configuration = InstanaConfig(FAKE_SERVER_URL, API_KEY)
+    private val configuration = InstanaConfig(API_KEY, FAKE_SERVER_URL)
     private val instrumentationService = InstrumentationService(app, managerMock, configuration)
 
     @Test
