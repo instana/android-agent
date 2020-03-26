@@ -6,13 +6,13 @@ import com.instana.android.performance.PerformanceMonitorConfig
 class InstanaConfig
 @JvmOverloads constructor(
     /**
-     * URL pointing to the Instana instance to which to the send monitoring data to
-     */
-    val reportingURL: String,
-    /**
      * Instana monitoring configuration key
      */
     val key: String,
+    /**
+     * URL pointing to the Instana instance to which to the send monitoring data to
+     */
+    val reportingURL: String,
     /**
      * Determine the HttpMonitoring mode
      */
