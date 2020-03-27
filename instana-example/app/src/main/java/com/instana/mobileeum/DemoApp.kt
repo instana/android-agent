@@ -22,7 +22,7 @@ class DemoApp : Application() {
         Instana.userEmail = "instana@example.com"
         Instana.userName = "instana android agent demo"
         Instana.meta.put("testKey", "testValue")
-        Instana.ignoreURLs.add("""^.*google\.com$""".toRegex())
+        Instana.ignoreURLs.add("""^.*google\.com$""".toRegex().toPattern())
         Instana.googlePlayServicesMissing = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS
 
         Instana.performanceService?.anrMonitor?.enabled = true

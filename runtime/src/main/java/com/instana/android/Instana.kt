@@ -24,6 +24,7 @@ import com.instana.android.performance.PerformanceService
 import com.instana.android.session.SessionService
 import com.instana.android.view.ViewChangeService
 import java.util.*
+import java.util.regex.Pattern
 import kotlin.properties.Delegates
 
 /**
@@ -62,7 +63,7 @@ object Instana {
      * List of URLs which will not be tracked by Instana, defined by a list of Regex(Kotlin) or Pattern(Java)
      */
     @JvmStatic
-    val ignoreURLs = mutableListOf<Regex>()
+    val ignoreURLs = mutableListOf<Pattern>()
 
     /**
      * Map of  ID which all new beacons will be associated with
