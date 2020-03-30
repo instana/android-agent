@@ -39,21 +39,26 @@ object OkHttp3GlobalInterceptor : Interceptor {
                     httpMarkers.add(marker)
                     chain.request().newBuilder().header(marker.headerKey(), marker.headerValue()).build()
                 } else {
+                    Logger.e("Failed to automatically mark OkHttp3 request with: `url` $url")
                     intercepted
                 }
             } else {
+                Logger.d("Skipped already tagged OkHttp3 request with: `url` $url")
                 request = intercepted
             }
         } else {
+            Logger.d("Ignored OkHttp3 request with: `url` $url")
             request = intercepted
         }
 
         return try {
             val response = chain.proceed(request)
+            Logger.d("Finishing OkHttp3 request with: `url` $url")
             marker?.finish(response)
             httpMarkers.remove(marker)
             response
         } catch (e: Exception) {
+            Logger.d("Finishing OkHttp3 request with: `url` $url, `error` ${e.message}")
             marker?.finish(request, e)
             httpMarkers.remove(marker)
             chain.proceed(chain.request())
