@@ -29,7 +29,7 @@ allprojects {
 }
 ```
 
-### 1. Add Instana Agent SDK to your app
+### Step 1. Add Instana Agent SDK to your app
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
@@ -37,7 +37,7 @@ dependencies {
 }
 ```
 
-### 2. Add Instana Agent Plugin to your app
+### Step 2. Add Instana Agent Plugin to your app
 In your module (app-level) Gradle file (usually `app/build.gradle`), after applying the `com.android.application` plugin:
 ```groovy
 apply plugin: 'com.android.application'
@@ -57,7 +57,7 @@ buildscript {
 }
 ```
 
-### 3. Initialize Instana Agent when your app starts
+### Step 3. Initialize Instana Agent when your app starts
 
 In your class extending `Application`, replace `YOUR_REPORTING_URL` and `YOUR_APP_KEY` with the configuration values you'll find in your Instana Dashboard:
 ```kotlin
@@ -75,7 +75,7 @@ class MyApplication : Application() {
 }
 ```
 
-### 4. Add Java 1.8 compatibility
+### Step 4. Add Java 1.8 compatibility
 
 Note: this step is not required if your `minSdkVersion` is 24 or higher
 
