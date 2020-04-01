@@ -33,7 +33,7 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:1.0.0'
+    implementation 'com.instana:android-agent-runtime:1.1.0'
 }
 ```
 
@@ -52,7 +52,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:1.0.0"
+        classpath "com.instana:android-agent-plugin:1.1.0"
     }
 }
 ```
