@@ -30,6 +30,6 @@ class DemoApp : Application() {
         Instana.performanceService?.frameSkipMonitor?.enabled = true
         Instana.performanceService?.lowMemoryMonitor?.enabled = true
 
-        Instana.logLevel = Log.DEBUG
+        Instana.logLevel = Log.VERBOSE
     }
 }
