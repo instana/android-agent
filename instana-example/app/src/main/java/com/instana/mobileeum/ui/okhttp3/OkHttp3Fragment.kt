@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_okhttp3.view.*
 
 class OkHttp3Fragment : Fragment() {
 
-    private lateinit var okHttp3ViewModel: OkHttp3ViewModel
+    private lateinit var viewModel: OkHttp3ViewModel
     private var presets = emptyList<RequestPreset>()
     private var waitingResponse = false
 
@@ -28,7 +28,7 @@ class OkHttp3Fragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        okHttp3ViewModel = ViewModelProvider(this).get(OkHttp3ViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(OkHttp3ViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_okhttp3, container, false)
 
         // OkHttp3 settings
@@ -40,7 +40,7 @@ class OkHttp3Fragment : Fragment() {
         }
 
         // Request Presets
-        okHttp3ViewModel.presets.observe(viewLifecycleOwner, Observer { list ->
+        viewModel.presets.observe(viewLifecycleOwner, Observer { list ->
             presets = list
             val spinnerOptions = list.map { it.name }.toMutableList().apply { add("CUSTOM") }
             root.requestPresets.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, spinnerOptions)
@@ -64,7 +64,7 @@ class OkHttp3Fragment : Fragment() {
         // Run Button
         root.runRequest.setOnClickListener {
             waitingResponse = true
-            okHttp3ViewModel.executeRequest(
+            viewModel.executeRequest(
                 useConstructor = root.useConstructor.isChecked,
                 cancel = root.cancelRequest.isChecked,
                 method = root.requestMethod.text.toString(),
@@ -74,7 +74,7 @@ class OkHttp3Fragment : Fragment() {
         }
 
         // Response
-        okHttp3ViewModel.response.observe(viewLifecycleOwner, Observer {
+        viewModel.response.observe(viewLifecycleOwner, Observer {
             root.response.text = it
             if (waitingResponse) root.scrollView.fullScroll(View.FOCUS_DOWN)
         })

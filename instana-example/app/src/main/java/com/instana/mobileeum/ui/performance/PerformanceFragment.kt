@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.fragment_performance.view.*
 
 class PerformanceFragment : Fragment() {
 
-    private lateinit var performanceViewModel: PerformanceViewModel
+    private lateinit var viewModel: PerformanceViewModel
     private var waitingResponse = false
 
     override fun onCreateView(
@@ -20,25 +20,25 @@ class PerformanceFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        performanceViewModel = ViewModelProvider(this).get(PerformanceViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(PerformanceViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_performance, container, false)
 
         // Actions
         root.lowMemory.setOnClickListener {
             waitingResponse = true
-            performanceViewModel.forceLowMemory(requireActivity().application)
+            viewModel.forceLowMemory(requireActivity().application)
         }
         root.frameSkip.setOnClickListener {
             waitingResponse = true
-            performanceViewModel.forceFrameSkip()
+            viewModel.forceFrameSkip()
         }
         root.anr.setOnClickListener {
             waitingResponse = true
-            performanceViewModel.forceANR()
+            viewModel.forceANR()
         }
 
         // Status
-        performanceViewModel.response.observe(viewLifecycleOwner, Observer {
+        viewModel.response.observe(viewLifecycleOwner, Observer {
             root.status.text = it
             if (waitingResponse) root.scrollView.fullScroll(View.FOCUS_DOWN)
         })

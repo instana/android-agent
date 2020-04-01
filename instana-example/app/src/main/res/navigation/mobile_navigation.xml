@@ -18,7 +18,14 @@
         tools:layout="@layout/fragment_httpurlconnection" />
 
     <fragment
+        android:id="@+id/navigation_transitives"
+        android:name="com.instana.mobileeum.ui.transitives.TransitivesFragment"
+        android:label="@string/title_transitives"
+        tools:layout="@layout/fragment_transitives" />
+
+    <fragment
         android:id="@+id/navigation_performance"
         android:name="com.instana.mobileeum.ui.performance.PerformanceFragment"
-        android:label="@string/title_performance" />
+        android:label="@string/title_performance"
+        tools:layout="@layout/fragment_performance" />
 </navigation>

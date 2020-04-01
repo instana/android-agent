@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_httpurlconnection.view.*
 
 class HttpURLConnectionFragment : Fragment() {
 
-    private lateinit var httpURLConnectionViewModel: HttpURLConnectionViewModel
+    private lateinit var viewModel: HttpURLConnectionViewModel
 
     private var presets = emptyList<RequestPreset>()
     private var waitingResponse = false
@@ -29,11 +29,11 @@ class HttpURLConnectionFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        httpURLConnectionViewModel = ViewModelProvider(this).get(HttpURLConnectionViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(HttpURLConnectionViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_httpurlconnection, container, false)
 
         // Request Presets
-        httpURLConnectionViewModel.presets.observe(viewLifecycleOwner, Observer { list ->
+        viewModel.presets.observe(viewLifecycleOwner, Observer { list ->
             presets = list
             val spinnerOptions = list.map { it.name }.toMutableList().apply { add("CUSTOM") }
             root.requestPresets.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, spinnerOptions)
@@ -57,7 +57,7 @@ class HttpURLConnectionFragment : Fragment() {
         // Run Button
         root.runRequest.setOnClickListener {
             waitingResponse = true
-            httpURLConnectionViewModel.executeRequest(
+            viewModel.executeRequest(
                 method = root.requestMethod.text.toString(),
                 url = root.requestUrl.text.toString(),
                 body = if (root.requestBody.text.isNullOrBlank()) null else root.requestBody.text.toString()
@@ -65,7 +65,7 @@ class HttpURLConnectionFragment : Fragment() {
         }
 
         // Response
-        httpURLConnectionViewModel.response.observe(viewLifecycleOwner, Observer {
+        viewModel.response.observe(viewLifecycleOwner, Observer {
             root.response.text = it
             if (waitingResponse) root.scrollView.fullScroll(View.FOCUS_DOWN)
         })

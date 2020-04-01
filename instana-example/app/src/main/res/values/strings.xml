@@ -3,8 +3,9 @@
 
     <!-- Navigation -->
     <string name="title_okhttp3">OkHttp3</string>
-    <string name="title_httpurlconnection">HttpURLConnection</string>
-    <string name="title_performance">Performance</string>
+    <string name="title_httpurlconnection">HttpURLConn</string>
+    <string name="title_transitives">Trans</string>
+    <string name="title_performance">Perf</string>
 
     <!-- Request -->
     <string name="request_parameters">Request parameters</string>
