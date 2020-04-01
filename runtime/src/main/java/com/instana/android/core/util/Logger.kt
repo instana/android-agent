@@ -17,6 +17,13 @@ object Logger {
     var logLevel = Log.INFO
 
     @JvmStatic
+    fun v(message: String) {
+        if (enabled && logLevel <= Log.VERBOSE) {
+            Log.v(LOG_TAG, message)
+        }
+    }
+
+    @JvmStatic
     fun d(message: String) {
         if (enabled && logLevel <= Log.DEBUG) {
             Log.d(LOG_TAG, message)
