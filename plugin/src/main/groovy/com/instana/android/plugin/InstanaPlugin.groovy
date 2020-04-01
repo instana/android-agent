@@ -17,11 +17,12 @@ class InstanaPlugin implements Plugin<Project> {
         }
 
         // add aspectj plugin
-        if (!project.pluginManager.hasPlugin('com.archinamon.aspectj')) {
-            project.pluginManager.apply('com.archinamon.aspectj')
+        if (!project.pluginManager.hasPlugin('com.archinamon.aspectj-ext')) {
+            project.pluginManager.apply('com.archinamon.aspectj-ext')
         }
 
         def aspectj = project.extensions.findByName("aspectj")
         aspectj.includeAspectsFromJar 'android-agent-runtime'
+        aspectj.includeJar "retrofit"
     }
 }
