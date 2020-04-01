@@ -24,5 +24,6 @@ class InstanaPlugin implements Plugin<Project> {
         def aspectj = project.extensions.findByName("aspectj")
         aspectj.includeAspectsFromJar 'android-agent-runtime'
         aspectj.includeJar "retrofit"
+        aspectj.includeJar "react-native"
     }
 }

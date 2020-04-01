@@ -6,6 +6,7 @@ import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import androidx.annotation.RestrictTo
 import com.instana.android.Instana
+import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
@@ -18,7 +19,8 @@ import java.util.*
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class SessionService(
     app: Application,
-    manager: InstanaWorkManager
+    manager: InstanaWorkManager,
+    config: InstanaConfig
 ) {
 
     /**
@@ -34,7 +36,7 @@ class SessionService(
             effectiveConnectionType = if (cm != null && tm != null) getCellularConnectionType(cm, tm) else null
         )
         val session = Beacon.newSessionStart(
-            appKey = Instana.config.key,
+            appKey = config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,

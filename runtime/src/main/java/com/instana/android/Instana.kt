@@ -147,7 +147,7 @@ object Instana {
      * Instana configuration object
      */
     @JvmStatic
-    lateinit var config: InstanaConfig
+    var config: InstanaConfig? = null
         internal set
 
     /**
@@ -166,10 +166,10 @@ object Instana {
     @JvmStatic
     fun setup(app: Application, config: InstanaConfig) {
         Logger.i("Configuring Instana agent")
+        this.config = config
         initProfiles(app)
         initLifecycle(app)
-        this.config = config
-        initWorkManager(Instana.config)
+        initWorkManager(config)
         Logger.i("Instana agent started")
     }
 
@@ -204,15 +204,16 @@ object Instana {
     private fun initWorkManager(config: InstanaConfig) {
         InstanaWorkManager(config, app).also {
             crashReporting = CrashService(app, it, config)
-            sessionService = SessionService(app, it)
+            sessionService = SessionService(app, it, config)
             customEvents = CustomEventService(
                 manager = it,
                 cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!!, //TODO don't force-cast
-                tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!
+                tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!,
+                config = config
             ) //TODO don't force-cast
             instrumentationService = InstrumentationService(app, it, config)
             performanceService = PerformanceService(app, config.performanceMonitorConfig, lifeCycle!!) //TODO don't force-cast
-            viewChangeService = ViewChangeService(app, it)
+            viewChangeService = ViewChangeService(app, it, config)
         }
     }
 }

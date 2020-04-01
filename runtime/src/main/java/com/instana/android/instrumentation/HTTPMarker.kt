@@ -1,6 +1,7 @@
 package com.instana.android.instrumentation
 
 import com.instana.android.Instana
+import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
@@ -22,7 +23,8 @@ import java.util.*
 class HTTPMarker(
     private val url: String,
     private val viewName: String?,
-    private val manager: InstanaWorkManager
+    private val manager: InstanaWorkManager,
+    private val config: InstanaConfig
 ) {
 
     private val stopWatch: StopWatch = StopWatch() // TODO replace with startTime&endTime
@@ -61,7 +63,7 @@ class HTTPMarker(
         val errorMessage = "Cancelled request"
 
         val beacon = Beacon.newHttpRequest(
-            appKey = Instana.config.key,
+            appKey = config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
@@ -80,7 +82,7 @@ class HTTPMarker(
             error = errorMessage
         )
 
-        if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+        if (config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             Logger.i("HttpRequest cancelled with: `url` $url")
             manager.queue(beacon)
         }
@@ -102,7 +104,7 @@ class HTTPMarker(
         val decodedResponseSize = response.decodedContentLength()
 
         val beacon = Beacon.newHttpRequest(
-            appKey = Instana.config.key,
+            appKey = config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
@@ -121,7 +123,7 @@ class HTTPMarker(
             error = null
         )
 
-        if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+        if (config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             Logger.i("HttpRequest finished with: `url` $url")
             manager.queue(beacon)
         }
@@ -140,7 +142,7 @@ class HTTPMarker(
         val requestSize = request.body?.contentLength()
 
         val beacon = Beacon.newHttpRequest(
-            appKey = Instana.config.key,
+            appKey = config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
@@ -159,7 +161,7 @@ class HTTPMarker(
             error = error.toString()
         )
 
-        if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+        if (config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             Logger.i("HttpRequest finished with: `url` $url")
             manager.queue(beacon)
         }
@@ -183,7 +185,7 @@ class HTTPMarker(
         val errorMessage = connection.errorMessageOrNull()
 
         val beacon = Beacon.newHttpRequest(
-            appKey = Instana.config.key,
+            appKey = config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
@@ -202,7 +204,7 @@ class HTTPMarker(
             error = errorMessage
         )
 
-        if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+        if (config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             Logger.i("HttpRequest finished with: `url` $url")
             manager.queue(beacon)
         }
@@ -222,7 +224,7 @@ class HTTPMarker(
         val errorMessage = error.message
 
         val beacon = Beacon.newHttpRequest(
-            appKey = Instana.config.key,
+            appKey = config.key,
             appProfile = Instana.appProfile,
             deviceProfile = Instana.deviceProfile,
             connectionProfile = connectionProfile,
@@ -241,7 +243,7 @@ class HTTPMarker(
             error = errorMessage
         )
 
-        if (Instana.config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
+        if (config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
             Logger.i("HttpRequest finished with: `url` $url")
             manager.queue(beacon)
         }

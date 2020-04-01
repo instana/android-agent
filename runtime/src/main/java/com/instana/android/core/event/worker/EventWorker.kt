@@ -52,7 +52,7 @@ open class EventWorker(
     private fun send(data: String): Boolean {
         return try {
             val request = Request.Builder()
-                .url(Instana.config.reportingURL)
+                .url(Instana.config!!.reportingURL)
                 .addHeader("Content-Type", "application/json") // TODO ??? it's def not json
                 .addHeader("Accept-Encoding", "gzip")
                 .post(data.toRequestBody(TEXT_PLAIN))

@@ -134,15 +134,13 @@ object ConstantsAndUtil {
         }
 
     @JvmStatic
-    fun isNotLibraryCallBoolean(url: String?): Boolean = if (url == null) {
-        false
-    } else {
-        !url.contains(Instana.config.reportingURL)
-    }
+    fun isNotLibraryCallBoolean(url: String?): Boolean =
+        if (url == null) false
+        else !url.contains(Instana.config?.reportingURL ?: "")
 
     @JvmStatic
     val isAutoEnabled: Boolean
-        get() = Instana.config.httpCaptureConfig == HTTPCaptureConfig.AUTO
+        get() = Instana.config?.httpCaptureConfig == HTTPCaptureConfig.AUTO
 
     @JvmStatic
     fun isBlacklistedURL(url: String): Boolean {
