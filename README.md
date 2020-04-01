@@ -92,7 +92,7 @@ android {
 ### Supported network clients
 
 Instana Android Agent is currently capable of automatically tracking events for the following network clients:
-- [OkHttp3](https://github.com/square/okhttp/)
+- [OkHttp3](https://square.github.io/okhttp/)
 - [HttpURLConnection](https://developer.android.com/reference/java/net/HttpURLConnection)
 - [Retrofit](https://square.github.io/retrofit/)
 
