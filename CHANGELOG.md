@@ -7,6 +7,7 @@ _2020-04-03_
 
 - Fixed bug which could potentially leave a file open after the execution of a Work 
 - Changes to make sure all file-access is done in the IO thread (this solves remaining StrictMode warnings)
+- Fixed agent-version reported to Instana
 
 ## Version 1.1.0
 
