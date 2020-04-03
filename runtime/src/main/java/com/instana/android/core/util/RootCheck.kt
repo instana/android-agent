@@ -13,7 +13,7 @@ object RootCheck {
     }
 
     private fun checkRootMethod2(): Boolean {
-        val paths = arrayOf(
+        arrayOf(
             "/system/app/Superuser.apk",
             "/sbin/su", "/system/bin/su",
             "/system/xbin/su",
@@ -23,9 +23,8 @@ object RootCheck {
             "/system/bin/failsafe/su",
             "/data/local/su",
             "/su/bin/su"
-        )
-        for (path in paths) {
-            if (File(path).exists()) return true
+        ).forEach {
+            if (File(it).exists()) return true
         }
         return false
     }
@@ -34,7 +33,7 @@ object RootCheck {
         var process: Process? = null
         return try {
             process = ConstantsAndUtil.runtime.exec(arrayOf("/system/xbin/which", "su"))
-            val br = BufferedReader(InputStreamReader(process!!.inputStream))
+            val br = BufferedReader(InputStreamReader(process.inputStream))
             br.readLine() != null
         } catch (t: Throwable) {
             false

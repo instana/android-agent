@@ -11,7 +11,7 @@ data class DeviceProfile(
     val deviceManufacturer: String,
     val deviceModel: String,
     val deviceHardware: String,
-    val rooted: Boolean,
+    var rooted: Boolean?,
     val locale: Locale,
     val viewportWidth: Int?,
     val viewportHeight: Int?

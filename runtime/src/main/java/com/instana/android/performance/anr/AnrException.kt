@@ -11,11 +11,11 @@ import java.util.*
  * [Thread]
  */
 class AnrException
-    /**
-     * Creates a new instance
-     *
-     * @param thread the [Thread] which is not responding
-     */
+/**
+ * Creates a new instance
+ *
+ * @param thread the [Thread] which is not responding
+ */
     (thread: Thread) : Exception("ANR detected") {
 
     init {

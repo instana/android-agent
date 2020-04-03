@@ -7,8 +7,9 @@ import java.nio.file.Paths
 
 fun File.isDirectoryEmpty(): Boolean {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val stream = Files.newDirectoryStream(Paths.get(absolutePath))
-        stream.firstOrNull() == null
+        Files.newDirectoryStream(Paths.get(absolutePath)).use {
+            it.firstOrNull() == null
+        }
     } else {
         listFiles().isNullOrEmpty()
     }

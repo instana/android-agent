@@ -45,8 +45,8 @@ class Beacon private constructor(
         setDeviceModel(deviceProfile.deviceModel)
         setDeviceHardware(deviceProfile.deviceHardware)
         deviceProfile.googlePlayServicesMissing?.run { setGooglePlayServicesMissing(this) }
-        setRooted(deviceProfile.rooted)
         setUserLanguages(listOf(deviceProfile.locale))
+        deviceProfile.rooted?.run { setRooted(this) }
         deviceProfile.viewportWidth?.run { setViewportWidth(this) }
         deviceProfile.viewportHeight?.run { setViewportHeight(this) }
 
@@ -293,6 +293,10 @@ class Beacon private constructor(
      */
     fun setRooted(value: Boolean) {
         booleanMap["ro"] = value
+    }
+
+    fun getRooted(): Boolean? {
+        return booleanMap["ro"]
     }
 
     /**

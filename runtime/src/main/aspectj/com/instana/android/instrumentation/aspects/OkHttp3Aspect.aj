@@ -2,7 +2,6 @@ package com.instana.android.instrumentation.aspects;
 
 import com.instana.android.core.util.Logger;
 import com.instana.android.instrumentation.okhttp3.OkHttp3GlobalInterceptor;
-
 import okhttp3.Call;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;

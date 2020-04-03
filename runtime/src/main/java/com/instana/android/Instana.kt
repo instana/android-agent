@@ -23,6 +23,10 @@ import com.instana.android.instrumentation.InstrumentationService
 import com.instana.android.performance.PerformanceService
 import com.instana.android.session.SessionService
 import com.instana.android.view.ViewChangeService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.properties.Delegates
@@ -166,6 +170,7 @@ object Instana {
     @JvmStatic
     fun setup(app: Application, config: InstanaConfig) {
         Logger.i("Configuring Instana agent")
+        avoidStrictModeFalsePositives()
         this.config = config
         initProfiles(app)
         initLifecycle(app)
@@ -189,7 +194,7 @@ object Instana {
             deviceManufacturer = Build.MANUFACTURER ?: ConstantsAndUtil.EMPTY_STR,
             deviceModel = Build.MODEL ?: ConstantsAndUtil.EMPTY_STR,
             deviceHardware = Build.HARDWARE,
-            rooted = RootCheck.isDeviceRooted(),
+            rooted = null,
             locale = Locale.getDefault(),
             viewportWidth = viewportWidthAndHeight.first,
             viewportHeight = viewportWidthAndHeight.second
@@ -199,6 +204,11 @@ object Instana {
             appBuild = appAndBuildVersion.second,
             appId = app.packageName
         )
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                deviceProfile.rooted = RootCheck.isDeviceRooted()
+            }
+        }
     }
 
     private fun initWorkManager(config: InstanaConfig) {
@@ -214,6 +224,19 @@ object Instana {
             instrumentationService = InstrumentationService(app, it, config)
             performanceService = PerformanceService(app, config.performanceMonitorConfig, lifeCycle!!) //TODO don't force-cast
             viewChangeService = ViewChangeService(app, it, config)
+        }
+    }
+
+    /**
+     * The current version of coroutines and StrictMode can produce false positives: https://github.com/googlecodelabs/kotlin-coroutines/issues/23
+     *
+     * This method applied a workaround to avoid those false positives
+     */
+    private fun avoidStrictModeFalsePositives() {
+        GlobalScope.launch {
+            withContext(Dispatchers.Main) {
+                Unit
+            }
         }
     }
 }

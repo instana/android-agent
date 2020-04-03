@@ -3,7 +3,6 @@ package com.instana.android.instrumentation.aspects;
 import com.instana.android.Instana;
 import com.instana.android.core.util.Logger;
 import com.instana.android.instrumentation.HTTPMarker;
-
 import org.aspectj.lang.JoinPoint;
 
 import java.io.IOException;
@@ -13,12 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY;
-import static com.instana.android.core.util.ConstantsAndUtil.checkTag;
-import static com.instana.android.core.util.ConstantsAndUtil.hasTrackingHeader;
-import static com.instana.android.core.util.ConstantsAndUtil.isAutoEnabled;
-import static com.instana.android.core.util.ConstantsAndUtil.isBlacklistedURL;
-import static com.instana.android.core.util.ConstantsAndUtil.isNotLibraryCallBoolean;
+import static com.instana.android.core.util.ConstantsAndUtil.*;
 
 public aspect UrlConnectionAspect {
     private final List<HTTPMarker> httpMarkers = new LinkedList<>();

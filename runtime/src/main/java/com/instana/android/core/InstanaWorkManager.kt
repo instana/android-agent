@@ -12,6 +12,10 @@ import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.worker.EventWorker
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.isDirectoryEmpty
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.*
 import java.util.concurrent.Executors
@@ -21,7 +25,7 @@ import java.util.concurrent.TimeUnit
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class InstanaWorkManager(
     config: InstanaConfig,
-    context: Context,
+    private val context: Context,
     private val manager: WorkManager = WorkManager.getInstance()
 ) {
 
@@ -29,19 +33,18 @@ class InstanaWorkManager(
     private val flushDelayMs = 1000L
 
     private val constraints: Constraints
-    private val beaconsDirectory: File
+    private var beaconsDirectory: File? = null
     private var initialDelayQueue: Queue<Beacon> = LinkedBlockingDeque()
     private var isInitialDelayComplete = false
 
     init {
         checkConfigurationParameters(config)
         constraints = configureWorkManager(config)
-        beaconsDirectory = File(context.filesDir, beaconsDirectoryName).apply { mkdirs() }
         Executors.newScheduledThreadPool(1).schedule({
             isInitialDelayComplete = true
             updateQueueItems(initialDelayQueue)
             initialDelayQueue.forEach { queue(it) }
-            flush(beaconsDirectory)
+            flush(getBeaconsDirectory())
         }, config.initialBeaconDelayMs, TimeUnit.MILLISECONDS)
     }
 
@@ -53,11 +56,21 @@ class InstanaWorkManager(
             Instana.userProfile.userId?.run { item.setUserId(this) }
             Instana.userProfile.userEmail?.run { item.setUserEmail(this) }
             if (item.getView() == null) Instana.firstView?.run { item.setView(this) }
+            if (item.getRooted() == null) Instana.deviceProfile.rooted?.run { item.setRooted(this) }
             if (item.getGooglePlayServicesMissing() == null) Instana.googlePlayServicesMissing?.run { item.setGooglePlayServicesMissing(this) }
             Instana.meta.getAll().forEach {
                 if (item.getMeta(it.key) == null) item.setMeta(it.key, it.value)
             }
         }
+    }
+
+    private fun getBeaconsDirectory(): File {
+        var directory = beaconsDirectory
+        if (directory == null) {
+            directory = File(context.filesDir, beaconsDirectoryName).apply { mkdirs() }
+            beaconsDirectory = directory
+        }
+        return directory
     }
 
     /**
@@ -133,9 +146,13 @@ class InstanaWorkManager(
             isInitialDelayComplete.not() -> initialDelayQueue.add(beacon)
             beaconId.isNullOrBlank() -> Logger.e("Tried to queue beacon with no beaconId: $beacon")
             else -> {
-                val file = File(beaconsDirectory, beaconId)
-                file.writeText(beacon.toString(), Charsets.UTF_8)
-                flush(beaconsDirectory)
+                GlobalScope.launch {
+                    withContext(Dispatchers.IO) {
+                        val file = File(getBeaconsDirectory(), beaconId)
+                        file.writeText(beacon.toString(), Charsets.UTF_8)
+                        flush(getBeaconsDirectory())
+                    }
+                }
             }
         }
     }
