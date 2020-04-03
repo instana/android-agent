@@ -1,4 +1,4 @@
-# Android Instana Agent 
+# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/bintray/v/instana/public-maven/android-agent-plugin?color=0db4b3&label=jcenter"></a>
 
 ## Requirements
 
