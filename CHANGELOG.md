@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+## Version 1.1.1
+
+_2020-04-03_
+
+- Fixed bug which could potentially leave a file open after the execution of a Work 
+- Changes to make sure all file-access is done in the IO thread (this solves remaining StrictMode warnings)
+
 ## Version 1.1.0
 
 _2020-04-01_
