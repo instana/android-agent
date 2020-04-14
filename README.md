@@ -2,7 +2,15 @@
 
 ## Requirements
 
-- Android Gradle Plugin: 3.5.x
+### Android Agent v1.x.x
+
+- Android Gradle Plugin 3.5.x 
+- Gradle 5.4.1+
+
+### Android Agent v2.x.x
+
+- Android Gradle Plugin 3.6.x
+- Gradle 6.0+
 
 ## Getting started
 
@@ -33,7 +41,7 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:1.1.1'
+    implementation 'com.instana:android-agent-runtime:2.1.1'
 }
 ```
 
@@ -52,7 +60,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:1.1.1"
+        classpath "com.instana:android-agent-plugin:2.1.1"
     }
 }
 ```
