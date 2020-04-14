@@ -1,6 +1,13 @@
 Change Log
 ==========
 
+## Version 2.1.1
+
+_2020-04-14_
+
+- Migrated to Android Gradle Plugin 3.6.x and Gradle 6.x
+- Feature-parity with v1.1.1
+
 ## Version 1.1.1
 
 _2020-04-03_
