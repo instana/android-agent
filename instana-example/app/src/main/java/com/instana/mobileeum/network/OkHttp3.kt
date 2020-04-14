@@ -7,11 +7,12 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.logging.HttpLoggingInterceptor
 
 object OkHttp3 {
 
     private val contentType = "application/json; charset=utf-8".toMediaType()
-    private val okHttpClient = OkHttpClient.Builder().build()
+    private val okHttpClient = OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor()).build()
 
     /**
      * Can't be run on Main Thread
