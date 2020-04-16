@@ -1,4 +1,4 @@
-# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-v2.1.2-brightgreen?color=0db4b3"> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-v1.1.2-brightgreen?color=0db4b3">
+# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.1.2-brightgreen?color=0db4b3"> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.1.2-brightgreen?color=0db4b3">
 ## Requirements
 
 ### Android Agent v1.x.x
