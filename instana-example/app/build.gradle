@@ -60,6 +60,7 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+    implementation project(path: ':network')
 
     // Language and support
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -75,10 +76,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.1'
 
     // Network clients
-    implementation 'com.squareup.okhttp3:okhttp:4.5.0'
-    implementation("com.squareup.okhttp3:logging-interceptor:4.5.0")
     implementation 'com.squareup.retrofit2:retrofit:2.8.1'
-    implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
 
     // Instana Agent
     implementation "com.instana:android-agent-runtime:$agent_version"
