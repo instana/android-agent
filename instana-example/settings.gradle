@@ -1,2 +1,3 @@
 include ':app'
 rootProject.name='instana-example'
+include ':network'
