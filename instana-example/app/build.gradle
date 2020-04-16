@@ -75,6 +75,9 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.2.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.1'
 
+    // Network clients
+    implementation 'com.squareup.retrofit2:retrofit:2.8.1'
+
     // Instana Agent
     implementation "com.instana:android-agent-runtime:$agent_version"
 
