@@ -4,6 +4,7 @@ import com.android.build.gradle.AppPlugin
 import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ProjectDependency
 
 class InstanaPlugin implements Plugin<Project> {
 
@@ -23,6 +24,16 @@ class InstanaPlugin implements Plugin<Project> {
 
         def aspectj = project.extensions.findByName("aspectj")
         aspectj.includeAspectsFromJar 'android-agent-runtime'
+
+        project.afterEvaluate {
+            project.configurations*.dependencies*.
+                    findAll { it instanceof ProjectDependency }.
+                    flatten().
+                    each {
+                        def dependency = it as ProjectDependency
+                        aspectj.includeJar dependency.name
+                    }
+        }
         aspectj.includeJar "retrofit"
         aspectj.includeJar "react-native"
     }
