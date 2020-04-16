@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+## Version 1.1.2
+
+_2020-04-16_
+
+- Fixed bug which could cause network requests in project-modules to not be traced 
+
 ## Version 1.1.1
 
 _2020-04-03_
