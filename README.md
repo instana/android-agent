@@ -1,4 +1,4 @@
-# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.1.2-brightgreen?color=0db4b3"> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.1.2-brightgreen?color=0db4b3">
+# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.1.2-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.1.2-brightgreen?color=0db4b3"></a>
 ## Requirements
 
 ### Android Agent v1.x.x
@@ -109,7 +109,7 @@ You can use *manual tracking* to add support for any client yourself, or please 
 
 The configuration described in `Step 3` is the minimum configuration you must provide to Instana Agent to function. 
 
-Please check for additional options in the [Android API documentation](https://documentation.link).
+Please check for additional options in the [Android API documentation](https://docs.instana.io/products/mobile_app_monitoring/android_api/).
 
 ## Examples
 
