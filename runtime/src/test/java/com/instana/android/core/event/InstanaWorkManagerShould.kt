@@ -36,7 +36,7 @@ class InstanaWorkManagerShould : BaseTest() {
         Beacon.newHttpRequest(
             appKey = "Instana.config.key",
             appProfile = AppProfile("version", "build", "id"),
-            deviceProfile = DeviceProfile(Platform.ANDROID, "1", "test", "test", "test", false, Locale.CANADA, 0, 0),
+            deviceProfile = DeviceProfile(Platform.ANDROID, "1", "test", "test", "test", "test", false, Locale.CANADA, 0, 0),
             connectionProfile = ConnectionProfile(null, null, null),
             userProfile = UserProfile(null, null, null),
             sessionId = "sessionId",
