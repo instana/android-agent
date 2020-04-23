@@ -1,5 +1,12 @@
-Change Log
+Changelog
 ==========
+
+## Version 1.1.3
+
+_2020-04-23_
+
+- Fixed bug which could cause a crash for users running HttpURLConnection
+- Report `osName` for Android 6.0 (23) devices (if defined by the manufacturer)
 
 ## Version 1.1.2
 
