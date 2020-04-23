@@ -1,6 +1,7 @@
 package com.instana.android.core.util
 
 import android.os.Build
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.util.zip.GZIPInputStream
 
@@ -23,7 +24,11 @@ fun HttpURLConnection.encodedResponseSizeOrNull(): Long? {
 
 fun HttpURLConnection.decodedResponseSizeOrNull(): Int? {
     if ("gzip".equals(contentEncoding, ignoreCase = true)) {
-        GZIPInputStream(inputStream.clone()).use { return it.readBytes().size }
+        try {
+            GZIPInputStream(inputStream.clone()).use { return it.readBytes().size }
+        } catch (e: IOException) {
+            return null
+        }
     }
     return null
 }
