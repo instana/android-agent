@@ -40,6 +40,7 @@ class Beacon private constructor(
 
         // Device
         setPlatform(deviceProfile.platform)
+        setOsName(deviceProfile.osName)
         setOsVersion(deviceProfile.osVersion)
         setDeviceManufacturer(deviceProfile.deviceManufacturer)
         setDeviceModel(deviceProfile.deviceModel)

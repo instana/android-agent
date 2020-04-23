@@ -13,6 +13,7 @@ import androidx.annotation.RestrictTo
 import com.instana.android.Instana
 import com.instana.android.core.event.models.ConnectionType
 import com.instana.android.core.event.models.EffectiveConnectionType
+import com.instana.android.core.event.models.Platform
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import okhttp3.OkHttpClient
 
@@ -32,6 +33,14 @@ object ConstantsAndUtil {
 
     val client: OkHttpClient by lazy {
         OkHttpClient()
+    }
+
+    fun getOsName(): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.BASE_OS.isNotBlank()) {
+            Build.VERSION.BASE_OS
+        } else {
+            Platform.ANDROID.internalType
+        }
     }
 
     @Suppress("DEPRECATION")
