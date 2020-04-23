@@ -190,6 +190,7 @@ object Instana {
         val viewportWidthAndHeight = ConstantsAndUtil.getViewportWidthAndHeight(app)
         deviceProfile = DeviceProfile(
             platform = Platform.ANDROID,
+            osName = ConstantsAndUtil.getOsName(),
             osVersion = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
             deviceManufacturer = Build.MANUFACTURER ?: ConstantsAndUtil.EMPTY_STR,
             deviceModel = Build.MODEL ?: ConstantsAndUtil.EMPTY_STR,

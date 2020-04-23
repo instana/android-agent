@@ -7,6 +7,7 @@ import java.util.*
 
 data class DeviceProfile(
     val platform: Platform,
+    val osName: String,
     val osVersion: String,
     val deviceManufacturer: String,
     val deviceModel: String,
