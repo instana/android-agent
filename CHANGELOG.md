@@ -3,6 +3,12 @@ Changelog
 
 ## Version 1.1.3
 
+_2020-05-06_
+
+- Fixed concurrency issue which could cause a crash for users running multithreaded HttpURLConnection clients
+
+## Version 1.1.3
+
 _2020-04-23_
 
 - Fixed bug which could cause a crash for users running HttpURLConnection
