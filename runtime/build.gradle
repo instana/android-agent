@@ -44,7 +44,7 @@ repositories {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'android.arch.work:work-runtime-ktx:1.0.1'
     implementation 'com.squareup.okhttp3:okhttp:4.3.1'
 
