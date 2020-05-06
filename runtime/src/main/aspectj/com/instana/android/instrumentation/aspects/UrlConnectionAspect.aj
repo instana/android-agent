@@ -8,14 +8,13 @@ import org.aspectj.lang.JoinPoint;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.instana.android.core.util.ConstantsAndUtil.*;
 
 public aspect UrlConnectionAspect {
-    private final List<HTTPMarker> httpMarkers = new LinkedList<>();
+    private final Map<String, HTTPMarker> httpMarkers = new ConcurrentHashMap<>();
 
     pointcut openConnectionMethodCall(): call(* java.net.URL.openConnection());
     after() returning(HttpURLConnection connection): openConnectionMethodCall() {
@@ -25,7 +24,7 @@ public aspect UrlConnectionAspect {
         if (isAutoEnabled() && !checkTag(header) && isNotLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
             HTTPMarker marker = Instana.startCapture(url);
             connection.setRequestProperty(marker.headerKey(), marker.headerValue());
-            httpMarkers.add(marker);
+            httpMarkers.put(marker.headerValue(), marker);
         }
     }
 
@@ -35,12 +34,10 @@ public aspect UrlConnectionAspect {
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();
         if (isAutoEnabled() && isNotLibraryCallBoolean(url) && checkTag(header)) {
-            try {
-                HTTPMarker marker = findFirst(httpMarkers, header);
+            HTTPMarker marker = httpMarkers.get(header);
+            if (marker != null) {
                 marker.finish(connection);
-                httpMarkers.remove(marker);
-            } catch (NoSuchElementException ignored) {
-                // swallow exception
+                httpMarkers.remove(header);
             }
         }
     }
@@ -72,23 +69,12 @@ public aspect UrlConnectionAspect {
             String header = urlConnection.getRequestProperty(TRACKING_HEADER_KEY);
             String url = urlConnection.getURL().toString();
             if (isAutoEnabled() && hasTrackingHeader(header) && isNotLibraryCallBoolean(url) && checkTag(header)) {
-                try {
-                    HTTPMarker marker = findFirst(httpMarkers, header);
+                HTTPMarker marker = httpMarkers.get(header);
+                if (marker != null) {
                     marker.finish(urlConnection, e);
-                    httpMarkers.remove(marker);
-                } catch (NoSuchElementException ignored) {
-                    // swallow exception
+                    httpMarkers.remove(header);
                 }
             }
         }
-    }
-
-    private HTTPMarker findFirst(List<HTTPMarker> list, String tag) throws NoSuchElementException {
-        for (HTTPMarker remoteMarker : list) {
-            if (remoteMarker.headerValue().equals(tag)) {
-                return remoteMarker;
-            }
-        }
-        throw new NoSuchElementException();
     }
 }
