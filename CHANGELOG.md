@@ -1,7 +1,7 @@
 Changelog
 ==========
 
-## Version 1.1.3
+## Version 1.1.4
 
 _2020-05-06_
 
