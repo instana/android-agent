@@ -34,6 +34,8 @@ object HttpURLConnection {
                 }
             }
 
+            urlConnection.inputStream?.close()
+            
             return urlConnection.toString()
         } catch (e: IOException) {
             return e.toString()
