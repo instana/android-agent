@@ -24,6 +24,12 @@
         tools:layout="@layout/fragment_transitives" />
 
     <fragment
+        android:id="@+id/navigation_custom"
+        android:name="com.instana.mobileeum.ui.custom.CustomEventFragment"
+        android:label="@string/title_custom"
+        tools:layout="@layout/fragment_custom" />
+
+    <fragment
         android:id="@+id/navigation_performance"
         android:name="com.instana.mobileeum.ui.performance.PerformanceFragment"
         android:label="@string/title_performance"

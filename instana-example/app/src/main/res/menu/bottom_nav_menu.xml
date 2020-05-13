@@ -17,6 +17,11 @@
         android:title="@string/title_transitives" />
 
     <item
+        android:id="@+id/navigation_custom"
+        android:icon="@drawable/ic_send_black_24dp"
+        android:title="@string/title_custom" />
+
+    <item
         android:id="@+id/navigation_performance"
         android:icon="@drawable/ic_timer_black_24dp"
         android:title="@string/title_performance" />
