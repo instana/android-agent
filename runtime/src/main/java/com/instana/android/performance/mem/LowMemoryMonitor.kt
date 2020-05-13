@@ -50,7 +50,7 @@ class LowMemoryMonitor(
         val availableInMb = availableMem / MB
         val usedInMb = usedMem / MB
         Instana.customEvents?.submit(
-            name = "LowMemory",
+            eventName = "LowMemory",
             startTime = System.currentTimeMillis(),
             duration = 0L,
             meta = mapOf(
@@ -58,7 +58,10 @@ class LowMemoryMonitor(
                 "maxMb" to maxInMb.toString(),
                 "availableMb" to availableInMb.toString(),
                 "usedMb" to usedInMb.toString()
-            )
+            ),
+            viewName = Instana.view,
+            backendTracingID = null,
+            error = null
         )
     }
 

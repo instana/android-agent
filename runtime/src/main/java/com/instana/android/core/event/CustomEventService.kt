@@ -19,7 +19,15 @@ class CustomEventService(
 
     private val appKey = config.key
 
-    fun submit(name: String, startTime: Long, duration: Long, meta: Map<String, String>) {
+    fun submit(
+        eventName: String,
+        startTime: Long,
+        duration: Long,
+        meta: Map<String, String>,
+        viewName: String?,
+        backendTracingID: String?,
+        error: Throwable?
+    ) {
         val sessionId = Instana.sessionId
         if (sessionId == null) {
             Logger.e("Tried send CustomEvent with null sessionId")
@@ -32,6 +40,7 @@ class CustomEventService(
             connectionType = ConstantsAndUtil.getConnectionType(cm),
             effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(cm, tm)
         )
+        val errorMessage = error?.message
         val beacon = Beacon.newCustomEvent(
             appKey = appKey,
             appProfile = Instana.appProfile,
@@ -39,11 +48,13 @@ class CustomEventService(
             connectionProfile = connectionProfile,
             userProfile = Instana.userProfile,
             sessionId = sessionId,
-            view = Instana.view,
+            view = viewName,
             startTime = startTime,
             duration = duration,
-            name = name,
-            meta = mergedMeta.getAll()
+            name = eventName,
+            meta = mergedMeta.getAll(),
+            backendTraceId = backendTracingID,
+            error = errorMessage
         )
 
         manager.queue(beacon)

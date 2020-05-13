@@ -29,13 +29,16 @@ class ANRMonitor(
         val activityName = lifeCycle.activityName ?: EMPTY_STR
         Logger.d("FrameDip detected with: `activityName` $activityName")
         Instana.customEvents?.submit(
-            name = "ANR",
+            eventName = "ANR",
             startTime = System.currentTimeMillis(),
             duration = duration,
             meta = mapOf(
                 "activityName" to activityName,
                 "stackTrace" to anrThread.stackTraceAsString()
-            )
+            ),
+            viewName = Instana.view,
+            backendTracingID = null,
+            error = null
         )
     }
 }
