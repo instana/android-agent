@@ -264,6 +264,6 @@ class HTTPMarker(
 
     companion object {
         private const val backendTraceIdHeaderKey = "Server-Timing"
-        private val backendTraceIdParser = "^intid;desc=(.*)\$".toRegex() //TODO check whether we can restrict the match pattern a bit more
+        private val backendTraceIdParser = "^.* ?intid;desc=([^,]+)?.*\$".toRegex()
     }
 }
