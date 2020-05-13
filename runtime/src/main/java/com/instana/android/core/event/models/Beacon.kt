@@ -585,6 +585,8 @@ class Beacon private constructor(
             meta: Map<String, String>,
             startTime: Long,
             duration: Long,
+            backendTraceId: String?,
+            error: String?,
             name: String
         ): Beacon {
             return Beacon(BeaconType.CUSTOM, duration, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
@@ -593,6 +595,8 @@ class Beacon private constructor(
                     meta.forEach { setMeta(it.key, it.value) }
                     setCustomEventName(name)
                     setTimestamp(startTime)
+                    backendTraceId?.run { setBackendTraceId(backendTraceId) }
+                    error?.run { setErrorMessage(this) }
                 }
         }
 

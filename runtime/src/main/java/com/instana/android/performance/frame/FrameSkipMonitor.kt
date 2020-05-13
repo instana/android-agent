@@ -86,13 +86,16 @@ class FrameSkipMonitor(
         val activityName = lifeCycle.activityName ?: EMPTY_STR
         Logger.d("FrameDip detected with: `activityName` $activityName, `avgFrameRate` $averageFrameRate")
         Instana.customEvents?.submit(
-            name = "FrameDip",
+            eventName = "FrameDip",
             startTime = startTime,
             duration = duration,
             meta = mapOf(
                 "activityName" to activityName,
                 "avgFrameRate" to averageFrameRate.toString()
-            )
+            ),
+            viewName = Instana.view,
+            backendTracingID = null,
+            error = null
         )
     }
 
