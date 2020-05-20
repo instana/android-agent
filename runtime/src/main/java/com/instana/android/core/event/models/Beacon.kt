@@ -34,19 +34,19 @@ class Beacon private constructor(
         setAgentVersion(BuildConfig.VERSION_NAME) //TODO this has a new serialization key. Test when backend is deployed https://instana.slack.com/archives/GQS1KRJ5D/p1582630642005600
 
         // App
-        setAppVersion(appProfile.appVersion)
-        setAppBuild(appProfile.appBuild)
-        setBundleIdentifier(appProfile.appId)
+        appProfile.appVersion?.run { setAppVersion(this) }
+        appProfile.appBuild?.run { setAppBuild(this) }
+        appProfile.appId?.run { setBundleIdentifier(this) }
 
         // Device
-        setPlatform(deviceProfile.platform)
-        setOsName(deviceProfile.osName)
-        setOsVersion(deviceProfile.osVersion)
-        setDeviceManufacturer(deviceProfile.deviceManufacturer)
-        setDeviceModel(deviceProfile.deviceModel)
-        setDeviceHardware(deviceProfile.deviceHardware)
+        deviceProfile.platform?.run { setPlatform(this) }
+        deviceProfile.osName?.run { setOsName(this) }
+        deviceProfile.osVersion?.run { setOsVersion(this) }
+        deviceProfile.deviceManufacturer?.run { setDeviceManufacturer(this) }
+        deviceProfile.deviceModel?.run { setDeviceModel(this) }
+        deviceProfile.deviceHardware?.run { setDeviceHardware(this) }
         deviceProfile.googlePlayServicesMissing?.run { setGooglePlayServicesMissing(this) }
-        setUserLanguages(listOf(deviceProfile.locale))
+        listOfNotNull(deviceProfile.locale).run { setUserLanguages(this) }
         deviceProfile.rooted?.run { setRooted(this) }
         deviceProfile.viewportWidth?.run { setViewportWidth(this) }
         deviceProfile.viewportHeight?.run { setViewportHeight(this) }
