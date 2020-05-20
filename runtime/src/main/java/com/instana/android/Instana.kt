@@ -38,13 +38,13 @@ import kotlin.properties.Delegates
  */
 object Instana {
 
-    private lateinit var app: Application
-    private lateinit var sessionService: SessionService
+    private var app: Application? = null
+    private var sessionService: SessionService? = null
     private var lifeCycle: InstanaLifeCycle? = null
 
-    internal lateinit var appProfile: AppProfile
-    internal lateinit var deviceProfile: DeviceProfile
-    internal val userProfile = UserProfile(null, null, null)
+    internal val appProfile: AppProfile = AppProfile()
+    internal val deviceProfile: DeviceProfile = DeviceProfile()
+    internal val userProfile = UserProfile()
     internal var firstView: String? = null
 
     private var viewChangeService: ViewChangeService? = null
@@ -203,17 +203,20 @@ object Instana {
         )
     }
 
+    init {
+        avoidStrictModeFalsePositives()
+    }
+
     /**
      * Initialize Instana
      */
     @JvmStatic
     fun setup(app: Application, config: InstanaConfig) {
         Logger.i("Configuring Instana agent")
-        avoidStrictModeFalsePositives()
         this.config = config
         initProfiles(app)
         initLifecycle(app)
-        initWorkManager(config)
+        initWorkManager(app, config)
         Logger.i("Instana agent started")
     }
 
@@ -227,23 +230,22 @@ object Instana {
     private fun initProfiles(app: Application) {
         val appAndBuildVersion = ConstantsAndUtil.getAppVersionNameAndVersionCode(app)
         val viewportWidthAndHeight = ConstantsAndUtil.getViewportWidthAndHeight(app)
-        deviceProfile = DeviceProfile(
-            platform = Platform.ANDROID,
-            osName = ConstantsAndUtil.getOsName(),
-            osVersion = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})",
-            deviceManufacturer = Build.MANUFACTURER ?: ConstantsAndUtil.EMPTY_STR,
-            deviceModel = Build.MODEL ?: ConstantsAndUtil.EMPTY_STR,
-            deviceHardware = Build.HARDWARE,
-            rooted = null,
-            locale = Locale.getDefault(),
-            viewportWidth = viewportWidthAndHeight.first,
+        deviceProfile.apply {
+            platform = Platform.ANDROID
+            osName = ConstantsAndUtil.getOsName()
+            osVersion = "${Build.VERSION.RELEASE} (${Build.VERSION.SDK_INT})"
+            deviceManufacturer = Build.MANUFACTURER ?: ConstantsAndUtil.EMPTY_STR
+            deviceModel = Build.MODEL ?: ConstantsAndUtil.EMPTY_STR
+            deviceHardware = Build.HARDWARE
+            locale = Locale.getDefault()
+            viewportWidth = viewportWidthAndHeight.first
             viewportHeight = viewportWidthAndHeight.second
-        )
-        appProfile = AppProfile(
-            appVersion = appAndBuildVersion.first,
-            appBuild = appAndBuildVersion.second,
+        }
+        appProfile.apply {
+            appVersion = appAndBuildVersion.first
+            appBuild = appAndBuildVersion.second
             appId = app.packageName
-        )
+        }
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
                 deviceProfile.rooted = RootCheck.isDeviceRooted()
@@ -251,7 +253,7 @@ object Instana {
         }
     }
 
-    private fun initWorkManager(config: InstanaConfig) {
+    private fun initWorkManager(app: Application, config: InstanaConfig) {
         InstanaWorkManager(config, app).also {
             crashReporting = CrashService(app, it, config)
             sessionService = SessionService(app, it, config)

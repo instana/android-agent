@@ -50,9 +50,14 @@ open class EventWorker(
     }
 
     private fun send(data: String): Boolean {
+        val reportingURL = Instana.config?.reportingURL
+        if (reportingURL == null) {
+            Logger.w("Instana hasn't been initialized. Dropping beacon.")
+            return true
+        }
         return try {
             val request = Request.Builder()
-                .url(Instana.config!!.reportingURL)
+                .url(reportingURL)
                 .addHeader("Content-Type", "application/json") // TODO ??? it's def not json
                 .addHeader("Accept-Encoding", "gzip")
                 .post(data.toRequestBody(TEXT_PLAIN))
