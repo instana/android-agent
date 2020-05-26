@@ -9,6 +9,7 @@ fun String.toMap(): Map<String, String> {
     this.removePrefix("{")
         .removeSuffix("}")
         .split(",")
+        .map { it.trim() }
         .map { it.split("=") }
         .mapNotNull { if (it.size == 2) it else null }
         .forEach { map[it[0]] = it[1] }
