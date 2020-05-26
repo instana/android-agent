@@ -169,37 +169,25 @@ object Instana {
      *
      * Please note that connection-related values like "connection type" will be collected when this method is called, regardless of their values in startTimeEpochMs
      *
-     * @param  eventName name fore the event
-     * @param  startTimeEpochMs timestamp in which the event started, defined in milliseconds since Epoch. Will default to Now()-durationMs
-     * @param  durationMs duration of the event defined in milliseconds. Will default to 0
-     * @param  viewName logical view in which the event happened. Will default to the current view set in Instana.view
-     * @param  meta set of meta values. These will be merged with the global Instana.meta tags for this event; they won't be applied any future event
-     * @param  backendTracingID tracing ID sent by the Instana-enabled server in the Server-Timing header as `intid;desc=backendTracingID`
-     * @param  error error Throwable
      * note:
      */
     @JvmStatic
-    @JvmOverloads
     fun reportEvent(
-        eventName: String,
-        startTimeEpochMs: Long?,
-        durationMs: Long? = 0,
-        viewName: String? = view,
-        meta: Map<String, String>? = emptyMap(),
-        backendTracingID: String? = null,
-        error: Throwable? = null
+        event: CustomEvent
     ) {
-        val reportedDuration = durationMs ?: 0
-        val reportedStartTime = startTimeEpochMs ?: (System.currentTimeMillis() - reportedDuration)
-        val reportedMeta = meta ?: emptyMap()
+        val reportedViewName = if (event.viewName.isNullOrBlank()) view else event.viewName
+        val reportedBackendTracingID = if (event.backendTracingID.isNullOrBlank()) null else event.backendTracingID
+        val reportedDuration = event.duration ?: 0
+        val reportedStartTime = event.startTime ?: (System.currentTimeMillis() - reportedDuration)
+        val reportedMeta = event.meta ?: emptyMap()
         customEvents?.submit(
-            eventName = eventName,
+            eventName = event.eventName,
             startTime = reportedStartTime,
             duration = reportedDuration,
             meta = reportedMeta,
-            backendTracingID = backendTracingID,
-            error = error,
-            viewName = viewName
+            backendTracingID = reportedBackendTracingID,
+            error = event.error,
+            viewName = reportedViewName
         )
     }
 
