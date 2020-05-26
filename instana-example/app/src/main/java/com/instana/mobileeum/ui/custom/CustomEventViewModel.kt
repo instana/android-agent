@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.instana.android.CustomEvent
 import com.instana.android.Instana
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,26 +29,15 @@ class CustomEventViewModel : ViewModel() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val error = errorMessage?.let { Throwable(errorMessage) }
-                if (viewName == null) {
-                    Instana.reportEvent(
-                        eventName = eventName,
-                        startTimeEpochMs = startTimeEpochMs,
-                        durationMs = durationMs,
-                        meta = meta,
-                        backendTracingID = backendTracingID,
-                        error = error
-                    )
-                } else {
-                    Instana.reportEvent(
-                        eventName = eventName,
-                        startTimeEpochMs = startTimeEpochMs,
-                        durationMs = durationMs,
-                        viewName = viewName,
-                        meta = meta,
-                        backendTracingID = backendTracingID,
-                        error = error
-                    )
+                val event = CustomEvent(eventName).apply {
+                    this.startTime = startTimeEpochMs
+                    this.duration = durationMs
+                    this.viewName = viewName
+                    this.meta = meta
+                    this.backendTracingID = backendTracingID
+                    this.error = error
                 }
+                Instana.reportEvent(event)
             }
         }
     }
