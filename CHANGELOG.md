@@ -1,6 +1,22 @@
 Changelog
 ==========
 
+## Version 2.2.0
+
+_2020-05-27_
+
+- Added support for reporting of Custom Events
+- Improved handling of server traces
+- Fixed issue which could cause a crash when Instana Agent was used without being initialized
+
+## Version 1.2.0
+
+_2020-05-27_
+
+- Added support for reporting of Custom Events
+- Improved handling of server traces
+- Fixed issue which could cause a crash when Instana Agent was used without being initialized
+
 ## Version 2.1.4
 
 _2020-05-06_
