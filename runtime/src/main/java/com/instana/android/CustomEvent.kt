@@ -29,7 +29,7 @@ class CustomEvent(
     var viewName: String? = null
 
     /**
-     * Map of meta values. These will be merged with the global Instana.meta tags for this event; they won't be applied any future event
+     * Map of meta values. These will be merged with the global Instana.meta tags for this event; they won't be applied to any other future event
      */
     var meta: Map<String, String>? = null
 
