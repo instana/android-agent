@@ -39,7 +39,7 @@ class CustomEvent(
     var backendTracingID: String? = null
 
     /**
-     * Error Throwable, if any
+     * Error Throwable to provide additional context, if any
      */
     var error: Throwable? = null
 }
