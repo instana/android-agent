@@ -1,4 +1,4 @@
-# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.2.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.2.0-brightgreen?color=0db4b3"></a>
+# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.3.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.3.0-brightgreen?color=0db4b3"></a>
 ## Requirements
 
 ### Android Agent v1.x.x
@@ -40,7 +40,7 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:2.2.0'
+    implementation 'com.instana:android-agent-runtime:2.3.0'
 }
 ```
 
@@ -59,7 +59,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:2.2.0"
+        classpath "com.instana:android-agent-plugin:2.3.0"
     }
 }
 ```
@@ -127,7 +127,7 @@ You can also find an example in this repo's `instana-example` folder. Just pleas
 
 ### Building `instana-example`
 
-Please head over to it's specific [README.md](instana-example/README.md) to learn how to build `instana-example`.
+Please head over to its specific [README.md](instana-example/README.md) to learn how to build `instana-example`.
 
 ### Building Instana Android Agent
 
