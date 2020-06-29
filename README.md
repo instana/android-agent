@@ -1,4 +1,4 @@
-# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.2.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.2.0-brightgreen?color=0db4b3"></a>
+# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.3.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.3.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.3.0-brightgreen?color=0db4b3"></a>
 ## Requirements
 
 ### Android Agent v1.x.x
@@ -10,6 +10,11 @@
 
 - Android Gradle Plugin 3.6.x
 - Gradle 6.0+
+
+### Android Agent v3.x.x
+
+- Android Gradle Plugin 4.0.x
+- Gradle 6.1.1+
 
 ## Getting started
 
@@ -40,7 +45,7 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:2.2.0'
+    implementation 'com.instana:android-agent-runtime:3.3.0'
 }
 ```
 
@@ -59,7 +64,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:2.2.0"
+        classpath "com.instana:android-agent-plugin:3.3.0"
     }
 }
 ```
