@@ -118,6 +118,18 @@ object Instana {
         }
 
     /**
+     * Logger to receive logs from Instana Android Agent
+     *
+     * Instana Android Agent will log into logcat unless this logger is set
+     */
+    @JvmStatic
+    var logger: com.instana.android.Logger?
+        get() = Logger.clientLogger
+        set(value) {
+            Logger.clientLogger = value
+        }
+
+    /**
      * Indicate whether Google Play Services are missing or not, so this information is associated with all new beacons
      */
     @JvmStatic
