@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 1.3.0
+
+_2020-06-29_
+
+- Added Logger facade
+- Fixed issue that could prevent project compilation when jar libraries where included in the project tree 
+
 ## Version 1.2.0
 
 _2020-05-27_
