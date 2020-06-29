@@ -7,6 +7,7 @@ import android.util.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.instana.android.Instana
+import com.instana.android.Logger
 import com.instana.android.core.InstanaConfig
 
 class DemoApp : Application() {
@@ -52,5 +53,10 @@ class DemoApp : Application() {
         Instana.performanceService?.lowMemoryMonitor?.enabled = true
 
         Instana.logLevel = Log.VERBOSE
+//        Instana.logger = object : Logger {
+//            override fun log(level: Int, tag: String, message: String, error: Throwable?) {
+//                Log.d("example", "intercepted Instana Android Agent log message: '$message'")
+//            }
+//        }
     }
 }
