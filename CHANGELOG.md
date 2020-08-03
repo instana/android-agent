@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 1.3.1
+
+_2020-08-03_
+
+- Added a workaround to avoid crashes when WorkManager is not properly initialized
+
 ## Version 1.3.0
 
 _2020-06-29_
