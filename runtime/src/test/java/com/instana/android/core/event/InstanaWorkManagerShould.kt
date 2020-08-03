@@ -12,7 +12,9 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import org.junit.Ignore
 import org.junit.Test
+import org.mockito.Mockito.`when`
 import java.util.*
+
 
 class InstanaWorkManagerShould : BaseTest() {
 
@@ -22,7 +24,8 @@ class InstanaWorkManagerShould : BaseTest() {
 
     init {
         WorkManagerTestInitHelper.initializeTestWorkManager(app)
-        manager = InstanaWorkManager(InstanaConfig(API_KEY, SERVER_URL, initialBeaconDelayMs = 0), app, mockManager)
+        manager = InstanaWorkManager(InstanaConfig(API_KEY, SERVER_URL, initialBeaconDelayMs = 0), app)
+        `when`(manager.getWorkManager()).thenReturn(mockManager)
     }
 
     @Test
