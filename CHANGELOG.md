@@ -6,18 +6,21 @@ Changelog
 _2020-08-03_
 
 - Added a workaround to avoid crashes when WorkManager is not properly initialized
+- Add support for Android 11 (API 30)
 
 ## Version 2.3.1
 
 _2020-08-03_
 
 - Added a workaround to avoid crashes when WorkManager is not properly initialized
+- Add support for Android 11 (API 30)
 
 ## Version 1.3.1
 
 _2020-08-03_
 
 - Added a workaround to avoid crashes when WorkManager is not properly initialized
+- Add support for Android 11 (API 30)
 
 ## Version 3.3.0
 

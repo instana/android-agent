@@ -258,6 +258,7 @@ object Instana {
             crashReporting = CrashService(app, it, config)
             sessionService = SessionService(app, it, config)
             customEvents = CustomEventService(
+                context = app,
                 manager = it,
                 cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!!, //TODO don't force-cast
                 tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!,

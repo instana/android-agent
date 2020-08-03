@@ -1,5 +1,6 @@
 package com.instana.android.core.util
 
+import android.Manifest
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
@@ -10,6 +11,7 @@ import android.telephony.TelephonyManager
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.annotation.RestrictTo
+import androidx.core.app.ActivityCompat
 import com.instana.android.Instana
 import com.instana.android.core.event.models.ConnectionType
 import com.instana.android.core.event.models.EffectiveConnectionType
@@ -76,28 +78,36 @@ object ConstantsAndUtil {
             else -> null
         }
 
-    fun getCellularConnectionType(cm: ConnectivityManager, tm: TelephonyManager): EffectiveConnectionType? {
+    fun getCellularConnectionType(context: Context, cm: ConnectivityManager, tm: TelephonyManager): EffectiveConnectionType? {
         if (getConnectionType(cm) != ConnectionType.CELLULAR) {
             return null
+        }
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            Logger.w("Missing permission 'READ_PHONE_STATE'. Instana Agent won't be able to detect cellular network type")
+            return null
+        }
+        val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            tm.dataNetworkType
         } else {
-            return when (tm.networkType) {
-                TelephonyManager.NETWORK_TYPE_GPRS,
-                TelephonyManager.NETWORK_TYPE_EDGE,
-                TelephonyManager.NETWORK_TYPE_CDMA,
-                TelephonyManager.NETWORK_TYPE_1xRTT,
-                TelephonyManager.NETWORK_TYPE_IDEN -> EffectiveConnectionType.TYPE_2G
-                TelephonyManager.NETWORK_TYPE_UMTS,
-                TelephonyManager.NETWORK_TYPE_EVDO_0,
-                TelephonyManager.NETWORK_TYPE_EVDO_A,
-                TelephonyManager.NETWORK_TYPE_HSDPA,
-                TelephonyManager.NETWORK_TYPE_HSUPA,
-                TelephonyManager.NETWORK_TYPE_HSPA,
-                TelephonyManager.NETWORK_TYPE_EVDO_B,
-                TelephonyManager.NETWORK_TYPE_EHRPD,
-                TelephonyManager.NETWORK_TYPE_HSPAP -> EffectiveConnectionType.TYPE_3G
-                TelephonyManager.NETWORK_TYPE_LTE -> EffectiveConnectionType.TYPE_4G
-                else -> null
-            }
+            tm.networkType
+        }
+        return when (networkType) {
+            TelephonyManager.NETWORK_TYPE_GPRS,
+            TelephonyManager.NETWORK_TYPE_EDGE,
+            TelephonyManager.NETWORK_TYPE_CDMA,
+            TelephonyManager.NETWORK_TYPE_1xRTT,
+            TelephonyManager.NETWORK_TYPE_IDEN -> EffectiveConnectionType.TYPE_2G
+            TelephonyManager.NETWORK_TYPE_UMTS,
+            TelephonyManager.NETWORK_TYPE_EVDO_0,
+            TelephonyManager.NETWORK_TYPE_EVDO_A,
+            TelephonyManager.NETWORK_TYPE_HSDPA,
+            TelephonyManager.NETWORK_TYPE_HSUPA,
+            TelephonyManager.NETWORK_TYPE_HSPA,
+            TelephonyManager.NETWORK_TYPE_EVDO_B,
+            TelephonyManager.NETWORK_TYPE_EHRPD,
+            TelephonyManager.NETWORK_TYPE_HSPAP -> EffectiveConnectionType.TYPE_3G
+            TelephonyManager.NETWORK_TYPE_LTE -> EffectiveConnectionType.TYPE_4G
+            else -> null
         }
     }
 

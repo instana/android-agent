@@ -14,7 +14,7 @@ import com.instana.android.core.util.Logger
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class ViewChangeService(
-    context: Context,
+    private val context: Context,
     private val manager: InstanaWorkManager,
     config: InstanaConfig
 ) {
@@ -31,7 +31,7 @@ class ViewChangeService(
         val connectionProfile = ConnectionProfile(
             carrierName = ConstantsAndUtil.getCarrierName(cm, tm),
             connectionType = ConstantsAndUtil.getConnectionType(cm),
-            effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(cm, tm)
+            effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(context, cm, tm)
         )
         val view = Beacon.newViewChange(
             appKey = appKey,

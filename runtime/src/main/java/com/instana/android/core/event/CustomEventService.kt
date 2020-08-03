@@ -1,5 +1,6 @@
 package com.instana.android.core.event
 
+import android.content.Context
 import android.net.ConnectivityManager
 import android.telephony.TelephonyManager
 import com.instana.android.Instana
@@ -11,6 +12,7 @@ import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 
 class CustomEventService(
+    private val context: Context,
     private val manager: InstanaWorkManager,
     private val cm: ConnectivityManager,
     private val tm: TelephonyManager,
@@ -38,7 +40,7 @@ class CustomEventService(
         val connectionProfile = ConnectionProfile(
             carrierName = ConstantsAndUtil.getCarrierName(cm, tm),
             connectionType = ConstantsAndUtil.getConnectionType(cm),
-            effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(cm, tm)
+            effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(context, cm, tm)
         )
         val errorMessage = error?.message
         val beacon = Beacon.newCustomEvent(
