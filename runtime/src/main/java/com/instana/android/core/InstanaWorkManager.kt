@@ -3,10 +3,8 @@ package com.instana.android.core
 import android.content.Context
 import android.webkit.URLUtil
 import androidx.annotation.RestrictTo
-import androidx.work.Constraints
-import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
-import androidx.work.WorkManager
+import androidx.annotation.VisibleForTesting
+import androidx.work.*
 import com.instana.android.Instana
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.worker.EventWorker
@@ -25,10 +23,8 @@ import java.util.concurrent.TimeUnit
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class InstanaWorkManager(
     config: InstanaConfig,
-    private val context: Context,
-    private val manager: WorkManager = WorkManager.getInstance()
+    private val context: Context
 ) {
-
     private val beaconsDirectoryName = "instanaBeacons"
     private val flushDelayMs = 1000L
 
@@ -44,7 +40,7 @@ class InstanaWorkManager(
             isInitialDelayComplete = true
             updateQueueItems(initialDelayQueue)
             initialDelayQueue.forEach { queue(it) }
-            flush(getBeaconsDirectory())
+            getWorkManager()?.run { flush(getBeaconsDirectory(), this) }
         }, config.initialBeaconDelayMs, TimeUnit.MILLISECONDS)
     }
 
@@ -71,6 +67,25 @@ class InstanaWorkManager(
             beaconsDirectory = directory
         }
         return directory
+    }
+
+    @VisibleForTesting
+    internal fun getWorkManager(): WorkManager? {
+        try {
+            return WorkManager.getInstance()
+        } catch (e: IllegalStateException) {
+            Logger.e("WorkManager has not been properly initialized. Please check your code and your dependencies for similar issues", e)
+        }
+        Logger.e("Instana Agent will now try to initialize WorkManager with the default configuration")
+        val config = Configuration.Builder()
+            .build()
+        return try {
+            WorkManager.initialize(context, config)
+            WorkManager.getInstance()
+        } catch (e: Throwable) {
+            Logger.e("Instana Agent failed to initialize WorkManager. Beacons will not be sent until the issue is solved", e)
+            null
+        }
     }
 
     /**
@@ -121,7 +136,7 @@ class InstanaWorkManager(
     /**
      * Send all beacons together once beacon-creation stops for 1s
      */
-    private fun flush(directory: File) {
+    private fun flush(directory: File, manager: WorkManager) {
         Logger.i("Flushing beacons")
         if (directory.isDirectoryEmpty()) return
 
@@ -150,7 +165,7 @@ class InstanaWorkManager(
                     withContext(Dispatchers.IO) {
                         val file = File(getBeaconsDirectory(), beaconId)
                         file.writeText(beacon.toString(), Charsets.UTF_8)
-                        flush(getBeaconsDirectory())
+                        getWorkManager()?.run { flush(getBeaconsDirectory(), this) }
                     }
                 }
             }
