@@ -9,6 +9,7 @@ android {
 
     defaultConfig {
         minSdkVersion 16
+        targetSdkVersion 29
         versionName "5.0"
         versionCode 1
         vectorDrawables.useSupportLibrary = true
@@ -68,12 +69,12 @@ dependencies {
     implementation 'android.arch.work:work-runtime-ktx:1.0.1'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.navigation:navigation-fragment:2.2.2'
-    implementation 'androidx.navigation:navigation-ui:2.2.2'
+    implementation 'androidx.navigation:navigation-fragment:2.3.0'
+    implementation 'androidx.navigation:navigation-ui:2.3.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.2.2'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.2.2'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
 
     // Network clients
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
