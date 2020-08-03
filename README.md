@@ -89,6 +89,14 @@ android {
 }
 ```
 
+### Step 5 (optional). Request READ_PHONE_STATE permission
+
+When a user accesses the Internet through a cellular network, Instana Agent has the ability to report the specific type of cellular network. 
+
+In order to enable the reporting of the cellular network type, your app needs to request the `READ_PHONE_STATE` permission. Please refer to the [`Request App Permissions` section in the official Android documentation](https://developer.android.com/training/permissions/requesting). 
+
+If your app doesn't request the permission or if the user declines it, Instana Agent will simply not report the cellular network type. 
+
 ### Supported network clients
 
 Instana Android Agent is currently capable of automatically tracking events for the following network clients:

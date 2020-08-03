@@ -29,7 +29,7 @@ class LowMemoryMonitor(
         // not implemented for now
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         // implement if needed info on configuration change
     }
 

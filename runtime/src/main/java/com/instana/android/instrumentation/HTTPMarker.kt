@@ -1,5 +1,6 @@
 package com.instana.android.instrumentation
 
+import android.content.Context
 import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
@@ -23,6 +24,7 @@ import java.util.*
 class HTTPMarker(
     private val url: String,
     private val viewName: String?,
+    private val context: Context,
     private val manager: InstanaWorkManager,
     private val config: InstanaConfig
 ) {
@@ -42,7 +44,7 @@ class HTTPMarker(
         connectionProfile = ConnectionProfile(
             carrierName = Instana.instrumentationService?.run { getCarrierName(connectivityManager, telephonyManager) },
             connectionType = Instana.instrumentationService?.run { getConnectionType(connectivityManager) },
-            effectiveConnectionType = Instana.instrumentationService?.run { getCellularConnectionType(connectivityManager, telephonyManager) }
+            effectiveConnectionType = Instana.instrumentationService?.run { getCellularConnectionType(context, connectivityManager, telephonyManager) }
         )
         Instana.instrumentationService?.run {
             carrierName = telephonyManager.networkOperatorName
