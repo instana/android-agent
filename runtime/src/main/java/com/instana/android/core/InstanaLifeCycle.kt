@@ -31,7 +31,7 @@ class InstanaLifeCycle(
         // not implemented
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration?) {
+    override fun onConfigurationChanged(newConfig: Configuration) {
         // not implemented
     }
 
@@ -45,36 +45,36 @@ class InstanaLifeCycle(
         }
     }
 
-    override fun onActivityPaused(activity: Activity?) {
-        activityName = activity?.localClassName.toString()
+    override fun onActivityPaused(activity: Activity) {
+        activityName = activity.localClassName.toString()
     }
 
-    override fun onActivityResumed(activity: Activity?) {
+    override fun onActivityResumed(activity: Activity) {
         if (backgrounded) {
             backgrounded = false
             callback?.onAppInForeground()
         }
-        activityName = activity?.localClassName.toString()
+        activityName = activity.localClassName.toString()
     }
 
-    override fun onActivityStarted(activity: Activity?) {
-        activityName = activity?.localClassName.toString()
+    override fun onActivityStarted(activity: Activity) {
+        activityName = activity.localClassName.toString()
     }
 
-    override fun onActivityDestroyed(activity: Activity?) {
-        activityName = activity?.localClassName.toString()
+    override fun onActivityDestroyed(activity: Activity) {
+        activityName = activity.localClassName.toString()
     }
 
-    override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {
-        activityName = activity?.localClassName.toString()
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
+        activityName = activity.localClassName.toString()
     }
 
-    override fun onActivityStopped(activity: Activity?) {
-        activityName = activity?.localClassName.toString()
+    override fun onActivityStopped(activity: Activity) {
+        activityName = activity.localClassName.toString()
     }
 
-    override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
-        activityName = activity?.localClassName.toString()
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+        activityName = activity.localClassName.toString()
     }
 
     fun registerCallback(appStateCallback: AppStateCallback) {

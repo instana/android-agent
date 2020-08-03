@@ -8,7 +8,7 @@ import com.instana.android.core.InstanaWorkManager
 
 
 class InstrumentationService(
-    context: Context,
+    private val context: Context,
     private val manager: InstanaWorkManager,
     private val config: InstanaConfig
 ) {
@@ -23,7 +23,7 @@ class InstrumentationService(
         config.httpCaptureConfig = type
     }
 
-    fun markCall(url: String, viewName: String?): HTTPMarker = HTTPMarker(url, viewName, manager, config)
+    fun markCall(url: String, viewName: String?): HTTPMarker = HTTPMarker(url, viewName, context, manager, config)
 
     fun hasTag(header: String): Boolean = tags.contains(header)
 
