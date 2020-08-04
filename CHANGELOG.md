@@ -1,6 +1,24 @@
 Changelog
 ==========
 
+## Version 3.3.2
+
+_2020-08-04_
+
+- Fix minSdkVersion and set it to 21 (Android 5.0)
+
+## Version 2.3.2
+
+_2020-08-04_
+
+- Fix minSdkVersion and set it to 21 (Android 5.0)
+
+## Version 1.3.2
+
+_2020-08-04_
+
+- Fix minSdkVersion and set it to 21 (Android 5.0)
+
 ## Version 3.3.1
 
 _2020-08-03_
