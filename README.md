@@ -1,7 +1,7 @@
 # Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.3.2-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.3.2-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.3.2-brightgreen?color=0db4b3"></a>
 ## Requirements
 
-Android Instana Agent works on Android 4.1+ (API level 16+) and on Java 8+. 
+Android Instana Agent works on Android 5.0+ (API level 21+) and on Java 8+. 
 
 Different Android Instana Agent versions provide support for different Android Gradle Plugin versions:
 
