@@ -5,6 +5,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
 import android.telephony.TelephonyManager
+import androidx.annotation.RequiresApi
+import com.instana.android.android.agent.BuildConfig
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.InstanaWorkManager
@@ -211,6 +213,7 @@ object Instana {
      * Initialize Instana
      */
     @JvmStatic
+    @RequiresApi(BuildConfig.MIN_SDK_VERSION)
     fun setup(app: Application, config: InstanaConfig) {
         Logger.i("Configuring Instana agent")
         this.config = config
