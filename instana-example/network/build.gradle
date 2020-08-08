@@ -17,8 +17,8 @@ android {
 
     flavorDimensions "default"
     productFlavors {
-        latest{}
-        support{}
+        api21{}
+        api16{}
     }
 
     buildTypes {
@@ -38,14 +38,14 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.3.1'
 
     // Network clients
-    latestImplementation 'com.squareup.okhttp3:okhttp:4.7.2'
-    latestImplementation("com.squareup.okhttp3:logging-interceptor:4.5.0")
-    latestImplementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    latestImplementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    supportImplementation 'com.squareup.okhttp3:okhttp:3.12.12'
-    supportImplementation("com.squareup.okhttp3:logging-interceptor:3.12.12")
-    supportImplementation 'com.squareup.retrofit2:retrofit:2.6.4'
-    supportImplementation 'com.squareup.retrofit2:converter-gson:2.6.4'
+    api21Implementation 'com.squareup.okhttp3:okhttp:4.7.2'
+    api21Implementation("com.squareup.okhttp3:logging-interceptor:4.5.0")
+    api21Implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    api21Implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    api16Implementation 'com.squareup.okhttp3:okhttp:3.12.12'
+    api16Implementation("com.squareup.okhttp3:logging-interceptor:3.12.12")
+    api16Implementation 'com.squareup.retrofit2:retrofit:2.6.4'
+    api16Implementation 'com.squareup.retrofit2:converter-gson:2.6.4'
 
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

@@ -26,7 +26,7 @@ class SessionService(
      * Send session to backend upon each fresh start of the app
      */
     init {
-        val sessionId = UUID.randomUUID().toString()
+        val sessionId = UUID.randomUUID().toString() // May produce false positive for StrictMode DiskReads in old Android versions: https://issuetracker.google.com/issues/36969031
         val tm = (context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)
         val cm = (context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)
         val connectionProfile = ConnectionProfile(

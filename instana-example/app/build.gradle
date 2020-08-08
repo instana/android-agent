@@ -36,10 +36,10 @@ android {
     }
     flavorDimensions "default"
     productFlavors {
-        latest {
+        api21 {
             minSdkVersion 21
         }
-        support {
+        api16 {
             minSdkVersion 16
         }
     }
@@ -85,8 +85,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
 
     // Network clients
-    latestImplementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    supportImplementation 'com.squareup.retrofit2:retrofit:2.6.4'
+    api21Implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    api16Implementation 'com.squareup.retrofit2:retrofit:2.6.4'
 
     // Instana Agent
     implementation "com.instana:android-agent-runtime:$agent_version"
