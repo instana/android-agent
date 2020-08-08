@@ -6,7 +6,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 
 fun File.isDirectoryEmpty(): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    return if (Build.VERSION.SDK_INT >= 26) {
         Files.newDirectoryStream(Paths.get(absolutePath)).use {
             it.firstOrNull() == null
         }
