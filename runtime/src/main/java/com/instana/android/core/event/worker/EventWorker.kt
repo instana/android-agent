@@ -49,6 +49,9 @@ open class EventWorker(
         return sb.toString() to files
     }
 
+    /**
+     * @return true when beacon was handled (so it can be discarded), false when it wasn't
+     */
     private fun send(data: String): Boolean {
         val reportingURL = Instana.config?.reportingURL
         if (reportingURL == null) {
