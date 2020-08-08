@@ -1,36 +1,19 @@
 package com.instana.mobileeum
 
 import android.app.Application
+import android.os.Build
 import android.os.StrictMode
-import android.os.StrictMode.VmPolicy
 import android.util.Log
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.instana.android.Instana
-import com.instana.android.Logger
 import com.instana.android.core.InstanaConfig
 
 class DemoApp : Application() {
 
     override fun onCreate() {
         if (BuildConfig.DEBUG) {
-            StrictMode.setThreadPolicy(
-                StrictMode.ThreadPolicy.Builder()
-                    .detectDiskReads()
-                    .detectDiskWrites()
-                    .detectAll()
-                    .penaltyLog()
-                    .penaltyDeath()
-                    .build()
-            )
-            StrictMode.setVmPolicy(
-                VmPolicy.Builder()
-                    .detectLeakedSqlLiteObjects()
-                    .detectLeakedClosableObjects()
-                    .penaltyLog()
-                    .penaltyDeath()
-                    .build()
-            )
+            enableStrictMode()
         }
         super.onCreate()
         Instana.setup(
@@ -48,9 +31,9 @@ class DemoApp : Application() {
         Instana.googlePlayServicesMissing =
             GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS
 
-        Instana.performanceService?.anrMonitor?.enabled = true
-        Instana.performanceService?.frameSkipMonitor?.enabled = true
-        Instana.performanceService?.lowMemoryMonitor?.enabled = true
+        Instana.performanceService?.anrMonitor?.enabled = false
+        Instana.performanceService?.frameSkipMonitor?.enabled = false
+        Instana.performanceService?.lowMemoryMonitor?.enabled = false
 
         Instana.logLevel = Log.VERBOSE
 //        Instana.logger = object : Logger {
@@ -58,5 +41,33 @@ class DemoApp : Application() {
 //                Log.d("example", "intercepted Instana Android Agent log message: '$message'")
 //            }
 //        }
+    }
+
+    private fun enableStrictMode() {
+        if (Build.VERSION.SDK_INT < 20) {
+            // Avoid failures due to false positives: https://issuetracker.google.com/issues/36969031
+            StrictMode.setThreadPolicy(
+                StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .build()
+            )
+        } else {
+            StrictMode.setThreadPolicy(
+                StrictMode.ThreadPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+                    .penaltyDeath()
+                    .build()
+            )
+        }
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder()
+                .detectLeakedSqlLiteObjects()
+                .detectLeakedClosableObjects()
+                .penaltyLog()
+                .penaltyDeath()
+                .build()
+        )
     }
 }
