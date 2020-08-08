@@ -5,10 +5,10 @@ import okio.Buffer
 import okio.GzipSource
 
 fun Response.decodedContentLength(): Long? {
-    val source = body?.source() ?: return null
+    val source = body()?.source() ?: return null
 
     source.request(Long.MAX_VALUE)
-    var buffer = source.buffer
+    var buffer = source.buffer()
 
     if ("gzip".equals(header("Content-Encoding"), ignoreCase = true)) {
         GzipSource(buffer.clone()).use { gzippedResponseBody ->
@@ -17,5 +17,5 @@ fun Response.decodedContentLength(): Long? {
         }
     }
 
-    return buffer.size
+    return buffer.size()
 }

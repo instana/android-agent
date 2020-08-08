@@ -26,7 +26,7 @@ object OkHttp3GlobalInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val intercepted = chain.request()
         val header = intercepted.header(TRACKING_HEADER_KEY)
-        val url = intercepted.url.toString()
+        val url = intercepted.url().toString()
 
         val request: Request
         var marker: HTTPMarker? = null
@@ -67,7 +67,7 @@ object OkHttp3GlobalInterceptor : Interceptor {
 
     fun cancel(request: Request) {
         val marker = httpMarkers.firstOrNull { it.headerValue() == request.header(it.headerKey()) }
-            ?: Instana.startCapture(request.url.toString())
+            ?: Instana.startCapture(request.url().toString())
         marker?.cancel()
         httpMarkers.remove(marker)
     }
