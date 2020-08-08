@@ -34,7 +34,17 @@ object ConstantsAndUtil {
     }
 
     val client: OkHttpClient by lazy {
-        OkHttpClient()
+        var client: OkHttpClient? = null
+        if (Build.VERSION.SDK_INT < 20) {
+            // Enable TLSv1.2 support: https://developer.android.com/reference/javax/net/ssl/SSLSocket.html#protocols
+            val trustManager = TLSSocketFactory.getTrustManagers()
+            if (trustManager != null) {
+                client = OkHttpClient.Builder()
+                    .sslSocketFactory(TLSSocketFactory(), trustManager)
+                    .build()
+            }
+        }
+        client ?: OkHttpClient()
     }
 
     fun getOsName(): String {
