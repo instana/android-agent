@@ -14,7 +14,7 @@ fun HttpURLConnection.isSuccessful(): Boolean =
 
 fun HttpURLConnection.encodedResponseSizeOrNull(): Long? {
     var size: Long? =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) contentLengthLong
+        if (Build.VERSION.SDK_INT >= 24) contentLengthLong
         else contentLength.toLong()
     if (size == -1L) {
         size = null
