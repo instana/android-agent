@@ -47,7 +47,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'android.arch.work:work-runtime-ktx:1.0.1'
-    implementation 'com.squareup.okhttp3:okhttp:4.3.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.12'
 
     testImplementation 'junit:junit:4.13'
     testImplementation 'androidx.arch.core:core-testing:2.1.0'

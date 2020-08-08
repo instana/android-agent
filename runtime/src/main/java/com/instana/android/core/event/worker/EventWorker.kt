@@ -5,11 +5,11 @@ import androidx.work.*
 import com.instana.android.Instana
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MediaType
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import okio.IOException
+import okhttp3.RequestBody
 import java.io.File
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 open class EventWorker(
@@ -56,11 +56,12 @@ open class EventWorker(
             return true
         }
         return try {
+            val requestBody = RequestBody.create(TEXT_PLAIN, data)
             val request = Request.Builder()
                 .url(reportingURL)
                 .addHeader("Content-Type", "application/json") // TODO ??? it's def not json
                 .addHeader("Accept-Encoding", "gzip")
-                .post(data.toRequestBody(TEXT_PLAIN))
+                .post(requestBody)
                 .build()
             val response = ConstantsAndUtil.client.newCall(request).execute()
             response.isSuccessful
@@ -91,7 +92,7 @@ open class EventWorker(
                 .build()
         }
 
-        private val TEXT_PLAIN = "text/plain; charset=utf-8".toMediaTypeOrNull()
+        private val TEXT_PLAIN = MediaType.parse("text/plain; charset=utf-8")
 
         private const val DIRECTORY_ABS_PATH = "dir_abs_path"
     }
