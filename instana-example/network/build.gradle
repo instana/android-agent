@@ -6,13 +6,19 @@ android {
     compileSdkVersion 29
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    flavorDimensions "default"
+    productFlavors {
+        api21{}
+        api16{}
     }
 
     buildTypes {
@@ -22,6 +28,7 @@ android {
         }
     }
 
+    publishNonDefault true
 }
 
 dependencies {
@@ -31,10 +38,14 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.2.0'
 
     // Network clients
-    implementation 'com.squareup.okhttp3:okhttp:4.5.0'
-    implementation("com.squareup.okhttp3:logging-interceptor:4.5.0")
-    implementation 'com.squareup.retrofit2:retrofit:2.8.1'
-    implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
+    api21Implementation 'com.squareup.okhttp3:okhttp:4.5.0'
+    api21Implementation("com.squareup.okhttp3:logging-interceptor:4.5.0")
+    api21Implementation 'com.squareup.retrofit2:retrofit:2.8.1'
+    api21Implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
+    api16Implementation 'com.squareup.okhttp3:okhttp:3.12.12'
+    api16Implementation("com.squareup.okhttp3:logging-interceptor:3.12.12")
+    api16Implementation 'com.squareup.retrofit2:retrofit:2.6.4'
+    api16Implementation 'com.squareup.retrofit2:converter-gson:2.6.4'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

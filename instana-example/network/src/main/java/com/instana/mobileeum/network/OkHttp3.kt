@@ -3,23 +3,23 @@
 */
 package com.instana.mobileeum.network
 
-import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 
 object OkHttp3 {
 
-    private val contentType = "application/json; charset=utf-8".toMediaType()
+    @Suppress("DEPRECATION_ERROR")
+    private val contentType = MediaType.parse("application/json; charset=utf-8")
     private val okHttpClient = OkHttpClient.Builder().addInterceptor(HttpLoggingInterceptor()).build()
 
     /**
      * Can't be run on Main Thread
      */
     fun executeRequest(useConstructor: Boolean, cancel: Boolean, method: String, url: String, body: String?): String {
-        val requestBody =
-            body?.toRequestBody(contentType)
+        val requestBody = body?.let { RequestBody.create(contentType, it) }
         val request = Request.Builder().apply {
             addHeader("Accept", "application/json")
             addHeader("Accept-Encoding", "gzip,deflate")

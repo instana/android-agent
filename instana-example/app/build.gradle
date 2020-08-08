@@ -8,7 +8,6 @@ android {
     compileSdkVersion 29
 
     defaultConfig {
-        minSdkVersion 21
         targetSdkVersion 29
         versionName "5.0"
         versionCode 1
@@ -33,6 +32,15 @@ android {
             storePassword 'password'
             keyAlias = 'release'
             keyPassword 'password'
+        }
+    }
+    flavorDimensions "default"
+    productFlavors {
+        api21 {
+            minSdkVersion 21
+        }
+        api16 {
+            minSdkVersion 16
         }
     }
     buildTypes {
@@ -77,7 +85,8 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.2'
 
     // Network clients
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    api21Implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    api16Implementation 'com.squareup.retrofit2:retrofit:2.6.4'
 
     // Instana Agent
     implementation "com.instana:android-agent-runtime:$agent_version"
