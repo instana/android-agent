@@ -38,7 +38,7 @@ object ConstantsAndUtil {
     }
 
     fun getOsName(): String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Build.VERSION.BASE_OS.isNotBlank()) {
+        return if (Build.VERSION.SDK_INT >= 23 && Build.VERSION.BASE_OS.isNotBlank()) {
             Build.VERSION.BASE_OS
         } else {
             Platform.ANDROID.internalType
@@ -47,7 +47,7 @@ object ConstantsAndUtil {
 
     @Suppress("DEPRECATION")
     fun getConnectionType(cm: ConnectivityManager): ConnectionType? {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= 23) {
             val network = cm.activeNetwork
             val capabilities = cm.getNetworkCapabilities(network)
             if (capabilities != null) {
@@ -86,7 +86,7 @@ object ConstantsAndUtil {
             Logger.w("Missing permission 'READ_PHONE_STATE'. Instana Agent won't be able to detect cellular network type")
             return null
         }
-        val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        val networkType = if (Build.VERSION.SDK_INT >= 24) {
             tm.dataNetworkType
         } else {
             tm.networkType
@@ -117,7 +117,7 @@ object ConstantsAndUtil {
         try {
             val packageInfo = app.packageManager.getPackageInfo(app.packageName, 0)
             version = packageInfo.versionName
-            versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            versionCode = if (Build.VERSION.SDK_INT >= 28) {
                 packageInfo.longVersionCode.toString()
             } else {
                 @Suppress("DEPRECATION")
