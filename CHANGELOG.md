@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 1.4.0
+
+_2020-08-10_
+
+- Add support for API 16 (Android 4.1)
+- Upgrade WorkManager to 2.4.0
+
 ## Version 1.3.2
 
 _2020-08-04_
