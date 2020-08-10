@@ -19,18 +19,17 @@ object OkHttp3 {
      * Can't be run on Main Thread
      */
     fun executeRequest(useConstructor: Boolean, cancel: Boolean, method: String, url: String, body: String?): String {
-        val requestBody = body?.let { RequestBody.create(contentType, it) }
-        val request = Request.Builder().apply {
-            addHeader("Accept", "application/json")
-            addHeader("Accept-Encoding", "gzip,deflate")
-            url(url)
-            method(method, requestBody)
-        }.build()
-
-        val client = if (useConstructor) OkHttpClient() else okHttpClient
-        val call = client.newCall(request)
-
         return try {
+            val requestBody = body?.let { RequestBody.create(contentType, it) }
+            val request = Request.Builder().apply {
+                addHeader("Accept", "application/json")
+                addHeader("Accept-Encoding", "gzip,deflate")
+                url(url)
+                method(method, requestBody)
+            }.build()
+
+            val client = if (useConstructor) OkHttpClient() else okHttpClient
+            val call = client.newCall(request)
             if (cancel) {
                 call.cancel()
                 "cancelled"

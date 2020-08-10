@@ -44,7 +44,7 @@ class DemoApp : Application() {
     }
 
     private fun enableStrictMode() {
-        if (Build.VERSION.SDK_INT < 20) {
+        if (Build.VERSION.SDK_INT <= 18) {
             // Avoid failures due to false positives: https://issuetracker.google.com/issues/36969031
             StrictMode.setThreadPolicy(
                 StrictMode.ThreadPolicy.Builder()
