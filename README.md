@@ -3,6 +3,7 @@
 ## Requirements
 
 - Android Gradle Plugin: 3.5.x
+- AndroidX libraries
 
 ## Getting started
 
