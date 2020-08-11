@@ -1,4 +1,10 @@
 # Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.4.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.4.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.4.0-brightgreen?color=0db4b3"></a>
+
+**[Changelog](CHANGELOG.md)** |
+**[Contributing](CONTRIBUTING.md)**
+
+---
+
 ## Requirements
 
 Android Instana Agent works on Android 4.1+ (API level 16+) and on Java 8+. 
@@ -135,31 +141,3 @@ Please check for additional options in the [Android API documentation](https://d
 Please head over to the [android-agent-examples repository](https://github.com/instana/android-agent-examples) to find multiple usage examples of the Instana Android Agent.
 
 You can also find an example in this repo's `instana-example` folder. Just please be aware that this is an example meant to be used during the development of the Android Agent, and therefore might contain usages of the Agent that are more complex that what you need for your situation.
-
-## Contributing 
-
-### Components
-
-- `instana-example`: demo app covering (most of) the usage scenarios of the Agent 
-- `plugin`: gradle plugin to simplify configuration for apps
-- `runtime`: weaving logic, instrumentation, beacon handling, ...
-
-### Building `instana-example`
-
-Please head over to its specific [README.md](instana-example/README.md) to learn how to build `instana-example`.
-
-### Building Instana Android Agent
-
-You must use IntelliJ Ultimate IDE in order to compile the `plugin` and `runtime`.
-
-If you want to work on the `runtime` or `plugin` components of the Agent, you must publish them to your local maven repository so they can be found by your application.
-
-Relevant commands:
-- compile and publish `runtime` to local maven: 
-```shell script
-gradlew :runtime::publishToMavenLocal
-```
-- compile and publish `plugin` to local maven:
-```shell script
-gradlew :plugin::publishToMavenLocal
-```
