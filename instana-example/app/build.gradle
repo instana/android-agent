@@ -65,6 +65,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    testOptions {
+        animationsDisabled true
+    }
 }
 
 dependencies {
@@ -94,6 +98,12 @@ dependencies {
     // Check for Google Play Services availability
     implementation 'com.google.android.gms:play-services-basement:17.4.0'
     implementation 'com.google.android.gms:play-services-base:17.4.0'
+
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
 }
 
 // Apply a different ribbon to the launcher of each app build type
