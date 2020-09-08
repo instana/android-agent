@@ -72,7 +72,7 @@ object Instana {
     val ignoreURLs = mutableListOf<Pattern>()
 
     /**
-     * Map of  ID which all new beacons will be associated with
+     * Map of Key-Value pairs which all new beacons will be associated with
      */
     @JvmStatic
     val meta = MaxCapacityMap<String, String>(50)
