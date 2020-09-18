@@ -66,9 +66,14 @@ object OkHttp3GlobalInterceptor : Interceptor {
     }
 
     fun cancel(request: Request) {
-        val marker = httpMarkers.firstOrNull { it.headerValue() == request.header(it.headerKey()) }
-            ?: Instana.startCapture(request.url().toString())
-        marker?.cancel()
-        httpMarkers.remove(marker)
+        var marker = httpMarkers.firstOrNull { it.headerValue() == request.header(it.headerKey()) }
+        if (marker == null) {
+            @Suppress("UNNECESSARY_SAFE_CALL") // Crash reports suggest `request.url()` is indeed nullable
+            marker = request.url()?.let { Instana.startCapture(it.toString()) }
+        }
+        marker?.run {
+            cancel()
+            httpMarkers.remove(this)
+        }
     }
 }
