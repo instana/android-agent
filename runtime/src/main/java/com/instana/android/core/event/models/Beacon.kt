@@ -7,6 +7,7 @@ import androidx.annotation.IntRange
 import androidx.annotation.Size
 import androidx.annotation.VisibleForTesting
 import com.instana.android.android.agent.BuildConfig
+import com.instana.android.core.util.Logger
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
@@ -78,7 +79,7 @@ class Beacon private constructor(
      * are still relying on old/outdated agents.
      */
     fun setAgentVersion(@Size(max = 128) value: String) {
-        stringMap["agv"] = value
+        stringMap["agv"] = value.truncate(128, "Agent Version")
     }
 
     /**
@@ -86,7 +87,7 @@ class Beacon private constructor(
      * the UI.
      */
     fun setMobileAppId(@Size(min = 1, max = 64) value: String) {
-        stringMap["k"] = value
+        stringMap["k"] = value.truncate(64, "Mobile App ID")
     }
 
     /**
@@ -118,14 +119,14 @@ class Beacon private constructor(
      * The Session ID must not be empty.
      */
     fun setSessionId(@Size(min = 1, max = 128) value: String) {
-        stringMap["sid"] = value
+        stringMap["sid"] = value.truncate(128, "Session ID")
     }
 
     /**
      * An unique UUID for each beacon.
      */
     fun setBeaconId(@Size(min = 1, max = 128) value: String) {
-        stringMap["bid"] = value
+        stringMap["bid"] = value.truncate(128, "Beacon ID")
     }
 
     fun getBeaconId(): String? = stringMap["bid"]
@@ -138,7 +139,7 @@ class Beacon private constructor(
      * This allows us to build a connection between end-user (mobile monitoring) and backend activity (tracing).
      */
     fun setBackendTraceId(@Size(max = 128) value: String) {
-        stringMap["bt"] = value
+        stringMap["bt"] = value.truncate(128, "Backend Trace ID")
     }
 
     /**
@@ -152,7 +153,7 @@ class Beacon private constructor(
      * The kind of view/page/screen the user is on, e.g. login, checkout…
      */
     fun setView(@Size(max = 256) value: String) {
-        stringMap["v"] = value
+        stringMap["v"] = value.truncate(256, "View Name")
     }
 
     fun getView(): String? = stringMap["v"]
@@ -161,7 +162,7 @@ class Beacon private constructor(
      * Defines what kind of event has happened on your website that should result in the transmission of a custom beacon.
      */
     fun setCustomEventName(@Size(max = 256) value: String) {
-        stringMap["cen"] = value
+        stringMap["cen"] = value.truncate(256, "Custom Event Name")
     }
 
     /**
@@ -172,31 +173,31 @@ class Beacon private constructor(
      * m_user  Tom Mason
      * m_email tom.mason@example.com
      */
-    fun setMeta(@Size(max = 64) key: String, @Size(max = 64) value: String) {
-        stringMap["m_$key"] = value
+    fun setMeta(@Size(max = 98) key: String, @Size(max = 1024) value: String) {
+        stringMap["m_${key.truncate(98, "Meta Key")}"] = value.truncate(1024, "Meta Value")
     }
 
-    fun getMeta(@Size(max = 64) key: String): String? = stringMap["m_$key"]
+    fun getMeta(key: String): String? = stringMap["m_$key"]
 
     /**
      * An identifier for the user. (optional)
      */
     fun setUserId(@Size(max = 128) value: String) {
-        stringMap["ui"] = value
+        stringMap["ui"] = value.truncate(128, "User ID")
     }
 
     /**
      * The user name. (optional)
      */
     fun setUserName(@Size(max = 128) value: String) {
-        stringMap["un"] = value
+        stringMap["un"] = value.truncate(128, "User Name")
     }
 
     /**
      * The user’s email address. (optional)
      */
     fun setUserEmail(@Size(max = 128) value: String) {
-        stringMap["ue"] = value
+        stringMap["ue"] = value.truncate(128, "User Email")
     }
 
     /**
@@ -216,7 +217,7 @@ class Beacon private constructor(
      * (e.g. .test or .dev).
      */
     fun setBundleIdentifier(@Size(max = 128) value: String) {
-        stringMap["bi"] = value
+        stringMap["bi"] = value.truncate(128, "Bundle Identifier")
     }
 
     /**
@@ -226,7 +227,7 @@ class Beacon private constructor(
      * For example: 1203
      */
     fun setAppBuild(@Size(max = 128) value: String) {
-        stringMap["ab"] = value
+        stringMap["ab"] = value.truncate(128, "App Build")
     }
 
     /**
@@ -235,7 +236,7 @@ class Beacon private constructor(
      * For example: 1.3.1
      */
     fun setAppVersion(@Size(max = 128) value: String) {
-        stringMap["av"] = value
+        stringMap["av"] = value.truncate(128, "App Version")
     }
 
     /**
@@ -253,7 +254,7 @@ class Beacon private constructor(
      */
     fun setOsName(@Size(max = 128) value: String) {
         //TODO I don't see how to reliable get this now (android/androidtv/googletv/...). For reference, in iOS it is "UIDevice.current.systemName"
-        stringMap["osn"] = value
+        stringMap["osn"] = value.truncate(128, "OS Name")
     }
 
     /**
@@ -263,21 +264,21 @@ class Beacon private constructor(
      */
     fun setOsVersion(@Size(max = 128) value: String) {
         //TODO there's "release" (10, 9, KIT_KAT, ...) and "sdk_int" (1, 2, 3, 4, 5...)
-        stringMap["osv"] = value
+        stringMap["osv"] = value.truncate(128, "OS Version")
     }
 
     /**
      * For example: Apple
      */
     fun setDeviceManufacturer(@Size(max = 128) value: String) {
-        stringMap["dma"] = value
+        stringMap["dma"] = value.truncate(128, "Device Manufacturer")
     }
 
     /**
      * For example: iPhone 6 XS
      */
     fun setDeviceModel(@Size(max = 128) value: String) {
-        stringMap["dmo"] = value
+        stringMap["dmo"] = value.truncate(128, "Device Model")
     }
 
     /**
@@ -285,7 +286,7 @@ class Beacon private constructor(
      */
     fun setDeviceHardware(@Size(max = 128) value: String) {
         //TODO is this ok? Right now, sending the result to "/proc"
-        stringMap["dh"] = value
+        stringMap["dh"] = value.truncate(128, "Device Hardware")
     }
 
     /**
@@ -341,7 +342,7 @@ class Beacon private constructor(
      * For example: Deutsche Telekom, Sprint, Verizon
      */
     fun setCarrier(@Size(max = 256) value: String) {
-        stringMap["cn"] = value
+        stringMap["cn"] = value.truncate(256, "Carrier Name")
     }
 
     /**
@@ -366,7 +367,7 @@ class Beacon private constructor(
      * For example: https://stackoverflow.com/questions/4604486/how-do-i-move-an-existing-git-submodule-within-a-git-repository
      */
     fun setHttpCallUrl(@Size(max = 4096) value: String) {
-        stringMap["hu"] = value
+        stringMap["hu"] = value.truncate(4096, "HTTP call URL")
     }
 
     /**
@@ -375,7 +376,7 @@ class Beacon private constructor(
      * For example: POST
      */
     fun setHttpCallMethod(@Size(max = 16) value: String) {
-        stringMap["hm"] = value
+        stringMap["hm"] = value.truncate(16, "HTTP call METHOD")
     }
 
     /**
@@ -433,15 +434,17 @@ class Beacon private constructor(
      * For example: "Error: Could not start a payment request."
      */
     fun setErrorMessage(@Size(max = 16384) value: String) {
-        stringMap["em"] = value
-        setErrorId(value.md5())
+        value.truncate(16384, "Error Message").let {
+            stringMap["em"] = it
+            setErrorId(it.md5())
+        }
     }
 
     /**
      * error ID must be defined when there is an error message
      */
-    private fun setErrorId(@Size(max = 16384) value: String) {
-        stringMap["ei"] = value
+    private fun setErrorId(@Size(max = 128) value: String) {
+        stringMap["ei"] = value.truncate(128, "Error ID")
     }
 
     /**
@@ -450,14 +453,14 @@ class Beacon private constructor(
      * For example: "NetworkError.timeout"
      */
     fun setErrorType(@Size(max = 1024) value: String) {
-        stringMap["et"] = value
+        stringMap["et"] = value.truncate(1024, "Error Type")
     }
 
     /**
      * A stacktrace of active threads.
      */
     fun setStackTrace(@Size(max = 16384) value: String) {
-        stringMap["st"] = value
+        stringMap["st"] = value.truncate(16384, "StackTrace")
     }
 
     @Suppress("DuplicatedCode") // I rather duplicate a few lines of code and keep type safety
@@ -488,6 +491,13 @@ class Beacon private constructor(
                 .append("\n")
         }
         return sb.toString()
+    }
+
+    private fun String.truncate(maxLength: Int, humanReadableDescription: String): String {
+        if (this.length > maxLength) {
+            Logger.e("$humanReadableDescription can't be longer than $maxLength characters. Provided value will be truncated to allowed max length: '$this'")
+        }
+        return this.take(maxLength)
     }
 
     @VisibleForTesting
