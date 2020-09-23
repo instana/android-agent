@@ -6,6 +6,7 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import androidx.annotation.RequiresApi
+import androidx.annotation.Size
 import com.instana.android.android.agent.BuildConfig
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaLifeCycle
@@ -72,7 +73,11 @@ object Instana {
     val ignoreURLs = mutableListOf<Pattern>()
 
     /**
-     * Map of  ID which all new beacons will be associated with
+     * Map of Key-Value pairs which all new beacons will be associated with
+     *
+     * Max Key Length: 98 characters
+     *
+     * Max Value Length: 1024 characters
      */
     @JvmStatic
     val meta = MaxCapacityMap<String, String>(50)
@@ -81,7 +86,7 @@ object Instana {
      * User ID which all new beacons will be associated with
      */
     @JvmStatic
-    var userId: String?
+    @set:Size(max = 128) @get:Size(max = 128) var userId: String?
         get() = userProfile.userId
         set(value) {
             userProfile.userId = value
@@ -91,7 +96,7 @@ object Instana {
      * User name which all new beacons will be associated with
      */
     @JvmStatic
-    var userName: String?
+    @set:Size(max = 128) @get:Size(max = 128) var userName: String?
         get() = userProfile.userName
         set(value) {
             userProfile.userName = value
@@ -101,7 +106,7 @@ object Instana {
      * User email which all new beacons will be associated with
      */
     @JvmStatic
-    var userEmail: String?
+    @set:Size(max = 128) @get:Size(max = 128) var userEmail: String?
         get() = userProfile.userEmail
         set(value) {
             userProfile.userEmail = value
@@ -146,7 +151,7 @@ object Instana {
      * Human-readable name of logical view to which beacons will be associated
      */
     @JvmStatic
-    var view by Delegates.observable<String?>(null) { _, oldValue, newValue ->
+    @delegate:Size(max = 256) var view by Delegates.observable<String?>(null) { _, oldValue, newValue ->
         if (firstView == null && newValue != null) {
             firstView = newValue
         } else if (oldValue != newValue && newValue != null) {
@@ -173,7 +178,7 @@ object Instana {
      */
     @JvmStatic
     @JvmOverloads
-    fun startCapture(url: String, viewName: String? = view): HTTPMarker? {
+    fun startCapture(@Size(max = 4096) url: String, @Size(max = 256) viewName: String? = view): HTTPMarker? {
         if (instrumentationService == null) Logger.e("Tried to start capture before Instana agent initialized with: `url` $url")
         return instrumentationService?.markCall(url, viewName)
     }
