@@ -9,6 +9,7 @@ import com.instana.android.Instana
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.worker.EventWorker
 import com.instana.android.core.util.Logger
+import com.instana.android.core.util.RateLimiter
 import com.instana.android.core.util.isDirectoryEmpty
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -27,6 +28,11 @@ class InstanaWorkManager(
 ) {
     private val beaconsDirectoryName = "instanaBeacons"
     private val flushDelayMs = 1000L
+
+    /**
+     * Rate-limits the creation of beacons, to protect the servers from accidental over-usage
+     */
+    private val rateLimiter = RateLimiter(128, 32)
 
     private val constraints: Constraints
     private var beaconsDirectory: File? = null
@@ -160,6 +166,7 @@ class InstanaWorkManager(
         when {
             isInitialDelayComplete.not() -> initialDelayQueue.add(beacon)
             beaconId.isNullOrBlank() -> Logger.e("Tried to queue beacon with no beaconId: $beacon")
+            rateLimiter.isRateExceeded(1) -> Logger.e("Max beacon-generation rate exceeded. Dropping beacon: $beacon")
             else -> {
                 GlobalScope.launch {
                     withContext(Dispatchers.IO) {
