@@ -8,6 +8,7 @@ import androidx.work.*
 import com.instana.android.Instana
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.worker.EventWorker
+import com.instana.android.core.util.Debouncer
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.RateLimiter
 import com.instana.android.core.util.isDirectoryEmpty
@@ -33,6 +34,11 @@ class InstanaWorkManager(
      * Rate-limits the creation of beacons, to protect the servers from accidental over-usage
      */
     private val rateLimiter = RateLimiter(128, 32)
+
+    /**
+     * Protects WorkManager from receiving too many scheduled tasks, which can generate Sqlite errors
+     */
+    private val flushDebouncer = Debouncer(2000)
 
     private val constraints: Constraints
     private var beaconsDirectory: File? = null
@@ -143,20 +149,22 @@ class InstanaWorkManager(
      * Send all beacons together once beacon-creation stops for 1s
      */
     private fun flush(directory: File, manager: WorkManager) {
-        Logger.i("Flushing beacons")
+        Logger.i("Scheduling beacons for flushing")
         if (directory.isDirectoryEmpty()) return
 
-        val tag = directory.absolutePath
-        manager.enqueueUniqueWork(
-            tag,
-            ExistingWorkPolicy.REPLACE,
-            EventWorker.createWorkRequest(
-                constraints = constraints,
-                directory = directory,
-                initialDelayMs = flushDelayMs,
-                tag = tag
+        flushDebouncer.enqueue {
+            val tag = directory.absolutePath
+            manager.enqueueUniqueWork(
+                tag,
+                ExistingWorkPolicy.REPLACE,
+                EventWorker.createWorkRequest(
+                    constraints = constraints,
+                    directory = directory,
+                    initialDelayMs = flushDelayMs,
+                    tag = tag
+                )
             )
-        )
+        }
     }
 
     @Synchronized
