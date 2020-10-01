@@ -1,6 +1,36 @@
 Changelog
 ==========
 
+## Version 3.4.1
+
+_2020-10-01_
+
+- Fix possible crash when OkHttp3 Request instances are prematurely disposed
+- Fix issue when redundant port numbers are provided in `InstanaConfig.reportingURL`
+- Improved handling of the size limit for each reported field
+- Addition of basic rate-limiting mechanism
+- Reduce stress produced by the Agent on WorkManager (fixes possible Sqlite errors)
+
+## Version 2.4.1
+
+_2020-10-01_
+
+- Fix possible crash when OkHttp3 Request instances are prematurely disposed
+- Fix issue when redundant port numbers are provided in `InstanaConfig.reportingURL`
+- Improved handling of the size limit for each reported field
+- Addition of basic rate-limiting mechanism
+- Reduce stress produced by the Agent on WorkManager (fixes possible Sqlite errors)
+
+## Version 1.4.1
+
+_2020-10-01_
+
+- Fix possible crash when OkHttp3 Request instances are prematurely disposed
+- Fix issue when redundant port numbers are provided in `InstanaConfig.reportingURL`
+- Improved handling of the size limit for each reported field
+- Addition of basic rate-limiting mechanism
+- Reduce stress produced by the Agent on WorkManager (fixes possible Sqlite errors)
+
 ## Version 3.4.0
 
 _2020-08-10_
