@@ -1,4 +1,4 @@
-# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.4.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.4.0-brightgreen?color=0db4b3"></a>
+# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.4.1-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.4.1-brightgreen?color=0db4b3"></a>
 ## Requirements
 
 Instana Android Agent requires the use of AndroidX libraries.
@@ -42,7 +42,7 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:2.4.0'
+    implementation 'com.instana:android-agent-runtime:2.4.1'
 }
 ```
 
@@ -61,7 +61,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:2.4.0"
+        classpath "com.instana:android-agent-plugin:2.4.1"
     }
 }
 ```
