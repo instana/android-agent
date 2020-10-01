@@ -6,7 +6,7 @@ import com.instana.android.core.util.ConstantsAndUtil.checkTag
 import com.instana.android.core.util.ConstantsAndUtil.hasTrackingHeader
 import com.instana.android.core.util.ConstantsAndUtil.isAutoEnabled
 import com.instana.android.core.util.ConstantsAndUtil.isBlacklistedURL
-import com.instana.android.core.util.ConstantsAndUtil.isNotLibraryCallBoolean
+import com.instana.android.core.util.ConstantsAndUtil.isLibraryCallBoolean
 import com.instana.android.core.util.Logger
 import com.instana.android.instrumentation.HTTPMarker
 import okhttp3.Interceptor
@@ -32,7 +32,7 @@ object OkHttp3GlobalInterceptor : Interceptor {
         var marker: HTTPMarker? = null
 
         if (isAutoEnabled && !hasTrackingHeader(header) && !isBlacklistedURL(url)) {
-            if (!checkTag(header) && isNotLibraryCallBoolean(url)) {
+            if (!checkTag(header) && !isLibraryCallBoolean(url)) {
                 marker = Instana.startCapture(url)
                 request = if (marker != null) {
                     Logger.d("Automatically marked OkHttp3 request with: `url` $url")
