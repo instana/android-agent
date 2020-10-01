@@ -1,7 +1,6 @@
 package com.instana.android.core
 
 import android.content.Context
-import android.webkit.URLUtil
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.work.*
@@ -46,7 +45,6 @@ class InstanaWorkManager(
     private var isInitialDelayComplete = false
 
     init {
-        checkConfigurationParameters(config)
         constraints = configureWorkManager(config)
         Executors.newScheduledThreadPool(1).schedule({
             isInitialDelayComplete = true
@@ -131,18 +129,6 @@ class InstanaWorkManager(
             .setRequiresBatteryNotLow(lowBattery)
             .setRequiresCharging(false)
             .build()
-    }
-
-    private fun checkConfigurationParameters(instanaConfig: InstanaConfig) {
-        if (instanaConfig.reportingURL.isEmpty()) {
-            throw IllegalArgumentException("Reporting Server url cannot be blank!")
-        }
-        if (!URLUtil.isValidUrl(instanaConfig.reportingURL)) {
-            throw IllegalArgumentException("Please provide a valid server url!")
-        }
-        if (instanaConfig.key.isEmpty()) {
-            throw IllegalArgumentException("Api key cannot be blank!")
-        }
     }
 
     /**

@@ -221,6 +221,11 @@ object Instana {
     @RequiresApi(BuildConfig.MIN_SDK_VERSION)
     fun setup(app: Application, config: InstanaConfig) {
         Logger.i("Configuring Instana agent")
+        if (config.isValid().not()) {
+            Logger.e("Invalid configuration provided to Instana agent. Instana agent will not start")
+            return
+        }
+
         this.config = config
         initProfiles(app)
         initLifecycle(app)

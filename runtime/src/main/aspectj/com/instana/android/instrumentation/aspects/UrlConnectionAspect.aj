@@ -21,7 +21,7 @@ public aspect UrlConnectionAspect {
         Logger.i("HttpURLConnection: intercepting openConnection");
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();
-        if (isAutoEnabled() && !checkTag(header) && isNotLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
+        if (isAutoEnabled() && !checkTag(header) && !isLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
             HTTPMarker marker = Instana.startCapture(url);
             connection.setRequestProperty(marker.headerKey(), marker.headerValue());
             httpMarkers.put(marker.headerValue(), marker);
@@ -33,7 +33,7 @@ public aspect UrlConnectionAspect {
         Logger.i("HttpURLConnection: intercepting disconnect");
         String header = connection.getRequestProperty(TRACKING_HEADER_KEY);
         String url = connection.getURL().toString();
-        if (isAutoEnabled() && isNotLibraryCallBoolean(url) && checkTag(header)) {
+        if (isAutoEnabled() && !isLibraryCallBoolean(url) && checkTag(header)) {
             HTTPMarker marker = httpMarkers.get(header);
             if (marker != null) {
                 marker.finish(connection);
@@ -68,7 +68,7 @@ public aspect UrlConnectionAspect {
             HttpURLConnection urlConnection = (HttpURLConnection) joinPoint.getTarget();
             String header = urlConnection.getRequestProperty(TRACKING_HEADER_KEY);
             String url = urlConnection.getURL().toString();
-            if (isAutoEnabled() && hasTrackingHeader(header) && isNotLibraryCallBoolean(url) && checkTag(header)) {
+            if (isAutoEnabled() && hasTrackingHeader(header) && !isLibraryCallBoolean(url) && checkTag(header)) {
                 HTTPMarker marker = httpMarkers.get(header);
                 if (marker != null) {
                     marker.finish(urlConnection, e);

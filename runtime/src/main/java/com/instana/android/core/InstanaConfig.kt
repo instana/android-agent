@@ -1,5 +1,8 @@
 package com.instana.android.core
 
+import android.webkit.URLUtil
+import com.instana.android.core.util.ConstantsAndUtil
+import com.instana.android.core.util.Logger
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import com.instana.android.performance.PerformanceMonitorConfig
 
@@ -37,4 +40,28 @@ class InstanaConfig
     var performanceMonitorConfig: PerformanceMonitorConfig = PerformanceMonitorConfig()
     val enableCrashReporting: Boolean = false
     val breadcrumbsBufferSize: Int = 20
+
+    /**
+     * Will use these for filtering out library calls, because we don't know whether the stacks will keep/remove redundant ports provided in reportingURL
+     */
+    internal val reportingURLWithPort = ConstantsAndUtil.forceRedundantURLPort(reportingURL)
+    internal val reportingURLWithoutPort = ConstantsAndUtil.forceNoRedundantURLPort(reportingURL)
+
+    fun isValid(): Boolean {
+        return when {
+            reportingURL.isBlank() -> {
+                Logger.e("Reporting URL cannot be blank")
+                false
+            }
+            URLUtil.isValidUrl(reportingURL).not() -> {
+                Logger.e("Please provide a valid Reporting URL")
+                false
+            }
+            key.isBlank() -> {
+                Logger.e("API Key cannot be blank")
+                false
+            }
+            else -> true
+        }
+    }
 }
