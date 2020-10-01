@@ -2,9 +2,12 @@ package com.instana.android
 
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.instana.android.core.InstanaConfig
+import junit.framework.Assert.assertNull
 import org.junit.Test
 
 class InstanaShould : BaseTest() {
+
+    // TODO depending on the order in which these tests are run, it could be that `getInstrumentationService` sets up the agent and `getCrashReporting` doesn't. But `getCrashReporting` will still succeed
 
     init {
         WorkManagerTestInitHelper.initializeTestWorkManager(app)
@@ -17,17 +20,12 @@ class InstanaShould : BaseTest() {
         checkNotNull(Instana.instrumentationService)
     }
 
-    @Test(expected = IllegalArgumentException::class)
-    fun initWithFakeServerUrl() {
-        Instana.setup(app, InstanaConfig(API_KEY, FAKE_SERVER_URL))
-    }
-
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun initWithEmptyServerUrl() {
         Instana.setup(app, InstanaConfig(API_KEY, ""))
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun initWithEmptyApiKey() {
         Instana.setup(app, InstanaConfig("", SERVER_URL))
     }
