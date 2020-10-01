@@ -495,7 +495,7 @@ class Beacon private constructor(
 
     private fun String.truncate(maxLength: Int, humanReadableDescription: String): String {
         if (this.length > maxLength) {
-            Logger.e("$humanReadableDescription can't be longer than $maxLength characters. Provided value will be truncated to allowed max length: '$this'")
+            Logger.e("$humanReadableDescription cannot be longer than $maxLength characters. Provided value will be truncated to allowed max length: '$this'")
         }
         return this.take(maxLength)
     }

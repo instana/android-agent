@@ -18,14 +18,14 @@ import com.instana.android.core.event.models.EffectiveConnectionType
 import com.instana.android.core.event.models.Platform
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import okhttp3.OkHttpClient
+import java.net.MalformedURLException
+import java.net.URL
 
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 object ConstantsAndUtil {
 
     const val EMPTY_STR = ""
-
-    const val OS_TYPE = "android"
 
     const val TRACKING_HEADER_KEY = "X-INSTANA-ANDROID"
 
@@ -99,6 +99,7 @@ object ConstantsAndUtil {
         val networkType = if (Build.VERSION.SDK_INT >= 24) {
             tm.dataNetworkType
         } else {
+            @Suppress("DEPRECATION")
             tm.networkType
         }
         return when (networkType) {
@@ -140,17 +141,6 @@ object ConstantsAndUtil {
         return Pair(version ?: EMPTY_STR, versionCode)
     }
 
-    fun getViewportWidthAndHeight(app: Application): Pair<Int?, Int?> {
-        val display = (app.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay
-        return if (Build.VERSION.SDK_INT >= 17) {
-            val displayMetrics = DisplayMetrics()
-            display?.getRealMetrics(displayMetrics)
-            displayMetrics.widthPixels to displayMetrics.heightPixels
-        } else {
-            display?.width to display?.height
-        }
-    }
-
     @JvmStatic
     fun hasTrackingHeader(header: String?): Boolean = header != null
 
@@ -162,10 +152,24 @@ object ConstantsAndUtil {
             false
         }
 
+    fun getViewportWidthAndHeight(app: Application): Pair<Int?, Int?> {
+        val display = (app.getSystemService(Context.WINDOW_SERVICE) as? WindowManager)?.defaultDisplay
+        return if (Build.VERSION.SDK_INT >= 17) {
+            val displayMetrics = DisplayMetrics()
+            display?.getRealMetrics(displayMetrics)
+            displayMetrics.widthPixels to displayMetrics.heightPixels
+        } else {
+            @Suppress("DEPRECATION")
+            display?.width to display?.height
+        }
+    }
+
     @JvmStatic
-    fun isNotLibraryCallBoolean(url: String?): Boolean =
-        if (url == null) false
-        else !url.contains(Instana.config?.reportingURL ?: "")
+    fun isLibraryCallBoolean(url: String?): Boolean =
+        url?.let {
+            it.contains(Instana.config?.reportingURLWithPort ?: "") ||
+                    it.contains(Instana.config?.reportingURLWithoutPort ?: "")
+        } ?: true
 
     @JvmStatic
     val isAutoEnabled: Boolean
@@ -177,5 +181,33 @@ object ConstantsAndUtil {
                 Instana.ignoreURLs.map { it.toRegex() }.any {
                     it.matches(url) || it.matches(url.removeTrailing("/"))
                 }
+    }
+
+    internal fun forceRedundantURLPort(url: String): String {
+        return try {
+            val originalURL = URL(url)
+            val newPort = if (originalURL.port != -1) originalURL.port else originalURL.defaultPort
+            URL(originalURL.protocol, originalURL.host, newPort, originalURL.file).toString()
+        } catch (e: MalformedURLException) {
+            Logger.w("URL seems malformed: $url")
+            Logger.w(e.toString())
+            url
+        }
+    }
+
+    internal fun forceNoRedundantURLPort(url: String): String {
+        return try {
+            val originalURL = URL(url)
+            val isPortRedundant = originalURL.port == originalURL.defaultPort
+            if (isPortRedundant) {
+                URL(originalURL.protocol, originalURL.host, originalURL.file).toString()
+            } else {
+                url
+            }
+        } catch (e: MalformedURLException) {
+            Logger.w("URL seems malformed: $url")
+            Logger.w(e.toString())
+            url
+        }
     }
 }
