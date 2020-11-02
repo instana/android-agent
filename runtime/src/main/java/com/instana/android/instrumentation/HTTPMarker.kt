@@ -2,7 +2,6 @@ package com.instana.android.instrumentation
 
 import android.content.Context
 import com.instana.android.Instana
-import com.instana.android.HTTPMarkerData
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon

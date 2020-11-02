@@ -1,4 +1,4 @@
-package com.instana.android
+package com.instana.android.instrumentation
 
 import androidx.annotation.IntRange
 import androidx.annotation.Size
