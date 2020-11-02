@@ -1,6 +1,27 @@
 Changelog
 ==========
 
+## Version 3.5.0
+
+_2020-11-02_
+
+- Fix possible crash on Timer mishandling
+- Improve API for Manual HTTP Tracing
+
+## Version 2.5.0
+
+_2020-11-02_
+
+- Fix possible crash on Timer mishandling
+- Improve API for Manual HTTP Tracing
+
+## Version 1.5.0
+
+_2020-11-02_
+
+- Fix possible crash on Timer mishandling
+- Improve API for Manual HTTP Tracing
+
 ## Version 3.4.1
 
 _2020-10-01_
