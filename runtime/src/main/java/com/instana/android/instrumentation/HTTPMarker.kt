@@ -21,6 +21,7 @@ import java.util.*
  * Use for manual instrumentation, called over instrumentation service instance
  * Instana.instrumentationService.markCall(...) returns this object instance
  */
+@Suppress("DuplicatedCode")
 class HTTPMarker(
     private val url: String,
     private val viewName: String?,
@@ -29,16 +30,20 @@ class HTTPMarker(
     private val config: InstanaConfig
 ) {
 
-    private val stopWatch: StopWatch = StopWatch() // TODO replace with startTime&endTime
+    private val stopWatch: StopWatch = StopWatch()
     private val markerId = UUID.randomUUID().toString()
     private var carrierName: String? = null
     private var connectionProfile: ConnectionProfile
     private val sessionId: String?
+    private var status: MarkerStatus
 
     fun headerKey(): String = TRACKING_HEADER_KEY
     fun headerValue(): String = markerId
 
+    private enum class MarkerStatus { STARTED, ENDING, ENDED }
+
     init {
+        status = MarkerStatus.STARTED
         stopWatch.start()
         sessionId = Instana.sessionId
         connectionProfile = ConnectionProfile(
@@ -54,131 +59,95 @@ class HTTPMarker(
     }
 
     fun cancel() {
-        stopWatch.stop()
-        Instana.instrumentationService?.removeTag(markerId)
-
-        if (sessionId == null) {
-            Logger.e("Tried to end HTTPMarker with null sessionId")
+        if (config.httpCaptureConfig == HTTPCaptureConfig.NONE) {
+            return
+        }
+        if (status in arrayOf(MarkerStatus.ENDING, MarkerStatus.ENDED)) {
+            Logger.e("Can't cancel HTTPMarker. HTTPMarker was already cancelled")
             return
         }
 
+        status = MarkerStatus.ENDING
+        stopWatch.stop()
+
         val errorMessage = "Cancelled request"
 
-        val beacon = Beacon.newHttpRequest(
-            appKey = config.key,
-            appProfile = Instana.appProfile,
-            deviceProfile = Instana.deviceProfile,
-            connectionProfile = connectionProfile,
-            userProfile = Instana.userProfile,
-            sessionId = sessionId,
-            view = viewName,
-            meta = Instana.meta.getAll(),
-            duration = stopWatch.totalTimeMillis,
-            method = null,
-            url = url,
+        sendBeacon(
+            connectionMethod = null,
             responseCode = null,
-            requestSizeBytes = null,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
             backendTraceId = null,
-            error = errorMessage
+            errorMessage = errorMessage
         )
-
-        if (config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
-            Logger.i("HttpRequest cancelled with: `url` $url")
-            manager.queue(beacon)
-        }
     }
 
     //region OkHttp
     fun finish(response: Response) {
-        stopWatch.stop()
-        Instana.instrumentationService?.removeTag(markerId)
-
-        if (sessionId == null) {
-            Logger.e("Tried to end HTTPMarker with null sessionId")
+        if (config.httpCaptureConfig == HTTPCaptureConfig.NONE) {
             return
         }
+        if (status in arrayOf(MarkerStatus.ENDING, MarkerStatus.ENDED)) {
+            Logger.e("Can't finish HTTPMarker. HTTPMarker was already finished")
+            return
+        }
+
+        status = MarkerStatus.ENDING
+        stopWatch.stop()
 
         val method = response.request().method()
         val requestSize = response.request().body()?.contentLength()
         val encodedResponseSize = response.body()?.contentLength()
         val decodedResponseSize = response.decodedContentLength()
 
-        val beacon = Beacon.newHttpRequest(
-            appKey = config.key,
-            appProfile = Instana.appProfile,
-            deviceProfile = Instana.deviceProfile,
-            connectionProfile = connectionProfile,
-            userProfile = Instana.userProfile,
-            sessionId = sessionId,
-            view = viewName,
-            meta = Instana.meta.getAll(),
-            duration = stopWatch.totalTimeMillis,
-            method = method,
-            url = url,
+        sendBeacon(
+            connectionMethod = method,
             responseCode = response.code(),
-            requestSizeBytes = requestSize,
             encodedResponseSizeBytes = encodedResponseSize,
             decodedResponseSizeBytes = decodedResponseSize,
             backendTraceId = getBackendTraceId(response),
-            error = null
+            errorMessage = null
         )
-
-        if (config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
-            Logger.i("HttpRequest finished with: `url` $url")
-            manager.queue(beacon)
-        }
     }
 
     fun finish(request: Request, error: Throwable) {
-        stopWatch.stop()
-        Instana.instrumentationService?.removeTag(markerId)
-
-        if (sessionId == null) {
-            Logger.e("Tried to end HTTPMarker with null sessionId")
+        if (config.httpCaptureConfig == HTTPCaptureConfig.NONE) {
             return
         }
+        if (status in arrayOf(MarkerStatus.ENDING, MarkerStatus.ENDED)) {
+            Logger.e("Can't finish HTTPMarker. HTTPMarker was already finished")
+            return
+        }
+
+        status = MarkerStatus.ENDING
+        stopWatch.stop()
 
         val method = request.method()
         val requestSize = request.body()?.contentLength()
 
-        val beacon = Beacon.newHttpRequest(
-            appKey = config.key,
-            appProfile = Instana.appProfile,
-            deviceProfile = Instana.deviceProfile,
-            connectionProfile = connectionProfile,
-            userProfile = Instana.userProfile,
-            sessionId = sessionId,
-            view = viewName,
-            meta = Instana.meta.getAll(),
-            duration = stopWatch.totalTimeMillis,
-            method = method,
-            url = url,
+        sendBeacon(
+            connectionMethod = method,
             responseCode = null,
-            requestSizeBytes = requestSize,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
             backendTraceId = null,
-            error = error.toString()
+            errorMessage = error.toString()
         )
-
-        if (config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
-            Logger.i("HttpRequest finished with: `url` $url")
-            manager.queue(beacon)
-        }
     }
     //endregion
 
     //region HttpUrlConnection
     fun finish(connection: HttpURLConnection) {
-        stopWatch.stop()
-        Instana.instrumentationService?.removeTag(markerId)
-
-        if (sessionId == null) {
-            Logger.e("Tried to end HTTPMarker with null sessionId")
+        if (config.httpCaptureConfig == HTTPCaptureConfig.NONE) {
             return
         }
+        if (status in arrayOf(MarkerStatus.ENDING, MarkerStatus.ENDED)) {
+            Logger.e("Can't finish HTTPMarker. HTTPMarker was already finished")
+            return
+        }
+
+        status = MarkerStatus.ENDING
+        stopWatch.stop()
 
         val method = connection.requestMethod
         val encodedResponseSize = connection.encodedResponseSizeOrNull()
@@ -186,45 +155,83 @@ class HTTPMarker(
         val responseCode = connection.responseCodeOrNull()
         val errorMessage = connection.errorMessageOrNull()
 
-        val beacon = Beacon.newHttpRequest(
-            appKey = config.key,
-            appProfile = Instana.appProfile,
-            deviceProfile = Instana.deviceProfile,
-            connectionProfile = connectionProfile,
-            userProfile = Instana.userProfile,
-            sessionId = sessionId,
-            view = viewName,
-            meta = Instana.meta.getAll(),
-            duration = stopWatch.totalTimeMillis,
-            method = method,
-            url = url,
+        sendBeacon(
+            connectionMethod = method,
             responseCode = responseCode,
-            requestSizeBytes = null,
             encodedResponseSizeBytes = encodedResponseSize,
             decodedResponseSizeBytes = decodedResponseSize,
             backendTraceId = getBackendTraceId(connection),
-            error = errorMessage
+            errorMessage = errorMessage
         )
-
-        if (config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
-            Logger.i("HttpRequest finished with: `url` $url")
-            manager.queue(beacon)
-        }
     }
 
     fun finish(connection: HttpURLConnection, error: Throwable) {
-        stopWatch.stop()
-        Instana.instrumentationService?.removeTag(markerId)
-
-        if (sessionId == null) {
-            Logger.e("Tried to end HTTPMarker with null sessionId")
+        if (config.httpCaptureConfig == HTTPCaptureConfig.NONE) {
             return
         }
+        if (status in arrayOf(MarkerStatus.ENDING, MarkerStatus.ENDED)) {
+            Logger.e("Can't finish HTTPMarker. HTTPMarker was already finished")
+            return
+        }
+
+        status = MarkerStatus.ENDING
+        stopWatch.stop()
 
         val method = connection.requestMethod
         val responseCode = connection.responseCodeOrNull()
         val errorMessage = error.message
 
+        sendBeacon(
+            connectionMethod = method,
+            responseCode = responseCode,
+            encodedResponseSizeBytes = null,
+            decodedResponseSizeBytes = null,
+            backendTraceId = getBackendTraceId(connection),
+            errorMessage = errorMessage
+        )
+    }
+    //endregion
+
+    //region Manual
+    fun finish(httpMarkerData: HTTPMarkerData) {
+        if (config.httpCaptureConfig == HTTPCaptureConfig.NONE) {
+            return
+        }
+        if (status in arrayOf(MarkerStatus.ENDING, MarkerStatus.ENDED)) {
+            Logger.e("Can't finish HTTPMarker. HTTPMarker was already finished")
+            return
+        }
+
+        status = MarkerStatus.ENDED
+        stopWatch.stop()
+
+        sendBeacon(
+            connectionMethod = httpMarkerData.requestMethod,
+            responseCode = httpMarkerData.responseStatusCode,
+            encodedResponseSizeBytes = httpMarkerData.responseSizeEncodedBytes,
+            decodedResponseSizeBytes = httpMarkerData.responseSizeDecodedBytes,
+            backendTraceId = httpMarkerData.backendTraceId,
+            errorMessage = httpMarkerData.errorMessage
+        )
+    }
+    //endregion
+
+    private fun sendBeacon(
+        connectionMethod: String? = null,
+        responseCode: Int? = null,
+        encodedResponseSizeBytes: Long? = null,
+        decodedResponseSizeBytes: Long? = null,
+        backendTraceId: String? = null,
+        errorMessage: String? = null
+    ) {
+        if (sessionId == null) {
+            Logger.e("Tried to end HTTPMarker with null sessionId")
+            return
+        }
+
+        status = MarkerStatus.ENDED
+        Instana.instrumentationService?.removeTag(markerId)
+
         val beacon = Beacon.newHttpRequest(
             appKey = config.key,
             appProfile = Instana.appProfile,
@@ -235,22 +242,19 @@ class HTTPMarker(
             view = viewName,
             meta = Instana.meta.getAll(),
             duration = stopWatch.totalTimeMillis,
-            method = method,
+            method = connectionMethod,
             url = url,
             responseCode = responseCode,
             requestSizeBytes = null,
-            encodedResponseSizeBytes = null,
-            decodedResponseSizeBytes = null,
-            backendTraceId = getBackendTraceId(connection),
+            encodedResponseSizeBytes = encodedResponseSizeBytes,
+            decodedResponseSizeBytes = decodedResponseSizeBytes,
+            backendTraceId = backendTraceId,
             error = errorMessage
         )
 
-        if (config.httpCaptureConfig != HTTPCaptureConfig.NONE) {
-            Logger.i("HttpRequest finished with: `url` $url")
-            manager.queue(beacon)
-        }
+        Logger.i("HttpRequest finished with: `url` $url")
+        manager.queue(beacon)
     }
-    //endregion
 
     private fun getBackendTraceId(connection: HttpURLConnection): String? {
         return connection.getHeaderField(backendTraceIdHeaderKey)?.let { it ->
