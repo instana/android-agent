@@ -5,14 +5,16 @@ import java.util.*
 internal class Debouncer(
     private val millis: Long
 ) {
-    private val timer = Timer()
-    private var task: TimerTask? = null
+    private var timer: Timer? = null
 
     fun enqueue(action: () -> Unit) {
-        task?.cancel()
-        task = object : TimerTask() {
+        timer?.cancel()
+
+        val task = object : TimerTask() {
             override fun run() = action()
         }
-        timer.schedule(task, millis)
+        timer = Timer("Debouncer").apply {
+            schedule(task, millis)
+        }
     }
 }
