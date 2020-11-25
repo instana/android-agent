@@ -28,7 +28,7 @@ dependencies {
     implementation "com.android.tools.build:gradle:$buildtools_version"
     implementation "com.android.tools.build:gradle-api:$buildtools_version"
 
-    runtime "com.archinamon:android-gradle-aspectj:$aspectj_version"
+    runtime "com.akaita.android:android-gradle-aspectj:$aspectj_version"
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

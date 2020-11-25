@@ -32,7 +32,7 @@ class Beacon private constructor(
 
     init {
         // Agent
-        setAgentVersion(BuildConfig.VERSION_NAME) //TODO this has a new serialization key. Test when backend is deployed https://instana.slack.com/archives/GQS1KRJ5D/p1582630642005600
+        setAgentVersion(BuildConfig.AGENT_VERSION_NAME) //TODO this has a new serialization key. Test when backend is deployed https://instana.slack.com/archives/GQS1KRJ5D/p1582630642005600
 
         // App
         appProfile.appVersion?.run { setAppVersion(this) }

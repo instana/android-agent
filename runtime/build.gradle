@@ -17,6 +17,7 @@ android {
         versionCode 1
         versionName "$agent_version"
 
+        buildConfigField 'String', 'AGENT_VERSION_NAME', "\"$agent_version\""
         buildConfigField "int", "MIN_SDK_VERSION", "$minSdkVersion.apiLevel"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
