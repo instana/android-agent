@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 4.5.0
+
+_2020-11-25_
+
+- New version to support Android Gradle Plugin 4.1.x
+
 ## Version 3.5.0
 
 _2020-11-02_
