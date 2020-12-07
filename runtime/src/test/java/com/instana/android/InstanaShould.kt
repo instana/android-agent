@@ -2,7 +2,6 @@ package com.instana.android
 
 import androidx.work.testing.WorkManagerTestInitHelper
 import com.instana.android.core.InstanaConfig
-import junit.framework.Assert.assertNull
 import org.junit.Test
 
 class InstanaShould : BaseTest() {

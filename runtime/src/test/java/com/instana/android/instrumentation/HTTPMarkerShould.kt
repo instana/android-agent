@@ -5,7 +5,6 @@ import com.instana.android.BaseTest
 import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
-import com.instana.android.core.util.ConstantsAndUtil
 import com.nhaarman.mockitokotlin2.*
 import junit.framework.Assert.assertNotNull
 import okhttp3.Protocol
@@ -34,7 +33,8 @@ class HTTPMarkerShould : BaseTest() {
     @Test
     fun createMarker() {
         val remoteCallMarker = HTTPMarker(URL, METHOD, app, mockManager, config)
-        assert(remoteCallMarker.headerKey() == ConstantsAndUtil.TRACKING_HEADER_KEY)
+        assertNotNull(remoteCallMarker)
+        assert(remoteCallMarker.headerValue().isNotBlank())
     }
 
     @Test
@@ -81,10 +81,8 @@ class HTTPMarkerShould : BaseTest() {
     fun getHeaders() {
         val remoteCallMarker = HTTPMarker(URL, METHOD, app, mockManager, config)
         assertNotNull(remoteCallMarker)
-        assertNotNull(remoteCallMarker.headerKey())
-        assert(remoteCallMarker.headerKey().isNotEmpty())
         assertNotNull(remoteCallMarker.headerValue())
-        assert(remoteCallMarker.headerValue().isNotEmpty())
+        assert(remoteCallMarker.headerValue().isNotBlank())
         verifyNoMoreInteractions(mockManager)
     }
 
