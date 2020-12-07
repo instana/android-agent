@@ -3,11 +3,9 @@
 */
 package com.instana.mobileeum.network
 
-import okhttp3.MediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
+import java.io.IOException
 
 object OkHttp3 {
 
@@ -31,6 +29,10 @@ object OkHttp3 {
             val client = if (useConstructor) OkHttpClient() else okHttpClient
             val call = client.newCall(request)
             if (cancel) {
+                call.enqueue(object : Callback {
+                    override fun onFailure(call: Call, e: IOException) {}
+                    override fun onResponse(call: Call, response: Response) {}
+                })
                 call.cancel()
                 "cancelled"
             } else {
