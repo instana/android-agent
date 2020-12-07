@@ -9,7 +9,7 @@ object RequestPresetFactory {
         RequestPreset(
             name = "GET success",
             method = "GET",
-            url = "https://4rtstudio.com",
+            url = "https://instana.com",
             body = null
         ),
         RequestPreset(
