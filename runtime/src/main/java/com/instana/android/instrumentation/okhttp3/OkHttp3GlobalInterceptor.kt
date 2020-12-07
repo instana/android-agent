@@ -13,6 +13,7 @@ import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * This interceptor will be added automatically by plugin and OkHttpAspect
@@ -20,7 +21,7 @@ import java.io.IOException
  */
 object OkHttp3GlobalInterceptor : Interceptor {
 
-    private val httpMarkers = mutableListOf<HTTPMarker>()
+    private val httpMarkers = ConcurrentHashMap<String, HTTPMarker>()
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -36,8 +37,8 @@ object OkHttp3GlobalInterceptor : Interceptor {
                 marker = Instana.startCapture(url)
                 request = if (marker != null) {
                     Logger.d("Automatically marked OkHttp3 request with: `url` $url")
-                    httpMarkers.add(marker)
-                    chain.request().newBuilder().header(marker.headerKey(), marker.headerValue()).build()
+                    httpMarkers[marker.headerValue()] = marker
+                    chain.request().newBuilder().header(TRACKING_HEADER_KEY, marker.headerValue()).build()
                 } else {
                     Logger.e("Failed to automatically mark OkHttp3 request with: `url` $url")
                     intercepted
@@ -54,26 +55,36 @@ object OkHttp3GlobalInterceptor : Interceptor {
         return try {
             val response = chain.proceed(request)
             Logger.d("Finishing OkHttp3 request with: `url` $url")
-            marker?.finish(response)
-            httpMarkers.remove(marker)
+            marker?.run {
+                finish(response)
+                httpMarkers.remove(marker.headerValue(), marker)
+            }
             response
         } catch (e: Exception) {
             Logger.d("Finishing OkHttp3 request with: `url` $url, `error` ${e.message}")
-            marker?.finish(request, e)
-            httpMarkers.remove(marker)
+            marker?.run {
+                finish(request, e)
+                httpMarkers.remove(marker.headerValue(), marker)
+            }
             chain.proceed(chain.request())
         }
     }
 
     fun cancel(request: Request) {
-        var marker = httpMarkers.firstOrNull { it.headerValue() == request.header(it.headerKey()) }
+        val cancelledTrackerValue: String? = request.header(TRACKING_HEADER_KEY)
+        if (cancelledTrackerValue == null) {
+            Logger.w("No marker found for cancelled OkHttp3 request with: 'url' ${request.url()}")
+            return
+        }
+
+        var marker = httpMarkers[cancelledTrackerValue]
         if (marker == null) {
             @Suppress("UNNECESSARY_SAFE_CALL") // Crash reports suggest `request.url()` is indeed nullable
             marker = request.url()?.let { Instana.startCapture(it.toString()) }
         }
         marker?.run {
             cancel()
-            httpMarkers.remove(this)
+            httpMarkers.remove(this.headerValue())
         }
     }
 }
