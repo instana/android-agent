@@ -1,6 +1,18 @@
 Changelog
 ==========
 
+## Version 2.5.1
+
+_2020-12-07_
+
+- Fix thread-safety issue on OkHttp3 tracing
+
+## Version 1.5.1
+
+_2020-12-07_
+
+- Fix thread-safety issue on OkHttp3 tracing
+
 ## Version 2.5.0
 
 _2020-11-02_
