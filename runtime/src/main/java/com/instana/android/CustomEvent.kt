@@ -27,7 +27,8 @@ class CustomEvent(
     /**
      * Logical view in which the event happened. Will default to the current view set in Instana.view
      */
-    @Size(max = 256) var viewName: String? = null
+    @Size(max = 256)
+    var viewName: String? = null
 
     /**
      * Map of meta values. These will be merged with the global Instana.meta tags for this event; they won't be applied to any other future event
@@ -41,7 +42,8 @@ class CustomEvent(
     /**
      * Tracing ID sent by the Instana-enabled server in the Server-Timing header as `intid;desc=backendTracingID`
      */
-    @Size(max = 128) var backendTracingID: String? = null
+    @Size(max = 128)
+    var backendTracingID: String? = null
 
     /**
      * Error Throwable to provide additional context, if any
