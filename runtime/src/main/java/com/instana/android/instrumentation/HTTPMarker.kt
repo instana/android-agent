@@ -8,7 +8,6 @@ import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
 import com.instana.android.core.util.*
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
-import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
 import com.instana.android.core.util.ConstantsAndUtil.getCarrierName
 import com.instana.android.core.util.ConstantsAndUtil.getCellularConnectionType
 import com.instana.android.core.util.ConstantsAndUtil.getConnectionType
@@ -37,7 +36,6 @@ class HTTPMarker(
     private val sessionId: String?
     private var status: MarkerStatus
 
-    fun headerKey(): String = TRACKING_HEADER_KEY
     fun headerValue(): String = markerId
 
     private enum class MarkerStatus { STARTED, ENDING, ENDED }
@@ -267,6 +265,22 @@ class HTTPMarker(
             backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
         }
     }
+
+    //region Comparison
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as HTTPMarker
+        if (markerId != other.markerId) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return markerId.hashCode()
+    }
+    //endregion
+
 
     companion object {
         private const val backendTraceIdHeaderKey = "Server-Timing"
