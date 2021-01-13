@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_agent/flutter_agent.dart';
 
@@ -20,6 +20,30 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initPlatformState();
+    setupInstana();
+  }
+
+  Future<void> setupInstana() async {
+    await FlutterAgent.setup(key: APP_KEY, reportingUrl: REPORTING_URL);
+    await FlutterAgent.setUserID('1234567890');
+    await FlutterAgent.setUserName('Boty McBotFace');
+    await FlutterAgent.setUserEmail('boty@mcbot.com');
+    await FlutterAgent.setView('Home');
+    await FlutterAgent.setMeta(key: 'exampleGlobalKey', value: 'exampleGlobalValue');
+    await FlutterAgent.reportEvent(name: 'simpleCustomEvent');
+    await FlutterAgent.reportEvent(
+        name: 'complexCustomEvent',
+        options: EventOptions()
+          ..viewName = 'customViewName'
+          ..startTime = DateTime.now().millisecondsSinceEpoch
+          ..duration = 2 * 1000);
+    await FlutterAgent.reportEvent(
+        name: 'advancedCustomEvent',
+        options: EventOptions()
+          ..viewName = 'customViewName'
+          ..startTime = DateTime.now().millisecondsSinceEpoch
+          ..duration = 3 * 1000
+          ..meta = {'customKey1': 'customValue1', 'customKey2': 'customValue2'});
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
