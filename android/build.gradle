@@ -36,6 +36,10 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+
+    dependencies {
+        implementation 'com.instana:android-agent-runtime:1.5.0'
+    }
 }
 
 dependencies {
