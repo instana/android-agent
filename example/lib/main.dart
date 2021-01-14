@@ -44,6 +44,12 @@ class _MyAppState extends State<MyApp> {
           ..startTime = DateTime.now().millisecondsSinceEpoch
           ..duration = 3 * 1000
           ..meta = {'customKey1': 'customValue1', 'customKey2': 'customValue2'});
+    await FlutterAgent.startCapture(url: 'https://example.com/success', method: 'GET').then((marker) => marker
+      ..responseStatusCode = 200
+      ..responseSizeBody = 1000
+      ..responseSizeBodyDecoded = 2400
+      ..finish());
+    await FlutterAgent.startCapture(url: 'https://example.com/cancel', method: 'POST').then((marker) => marker.cancel());
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
