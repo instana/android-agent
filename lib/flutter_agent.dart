@@ -69,7 +69,7 @@ class Marker {
   final String id;
   final String viewName;
 
-  int responseStatusCode = -1;
+  int responseStatusCode;
   String backendTracingID;
   int responseSizeHeader;
   int responseSizeBody;
@@ -77,7 +77,7 @@ class Marker {
   String errorMessage;
 
   Future<void> finish() async {
-    await _channel.invokeMethod('finishCapture', <String, dynamic>{
+    await _channel.invokeMethod('finish', <String, dynamic>{
       'id': id,
       'responseStatusCode': responseStatusCode,
       'backendTracingID': backendTracingID,
@@ -89,7 +89,7 @@ class Marker {
   }
 
   Future<void> cancel() async {
-    await _channel.invokeMethod('cancelCapture', <String, dynamic>{'id': id});
+    await _channel.invokeMethod('cancel', <String, dynamic>{'id': id});
   }
 }
 
