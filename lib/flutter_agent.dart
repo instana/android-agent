@@ -55,9 +55,10 @@ class FlutterAgent {
     });
   }
 
-  static Future<Marker> startCapture({@required String url, String viewName}) async {
-    var markerId, view = await _channel.invokeMethod('startCapture', <String, dynamic>{'url': url, 'viewName': viewName});
-    return Marker(channel: _channel, id: markerId, viewName: view);
+  static Future<Marker> startCapture({@required String url, @required String method, String viewName}) async {
+    var markerId = await _channel.invokeMethod('startCapture', <String, dynamic>{'url': url, 'method': method, 'viewName': viewName});
+    var view = await _channel.invokeMethod('getView', <String, dynamic>{});
+    return Marker(channel: _channel, id: markerId, viewName: viewName ?? view);
   }
 }
 
@@ -66,10 +67,9 @@ class Marker {
 
   final MethodChannel _channel;
   final String id;
+  final String viewName;
 
-  String viewName;
-  int responseStatusCode = -1;
-  String method;
+  int responseStatusCode;
   String backendTracingID;
   int responseSizeHeader;
   int responseSizeBody;
@@ -80,7 +80,6 @@ class Marker {
     await _channel.invokeMethod('finish', <String, dynamic>{
       'id': id,
       'responseStatusCode': responseStatusCode,
-      'method': method,
       'backendTracingID': backendTracingID,
       'responseSizeHeader': responseSizeHeader,
       'responseSizeBody': responseSizeBody,
@@ -88,12 +87,16 @@ class Marker {
       'errorMessage': errorMessage
     });
   }
+
+  Future<void> cancel() async {
+    await _channel.invokeMethod('cancel', <String, dynamic>{'id': id});
+  }
 }
 
 class EventOptions {
   int startTime;
   int duration;
   String viewName;
-  Map<String,String> meta;
+  Map<String, String> meta;
   String backendTracingID;
 }
