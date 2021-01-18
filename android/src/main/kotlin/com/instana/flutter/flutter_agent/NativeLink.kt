@@ -66,7 +66,7 @@ internal class NativeLink {
         else {
             val putSuccess = Instana.meta.put(key, value)
             if (putSuccess) result.success(null)
-            else result.error(ErrorCode.LIST_FULL.serialized, "Instana failed to add new meta value", null)
+            else result.error(ErrorCode.META_LIST_FULL.serialized, "Instana failed to add new meta value", null)
         }
     }
 
