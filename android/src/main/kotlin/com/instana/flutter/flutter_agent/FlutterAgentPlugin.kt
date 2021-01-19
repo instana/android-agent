@@ -2,34 +2,29 @@ package com.instana.flutter.flutter_agent
 
 import android.app.Application
 import androidx.annotation.NonNull
-import com.instana.android.CustomEvent
-
-import com.instana.android.Instana
-import com.instana.android.core.InstanaConfig
-import com.instana.android.instrumentation.HTTPCaptureConfig
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import java.util.*
+import kotlin.collections.HashMap
 
 /** FlutterAgentPlugin */
 class FlutterAgentPlugin : FlutterPlugin, MethodCallHandler {
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
-    private lateinit var channel: MethodChannel
 
-    private lateinit var app: Application
+    private var channel: MethodChannel? = null
+    private var app: Application? = null
+
+    private val nativeLink = NativeLink()
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_agent")
-        channel.setMethodCallHandler(this)
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_agent").apply {
+            setMethodCallHandler(this@FlutterAgentPlugin)
+        }
 
-        // TODO applicationContext might be null. Need to store as I did with RN
-        app = flutterPluginBinding.applicationContext as Application
+        app = flutterPluginBinding.applicationContext as? Application
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -40,50 +35,58 @@ class FlutterAgentPlugin : FlutterPlugin, MethodCallHandler {
             "setup" -> {
                 val key: String? = call.argument("key")
                 val reportingUrl: String? = call.argument("reportingUrl")
-                if (key.isNullOrBlank()) result.error("missingAppKey", "Instana set up requires a non-blank 'key'", null)
-                else if (reportingUrl.isNullOrBlank()) result.error("missingReportingUrl", "Instana set up requires a non-blank 'reportingUrl'", null)
-                else {
-                    Instana.setup(
-                            app,
-                            InstanaConfig(
-                                    reportingURL = reportingUrl,
-                                    key = key,
-                                    httpCaptureConfig = HTTPCaptureConfig.MANUAL
-                            )
-                    )
-                    result.success(null)
-                }
+                nativeLink.setUpInstana(
+                        result = result,
+                        app = app,
+                        reportingUrl = reportingUrl,
+                        key = key)
             }
             "setUserID" -> {
                 val userID: String? = call.argument("userID")
-                Instana.userId = userID
-                result.success(null)
+                nativeLink.setUserId(
+                        result = result,
+                        userID = userID)
             }
             "setUserName" -> {
                 val userName: String? = call.argument("userName")
-                Instana.userName = userName
-                result.success(null)
+                nativeLink.setUserName(
+                        result = result,
+                        userName = userName)
             }
             "setUserEmail" -> {
                 val userEmail: String? = call.argument("userEmail")
-                Instana.userEmail = userEmail
-                result.success(null)
+                nativeLink.setUserEmail(
+                        result = result,
+                        userEmail = userEmail)
             }
             "setView" -> {
                 val viewName: String? = call.argument("viewName")
-                Instana.view = viewName
-                result.success(null)
+                nativeLink.setView(
+                        result = result,
+                        viewName = viewName)
+            }
+            "getView" -> {
+                result.success(nativeLink.getView())
             }
             "setMeta" -> {
                 val key: String? = call.argument("key")
                 val value: String? = call.argument("value")
-                if (key.isNullOrBlank()) result.error("missingMetaKey", "Instana requires non-blank 'meta keys'", null)
-                else if (value == null) result.error("missingMetaValue", "Instana requires non-null 'meta values'", null)
-                else {
-                    val putSuccess = Instana.meta.put(key, value)
-                    if (putSuccess) result.success(null)
-                    else result.error("errorAddingMeta", "Instana failed to add new meta value", null)
-                }
+                nativeLink.setMeta(
+                        result = result,
+                        key = key,
+                        value = value)
+            }
+            "setIgnore" -> {
+                val urls: List<String?>? = call.argument("urls")
+                nativeLink.setIgnore(
+                        result = result,
+                        urls = urls)
+            }
+            "setIgnoreRegex" -> {
+                val regexStr: List<String?>? = call.argument("regex")
+                nativeLink.setIgnoreRegex(
+                        result = result,
+                        regexStr = regexStr)
             }
             "reportEvent" -> {
                 val eventName: String? = call.argument("eventName")
@@ -92,18 +95,46 @@ class FlutterAgentPlugin : FlutterPlugin, MethodCallHandler {
                 val viewName: String? = call.argument("viewName")
                 val meta: HashMap<String?, String?>? = call.argument("meta")
                 val backendTracingID: String? = call.argument("backendTracingID")
-                if (eventName.isNullOrBlank()) result.error("missingEventName", "Instana requires non-blank 'event name'", null)
-                else {
-                    val event = CustomEvent(eventName).apply {
-                        this.startTime = startTime?.toLong()
-                        this.duration = duration?.toLong()
-                        this.viewName = viewName
-                        this.backendTracingID = backendTracingID
-                        this.meta = meta?.filter { it.key != null && it.value != null} as? HashMap<String,String>
-                    }
-                    Instana.reportEvent(event)
-                    result.success(null)
-                }
+                nativeLink.reportEvent(
+                        result = result,
+                        eventName = eventName,
+                        startTime = startTime,
+                        duration = duration,
+                        viewName = viewName,
+                        meta = meta,
+                        backendTracingID = backendTracingID)
+            }
+            "startCapture" -> {
+                val url: String? = call.argument("url")
+                val method: String? = call.argument("method")
+                val viewName: String? = call.argument("viewName")
+                nativeLink.startCapture(
+                        result = result,
+                        url = url,
+                        method = method,
+                        viewName = viewName)
+            }
+            "finish" -> {
+                val markerId: String? = call.argument("id")
+                val responseStatusCode: Int? = call.argument("responseStatusCode")
+                val responseSizeEncodedBytes: Long? = (call.argument("responseSizeBody") as? Int)?.toLong()
+                val responseSizeDecodedBytes: Long? = (call.argument("responseSizeBodyDecoded") as? Int)?.toLong()
+                val backendTraceId: String? = call.argument("backendTracingID")
+                val errorMessage: String? = call.argument("errorMessage")
+                nativeLink.finishCapture(
+                        result = result,
+                        markerId = markerId,
+                        responseStatusCode = responseStatusCode,
+                        responseSizeEncodedBytes = responseSizeEncodedBytes,
+                        responseSizeDecodedBytes = responseSizeDecodedBytes,
+                        backendTraceId = backendTraceId,
+                        errorMessage = errorMessage)
+            }
+            "cancel" -> {
+                val markerId: String? = call.argument("id")
+                nativeLink.cancelCapture(
+                        result = result,
+                        markerId = markerId)
             }
             else -> {
                 result.notImplemented()
@@ -112,6 +143,7 @@ class FlutterAgentPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+        channel?.setMethodCallHandler(null)
     }
+
 }
