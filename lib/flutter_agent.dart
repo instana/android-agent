@@ -40,13 +40,11 @@ class FlutterAgent {
   }
 
   static Future<void> reportEvent({@required String name, EventOptions options}) async {
-    var currentView = await _channel.invokeMethod('getViewName', <String, dynamic>{});
-    var viewName = options?.viewName ?? currentView;
     await _channel.invokeMethod('reportEvent', <String, dynamic>{
       'eventName': name,
       'startTime': options?.startTime?.toDouble(),
       'duration': options?.duration?.toDouble(),
-      'viewName': viewName,
+      'viewName': options?.viewName,
       'meta': options?.meta,
       'backendTracingID': options?.backendTracingID
     });
