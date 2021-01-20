@@ -10,6 +10,10 @@ class InstanaAgent {
     return await _channel.invokeMethod('setup', <String, dynamic>{'key': key, 'reportingUrl': reportingUrl});
   }
 
+  static Future<String> getSessionID() async {
+    return await _channel.invokeMethod('getSessionID', <String, dynamic>{});
+  }
+
   static Future<void> setUserID(String userID) async {
     await _channel.invokeMethod('setUserID', <String, dynamic>{'userID': userID});
   }

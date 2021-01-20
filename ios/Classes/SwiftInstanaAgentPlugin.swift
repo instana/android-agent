@@ -67,6 +67,8 @@ public class SwiftInstanaAgentPlugin: NSObject, FlutterPlugin {
             cancel(call, result)
         } else if call.method == "getView" {
             getView(call, result)
+        } else if call.method == "getSessionID" { 
+            getSessionID(call, result)
         } else {
             result(FlutterMethodNotImplemented)
         }
@@ -213,6 +215,10 @@ public class SwiftInstanaAgentPlugin: NSObject, FlutterPlugin {
 
     func getView(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         result(Instana.viewName)
+    }
+
+    func getSessionID(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        result(Instana.sessionID)
     }
 
     // Helper

@@ -65,6 +65,9 @@ class InstanaAgentPlugin : FlutterPlugin, MethodCallHandler {
             "getView" -> {
                 result.success(nativeLink.getView())
             }
+            "getSessionID" -> {
+                result.success(nativeLink.getSessionID())
+            }
             "setMeta" -> {
                 val key: String? = call.argument("key")
                 val value: String? = call.argument("value")
