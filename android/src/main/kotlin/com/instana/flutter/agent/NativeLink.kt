@@ -60,6 +60,10 @@ internal class NativeLink {
         return Instana.view
     }
 
+    fun getSessionID(): String? {
+        return Instana.sessionId
+    }
+
     fun setMeta(result: MethodChannel.Result, key: String?, value: String?) {
         if (key.isNullOrBlank()) result.error(ErrorCode.MISSING_OR_INVALID_ARGUMENT.serialized, "Instana requires non-blank 'meta keys'", null)
         else if (value == null) result.error(ErrorCode.MISSING_OR_INVALID_ARGUMENT.serialized, "Instana requires non-null 'meta values'", null)
