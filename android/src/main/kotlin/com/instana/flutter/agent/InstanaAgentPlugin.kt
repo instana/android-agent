@@ -1,4 +1,4 @@
-package com.instana.flutter.flutter_agent
+package com.instana.flutter.agent
 
 import android.app.Application
 import androidx.annotation.NonNull
@@ -11,8 +11,8 @@ import io.flutter.plugin.common.MethodChannel.Result
 import java.util.*
 import kotlin.collections.HashMap
 
-/** FlutterAgentPlugin */
-class FlutterAgentPlugin : FlutterPlugin, MethodCallHandler {
+/** InstanaAgentPlugin */
+class InstanaAgentPlugin : FlutterPlugin, MethodCallHandler {
 
     private var channel: MethodChannel? = null
     private var app: Application? = null
@@ -20,8 +20,8 @@ class FlutterAgentPlugin : FlutterPlugin, MethodCallHandler {
     private val nativeLink = NativeLink()
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "flutter_agent").apply {
-            setMethodCallHandler(this@FlutterAgentPlugin)
+        channel = MethodChannel(flutterPluginBinding.binaryMessenger, "instana_agent").apply {
+            setMethodCallHandler(this@InstanaAgentPlugin)
         }
 
         app = flutterPluginBinding.applicationContext as? Application

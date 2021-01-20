@@ -1,4 +1,4 @@
-# flutter_agent
+# instana_agent
 
 Instana Agent for Flutter
 

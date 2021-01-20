@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-class FlutterAgent {
-  static const MethodChannel _channel = const MethodChannel('flutter_agent');
+class InstanaAgent {
+  static const MethodChannel _channel = const MethodChannel('instana_agent');
 
   static Future<void> setup({@required String key, @required String reportingUrl}) async {
     return await _channel.invokeMethod('setup', <String, dynamic>{'key': key, 'reportingUrl': reportingUrl});
@@ -52,11 +52,7 @@ class FlutterAgent {
 
   static Future<Marker> startCapture({@required String url, @required String method, String viewName}) async {
     var currentView = await _channel.invokeMethod('getView', <String, dynamic>{});
-    var markerId = await _channel.invokeMethod('startCapture', <String, dynamic>{
-      'url': url,
-      'method': method,
-      'viewName': viewName ?? currentView
-    });
+    var markerId = await _channel.invokeMethod('startCapture', <String, dynamic>{'url': url, 'method': method, 'viewName': viewName ?? currentView});
     return Marker(channel: _channel, id: markerId, viewName: viewName ?? currentView);
   }
 }

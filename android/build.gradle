@@ -1,4 +1,4 @@
-group 'com.instana.flutter.flutter_agent'
+group 'com.instana.flutter.agent'
 version '1.0-SNAPSHOT'
 
 buildscript {

@@ -1,4 +1,4 @@
-package com.instana.flutter.flutter_agent
+package com.instana.flutter.agent
 
 import android.app.Application
 import com.instana.android.CustomEvent

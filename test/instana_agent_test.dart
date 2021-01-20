@@ -1,9 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_agent/flutter_agent.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('flutter_agent');
+  const MethodChannel channel = MethodChannel('instana_agent');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 

@@ -1,4 +1,4 @@
-name: flutter_agent
+name: instana_agent
 description: Instana agent for Flutter
 version: 1.0.0
 author: Instana Inc.
@@ -28,10 +28,10 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.instana.flutter.flutter_agent
-        pluginClass: FlutterAgentPlugin
+        package: com.instana.flutter.agent
+        pluginClass: InstanaAgentPlugin
       ios:
-        pluginClass: FlutterAgentPlugin
+        pluginClass: InstanaAgentPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

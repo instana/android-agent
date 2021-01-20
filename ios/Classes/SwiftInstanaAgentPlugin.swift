@@ -2,7 +2,7 @@ import Flutter
 import UIKit
 import InstanaAgent
 
-enum SwiftFlutterAgentPluginError: Error {
+enum SwiftInstanaAgentPluginError: Error {
     case missingOrInvalidArgs([String])
     case invalidSetup
     case captureResultFailed(String)
@@ -28,12 +28,12 @@ enum SwiftFlutterAgentPluginError: Error {
     }
 }
 
-public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
+public class SwiftInstanaAgentPlugin: NSObject, FlutterPlugin {
     var markerIDMapper = [String: HTTPMarker]()
 
     public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: "flutter_agent", binaryMessenger: registrar.messenger())
-        let instance = SwiftFlutterAgentPlugin()
+        let channel = FlutterMethodChannel(name: "instana_agent", binaryMessenger: registrar.messenger())
+        let instance = SwiftInstanaAgentPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 
@@ -75,7 +75,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
     func setup(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let url = url(for: "reportingUrl", at: call),
               let key = string(for: "key", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["reportingUrl", "key"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["reportingUrl", "key"]).flutterError)
         }
         Instana.setup(key: key, reportingURL: url, httpCaptureConfig: .manual)
         result("Instana did setup")
@@ -83,7 +83,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
 
     func verifySetup(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) -> Bool {
         if call.method != "setup", Instana.reportingURL == nil || Instana.key == nil {
-            result(SwiftFlutterAgentPluginError.invalidSetup.flutterError)
+            result(SwiftInstanaAgentPluginError.invalidSetup.flutterError)
             return false
         }
         return true
@@ -91,7 +91,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
 
     func setUserID(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let userID = string(for: "userID", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["userID"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["userID"]).flutterError)
         }
         Instana.setUser(id: userID)
         result("UserID \(userID) set")
@@ -99,7 +99,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
 
     func setUserName(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let userName = string(for: "userName", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["userName"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["userName"]).flutterError)
         }
         Instana.setUser(name: userName)
         result("User's name \(userName) set")
@@ -107,7 +107,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
 
     func setUserEmail(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let userEmail = string(for: "userEmail", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["userEmail"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["userEmail"]).flutterError)
         }
         Instana.setUser(email: userEmail)
         result("User's email \(userEmail) set")
@@ -115,7 +115,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
 
     func setView(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let name = string(for: "viewName", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["viewName"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["viewName"]).flutterError)
         }
         Instana.setView(name: name)
         result("View \(name) set")
@@ -124,7 +124,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
     func setMeta(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let key = string(for: "key", at: call),
               let value = string(for: "value", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["key", "value"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["key", "value"]).flutterError)
         }
         Instana.setMeta(value: value, key: key)
         result("Meta \(key):\(value) set")
@@ -132,7 +132,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
 
     func setIgnore(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let values = stringArray(for: "urls", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["urls"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["urls"]).flutterError)
         }
         let urls = values.compactMap { URL(string: $0) }
         Instana.setIgnore(urls: urls)
@@ -141,7 +141,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
 
     func setIgnoreRegex(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let patterns = stringArray(for: "regex", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["regex"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["regex"]).flutterError)
         }
         let regex = patterns.compactMap { try? NSRegularExpression(pattern: $0) }
         Instana.setIgnoreURLs(matching: regex)
@@ -150,7 +150,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
 
     func reportEvent(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let eventName = string(for: "eventName", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["eventName"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["eventName"]).flutterError)
         }
         let startTime = int64(for: "startTime", at: call) ?? Instana.Types.Milliseconds(NSNotFound)
         let duration = int64(for: "duration", at: call) ?? Instana.Types.Milliseconds(NSNotFound)
@@ -170,7 +170,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
     func startCapture(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let url = url(for: "url", at: call),
               let method = string(for: "method", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["url", "method"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["url", "method"]).flutterError)
         }
         let viewName = string(for: "viewName", at: call)
         let marker = Instana.startCapture(url: url, method: method, viewName: viewName)
@@ -182,11 +182,11 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
     func finish(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         print(call)
         guard let id = string(for: "id", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["id"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["id"]).flutterError)
         }
         let statusCode = int(for: "responseStatusCode", at: call) ?? 200
         let errorMsg = string(for: "errorMessage", at: call)
-        let error = errorMsg != nil ? SwiftFlutterAgentPluginError.captureResultFailed(errorMsg!) : nil
+        let error = errorMsg != nil ? SwiftInstanaAgentPluginError.captureResultFailed(errorMsg!) : nil
         let backendTracingID = string(for: "backendTracingID", at: call)
         let headerSize = int64(for: "responseSizeHeader", at: call) ?? 0
         let bodySize = int64(for: "responseSizeBody", at: call) ?? 0
@@ -204,7 +204,7 @@ public class SwiftFlutterAgentPlugin: NSObject, FlutterPlugin {
 
     func cancel(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard let id = string(for: "id", at: call) else {
-            return result(SwiftFlutterAgentPluginError.missingOrInvalidArgs(["id"]).flutterError)
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["id"]).flutterError)
         }
         let marker = markerIDMapper[id]
         marker?.cancel()

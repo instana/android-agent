@@ -1,6 +1,6 @@
-# flutter_agent_example
+# instana_agent_example
 
-Demonstrates how to use the flutter_agent plugin.
+Demonstrates how to use the instana_agent plugin.
 
 ## Getting Started
 

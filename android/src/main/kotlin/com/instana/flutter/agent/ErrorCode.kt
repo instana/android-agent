@@ -1,4 +1,4 @@
-package com.instana.flutter.flutter_agent
+package com.instana.flutter.agent
 
 /**
  * Error codes Instana Flutter Agent could return
