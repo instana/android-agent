@@ -76,18 +76,6 @@ class InstanaAgentPlugin : FlutterPlugin, MethodCallHandler {
                         key = key,
                         value = value)
             }
-            "setIgnore" -> {
-                val urls: List<String?>? = call.argument("urls")
-                nativeLink.setIgnore(
-                        result = result,
-                        urls = urls)
-            }
-            "setIgnoreRegex" -> {
-                val regexStr: List<String?>? = call.argument("regex")
-                nativeLink.setIgnoreRegex(
-                        result = result,
-                        regexStr = regexStr)
-            }
             "reportEvent" -> {
                 val eventName: String? = call.argument("eventName")
                 val startTime: Double? = call.argument("startTime")

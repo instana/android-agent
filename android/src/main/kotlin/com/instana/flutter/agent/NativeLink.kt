@@ -74,24 +74,6 @@ internal class NativeLink {
         }
     }
 
-    fun setIgnore(result: MethodChannel.Result, urls: List<String?>?) {
-        if (urls == null) result.error(ErrorCode.MISSING_OR_INVALID_ARGUMENT.serialized, "Instana requires non-null 'urls' list", null)
-        else {
-            val regex = urls.mapNotNull { it?.toPattern(Pattern.LITERAL) }
-            Instana.ignoreURLs.addAll(regex)
-            result.success(null)
-        }
-    }
-
-    fun setIgnoreRegex(result: MethodChannel.Result, regexStr: List<String?>?) {
-        if (regexStr == null) result.error(ErrorCode.MISSING_OR_INVALID_ARGUMENT.serialized, "Instana requires non-null 'regex' list", null)
-        else {
-            val regex = regexStr.mapNotNull { it?.toPattern() }
-            Instana.ignoreURLs.addAll(regex)
-            result.success(null)
-        }
-    }
-
     fun reportEvent(result: MethodChannel.Result, eventName: String?, startTime: Double?, duration: Double?, viewName: String?, meta: HashMap<String?, String?>?, backendTracingID: String?) {
         if (eventName.isNullOrBlank()) result.error(ErrorCode.MISSING_OR_INVALID_ARGUMENT.serialized, "Instana requires non-blank 'event name'", null)
         else {

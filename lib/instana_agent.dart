@@ -34,15 +34,6 @@ class InstanaAgent {
     await _channel.invokeMethod('setMeta', <String, dynamic>{'key': key, 'value': value});
   }
 
-  static Future<void> setIgnore(List<String> urls) async {
-    await _channel.invokeMethod('setIgnore', <String, dynamic>{'urls': urls});
-  }
-
-  static Future<void> setIgnoreRegex(List<RegExp> regex) async {
-    var regexString = regex.map((val) => val.toString()).toList();
-    await _channel.invokeMethod('setIgnoreRegex', <String, dynamic>{'regex': regexString});
-  }
-
   static Future<void> reportEvent({@required String name, EventOptions options}) async {
     await _channel.invokeMethod('reportEvent', <String, dynamic>{
       'eventName': name,
