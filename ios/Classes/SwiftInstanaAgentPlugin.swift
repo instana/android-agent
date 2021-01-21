@@ -53,10 +53,6 @@ public class SwiftInstanaAgentPlugin: NSObject, FlutterPlugin {
             setView(call, result)
         } else if call.method == "setMeta" {
             setMeta(call, result)
-        } else if call.method == "setIgnore" {
-            setIgnore(call, result)
-        } else if call.method == "setIgnoreRegex" {
-            setIgnoreRegex(call, result)
         } else if call.method == "reportEvent" {
             reportEvent(call, result)
         } else if call.method == "startCapture" {
@@ -130,24 +126,6 @@ public class SwiftInstanaAgentPlugin: NSObject, FlutterPlugin {
         }
         Instana.setMeta(value: value, key: key)
         result("Meta \(key):\(value) set")
-    }
-
-    func setIgnore(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let values = stringArray(for: "urls", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["urls"]).flutterError)
-        }
-        let urls = values.compactMap { URL(string: $0) }
-        Instana.setIgnore(urls: urls)
-        result("URLs \(values) ignored")
-    }
-
-    func setIgnoreRegex(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let patterns = stringArray(for: "regex", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["regex"]).flutterError)
-        }
-        let regex = patterns.compactMap { try? NSRegularExpression(pattern: $0) }
-        Instana.setIgnoreURLs(matching: regex)
-        result("URLs with regex patterns \(patterns) ignored")
     }
 
     func reportEvent(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
