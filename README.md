@@ -1,6 +1,6 @@
 # Instana agent for Flutter
 
-**[Changelog](CHANGELOG.md)** 
+**[Changelog](CHANGELOG.md)** |
 **[Contributing](CONTRIBUTING.md)**
 
 ---
