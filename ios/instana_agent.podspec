@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.description      = <<-DESC
 Instana Agent for Flutter
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://www.instana.com'
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Instana Inc.' => 'info@instana.com' }
   s.source           = { :path => '.' }
