@@ -1,41 +1,33 @@
 PODS:
   - Flutter (1.0.0)
+  - GzipSwift (5.1.1)
   - instana_agent (1.0.0):
     - Flutter
-    - InstanaAgent (= 1.1.6)
-  - GzipSwift (5.1.1)
-  - InstanaAgent (1.1.6):
+    - InstanaAgent (= 1.1.8)
+  - InstanaAgent (1.1.8):
     - GzipSwift
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - instana_agent (from `.symlinks/plugins/instana_agent/ios`)
-  - InstanaAgent (from `https://github.com/instana/iOSAgent.git`, branch `master`)
 
 SPEC REPOS:
   trunk:
     - GzipSwift
+    - InstanaAgent
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
   instana_agent:
     :path: ".symlinks/plugins/instana_agent/ios"
-  InstanaAgent:
-    :branch: master
-    :git: https://github.com/instana/iOSAgent.git
-
-CHECKOUT OPTIONS:
-  InstanaAgent:
-    :commit: be36b04decaad1facc79d1f12c085955db10d9ca
-    :git: https://github.com/instana/iOSAgent.git
 
 SPEC CHECKSUMS:
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  instana_agent: 9cef29e0984bacfed56582fec36f8ddb97c966f5
   GzipSwift: 893f3e48e597a1a4f62fafcb6514220fcf8287fa
-  InstanaAgent: 038097d3de6c2a52aecc75265bc1f424a8001664
+  instana_agent: 2e76084e4908d31c0935ad1a3c26466e2b9e1b39
+  InstanaAgent: c9550f6b70adb963f6aa97cdc2d1348012efbfb0
 
-PODFILE CHECKSUM: 765c2313fbaa6f8076fc89a03b4951f73a6130ff
+PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0
