@@ -9,7 +9,7 @@
 
 The package **Instana agent** for Flutter is available via pub.dev.
 
-1. Open the `pubspec.yaml` file located inside the app folder, and add `instana_agent`: under dependencies.
+1. Open the `pubspec.yaml` file located inside the app folder, and add `instana_agent:` under dependencies.
 2. Install it
 From the terminal: Run `flutter pub get`
 Or
