@@ -11,3 +11,4 @@
 To make a release, you first need to ensure that the released version will either be a semver minor or patch release so that automatic updates are working for our users. Following that, the process is simple:
 Update CHANGELOG.md so that the unreleased section gets its version number. Commit and push this change.
 Run the command `flutter pub publish` to publish the new version.
+See the flutter [link](https://dart.dev/tools/pub/publishing) for more information.
