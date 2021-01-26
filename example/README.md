@@ -2,11 +2,12 @@
 
 This example demonstrates how to use the Instana agent package with Flutter apps.
 
-## Run example
-* Android
-* iOS: Make sure that you have running iOS simulator or real iOS device connected
+## Runing the example
 
-Run in the terminal (in this example folder)
+Please open the [lib/main.dart](lib/main.dart) file and replace the default 'KEY' and 'REPORTING_URL' with you own Instana **key** and **reporting url**.
+
+Then just run the app as you would normally do. For example, running this command in the terminal:
+
 ```
 flutter run
 ```
