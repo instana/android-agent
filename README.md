@@ -41,5 +41,9 @@ Future<void> setupInstana() async {
     // For further calls and functions see the documentation
 }
 ```
-For the whole documentation see the [Instana Flutter API](https://www.instana.com/docs/mobile_app_monitoring/flutter_api) 
-You can also check out the [Flutter example](https://github.com/instana/flutter-agent/tree/main/example) in this repository.
+
+## More
+
+The complete documentation for this package can be found in: [Instana Flutter API](https://www.instana.com/docs/mobile_app_monitoring/flutter_api) 
+
+Please also check out the [Flutter example](https://github.com/instana/flutter-agent/tree/main/example) in this repository for a simple usage demonstration.
