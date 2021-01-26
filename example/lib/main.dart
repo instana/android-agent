@@ -21,17 +21,35 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    setupInstana();
+
+    /// Initializes Instana. Must be run only once as soon as possible in the app's lifecycle
+    InstanaAgent.setup(key: 'KEY', reportingUrl: 'REPORTING_URL');
+
+    setUserIdentifiers(); /// optional
+    setView(); /// optional
+    reportCustomEvents(); /// optional
+
     futureAlbum = fetchAlbum();
   }
 
-  Future<void> setupInstana() async {
-    await InstanaAgent.setup(key: 'KEY', reportingUrl: 'REPORTING_URL');
-    await InstanaAgent.setUserID('1234567890');
-    await InstanaAgent.setUserName('Boty McBotFace');
-    await InstanaAgent.setUserEmail('boty@mcbot.com');
-    await InstanaAgent.setView('Home');
-    await InstanaAgent.setMeta(key: 'exampleGlobalKey', value: 'exampleGlobalValue');
+  /// Set user identifiers
+  ///
+  /// These will be attached to all subsequent beacons
+  setUserIdentifiers() {
+    InstanaAgent.setUserID('1234567890');
+    InstanaAgent.setUserName('Boty McBotFace');
+    InstanaAgent.setUserEmail('boty@mcbot.com');
+  }
+
+  /// Setting a view allows for easier logical segmentation of beacons in the timeline shown in the Instana Dashboard's Session
+  setView() {
+    InstanaAgent.setView('Home');
+  }
+
+  /// At any time, Metadata can be added to Instana beacons and events can be generated
+  Future<void> reportCustomEvents() async {
+    InstanaAgent.setMeta(key: 'exampleGlobalKey', value: 'exampleGlobalValue');
+
     await InstanaAgent.reportEvent(name: 'simpleCustomEvent');
     await InstanaAgent.reportEvent(
         name: 'complexCustomEvent',
