@@ -27,19 +27,16 @@ import 'package:instana_agent/instana_agent.dart';
 Stop and restart the app, if necessary
 
 ## Setup
-Setup Instana via `initState`
+Setup Instana once as soon as possible. 
+
+For example, in `initState()`
 
 ```dart
 @override
   void initState() {
     super.initState();
-    setupInstana();
+    InstanaAgent.setup(key: 'YOUR-INSTANA-KEY', reportingUrl: 'YOUR-REPORTING_URL');
   }
-
-Future<void> setupInstana() async {
-    await InstanaAgent.setup(key: 'YOUR-INSTANA-KEY', reportingUrl: 'YOUR-REPORTING_URL');
-    // For further calls and functions see the documentation
-}
 ```
 
 ## More
