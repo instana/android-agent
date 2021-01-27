@@ -1,3 +1,8 @@
+/*
+ * (c) Copyright IBM Corp. 2021
+ * (c) Copyright Instana Inc. and contributors 2021
+ */
+ 
 #import "InstanaAgentPlugin.h"
 #if __has_include(<instana_agent/instana_agent-Swift.h>)
 #import <instana_agent/instana_agent-Swift.h>

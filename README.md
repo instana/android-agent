@@ -5,9 +5,7 @@
 
 ---
 
-Instana agent allows Flutter apps to send custom traces to Instana. 
-
-Traces should instantly appear in your Instana dashboard. 
+Instana agent allows Flutter apps to send monitoring data to Instana. 
 
 ## Installation
 
@@ -42,9 +40,9 @@ Setup Instana once as soon as possible. For example, in `initState()`
   }
 ```
 
-## Tracing View changes
+## Tracking View changes
 
-At any point after initialing Instana agent:
+At any point after initializing the Instana agent:
 
 ```dart
 import 'package:instana_agent/instana_agent.dart';
@@ -54,9 +52,9 @@ import 'package:instana_agent/instana_agent.dart';
 InstanaAgent.setView('Home');
 ```
 
-## Tracing Http requests
+## Tracking HTTP requests
 
-At any point after initialing Instana agent:
+At any point after initializing the Instana agent:
 
 ```dart
 import 'package:instana_agent/instana_agent.dart';
@@ -112,6 +110,6 @@ class _MyAppState extends State<MyApp> {
 
 ## More
 
-The complete documentation for this package, including `custom events` and such can be found in: [Instana Flutter API](https://www.instana.com/docs/mobile_app_monitoring/flutter_api) 
+The complete documentation for this package, including `custom events` and others can be found within [Instana's public documentation page](https://www.instana.com/docs/mobile_app_monitoring/flutter_api) 
 
 Please also check out the [Flutter example](https://github.com/instana/flutter-agent/tree/main/example) in this repository for a simple usage demonstration.

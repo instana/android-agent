@@ -1,3 +1,8 @@
+/*
+ * (c) Copyright IBM Corp. 2021
+ * (c) Copyright Instana Inc. and contributors 2021
+ */
+ 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 

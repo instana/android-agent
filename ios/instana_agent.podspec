@@ -11,7 +11,7 @@ Instana Agent for Flutter
                        DESC
   s.homepage         = 'https://www.instana.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Instana Inc.' => 'info@instana.com' }
+  s.author           = { 'Instana Inc.' => 'dev@instana.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
