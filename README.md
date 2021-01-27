@@ -70,7 +70,7 @@ InstanaAgent.startCapture(url: 'https://example.com/success', method: 'GET').the
     ..finish());
 ```
 
-We recommend creating your own `InstrumentedHttpClient` extending `http.BaseCLient` as shown in this snippet, for example:
+We recommend creating your own `InstrumentedHttpClient` extending `http.BaseClient` as shown in this snippet, for example:
 
 ```dart
 class _InstrumentedHttpClient extends http.BaseClient {
