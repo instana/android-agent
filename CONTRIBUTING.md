@@ -20,7 +20,7 @@ Steps:
 2. Update [pubspec.yaml](./pubspec.yaml) with the new version
 3. Commit and push the change
 4. Run `flutter pub publish --dry-run` to verify all is good
-5. Run `flutter pub publish --dry-run` to publish
+5. Run `flutter pub publish` to publish
 
 
 For more info, please check the [Flutter docs for Publishing Packages](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#publish) and the [Dart docs for Publishing Packages](https://dart.dev/tools/pub/publishing).
