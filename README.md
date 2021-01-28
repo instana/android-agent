@@ -71,40 +71,41 @@ InstanaAgent.startCapture(url: 'https://example.com/success', method: 'GET').the
 We recommend creating your own `InstrumentedHttpClient` extending `http.BaseClient` as shown in this snippet, for example:
 
 ```dart
-class _InstrumentedHttpClient extends http.BaseClient {
-  _InstrumentedHttpClient(this._inner);
+class _InstrumentedHttpClient extends BaseClient {
+   _InstrumentedHttpClient(this._inner);
 
-  final http.Client _inner;
+   final Client _inner;
 
-  @override
-  Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    final Marker marker = Instana.startCapture(url: request.url.toString(), method: request.method);
-    
-    StreamedResponse response;
-    try {
-      response = await _inner.send(request);
-      marker
-         ..responseStatusCode = response.statusCode
-         ..responseSizeBody = response.contentLength;
-    } finally {
-      await marker.finish();
-    }
+   @override
+   Future<StreamedResponse> send(BaseRequest request) async {
+      final Marker marker = await InstanaAgent.startCapture(url: request.url.toString(), method: request.method);
 
-    return response;
-  }
+      StreamedResponse response;
+      try {
+         response = await _inner.send(request);
+         marker
+            ..responseStatusCode = response.statusCode
+            ..responseSizeBody = response.contentLength
+            ..backendTracingID = BackendTracingIDParser.fromHeadersMap(response.headers);
+      } finally {
+         await marker.finish();
+      }
+
+      return response;
+   }
 }
 
 class _MyAppState extends State<MyApp> {
 
-  [...]
-  
-  Future<void> httpRequest() async {
-    final _InstrumentedHttpClient httpClient = _InstrumentedHttpClient(http.Client());
-    final Request request = Request("GET", Uri.parse("https://www.instana.com"));
-    httpClient.send(request);
-  }
+   [...]
 
-  [...]
+   Future<void> httpRequest() async {
+      final _InstrumentedHttpClient httpClient = _InstrumentedHttpClient(Client());
+      final Request request = Request("GET", Uri.parse("https://www.instana.com"));
+      httpClient.send(request);
+   }
+
+   [...]
 }
 ```
 
