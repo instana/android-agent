@@ -95,3 +95,18 @@ class EventOptions {
   Map<String, String> meta;
   String backendTracingID;
 }
+
+class BackendTracingIDParser {
+  static final String headerKey = "server-timing";
+  static final RegExp headerValueRegex = RegExp("^.* ?intid;desc=([^,]+)?.*\$");
+
+  static String fromHeadersMap(Map<String, String> headers) {
+    var result;
+    headers.forEach((key, value) {
+      if (key.toLowerCase() == headerKey.toLowerCase()) {
+        result = headerValueRegex.firstMatch(value)?.group(1);
+      }
+    });
+    return result;
+  }
+}
