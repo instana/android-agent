@@ -76,9 +76,11 @@ public class SwiftInstanaAgentPlugin: NSObject, FlutterPlugin {
     }
 
     func setup(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let url = url(for: "reportingUrl", at: call),
-              let key = string(for: "key", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["reportingUrl", "key"]).flutterError)
+        guard let url = url(for: .reportingUrl, at: call),
+              let key = string(for: .key, at: call) else {
+            return result(SwiftInstanaAgentPluginError
+                            .missingOrInvalidArgs([Arg.reportingUrl.string, Arg.key.string])
+                            .flutterError)
         }
         Instana.setup(key: key, reportingURL: url, httpCaptureConfig: .manual)
         result("Instana did setup")
@@ -93,55 +95,67 @@ public class SwiftInstanaAgentPlugin: NSObject, FlutterPlugin {
     }
 
     func setUserID(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let userID = string(for: "userID", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["userID"]).flutterError)
+        guard let userID = string(for: .userID, at: call) else {
+            return result(SwiftInstanaAgentPluginError
+                            .missingOrInvalidArgs([Arg.userID.string])
+                            .flutterError)
         }
         Instana.setUser(id: userID)
         result("UserID \(userID) set")
     }
 
     func setUserName(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let userName = string(for: "userName", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["userName"]).flutterError)
+        guard let userName = string(for: .userName, at: call) else {
+            return result(SwiftInstanaAgentPluginError
+                            .missingOrInvalidArgs([Arg.userName.string])
+                            .flutterError)
         }
         Instana.setUser(name: userName)
         result("User's name \(userName) set")
     }
 
     func setUserEmail(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let userEmail = string(for: "userEmail", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["userEmail"]).flutterError)
+        guard let userEmail = string(for: .userEmail, at: call) else {
+            return result(SwiftInstanaAgentPluginError
+                            .missingOrInvalidArgs([Arg.userEmail.string])
+                            .flutterError)
         }
         Instana.setUser(email: userEmail)
         result("User's email \(userEmail) set")
     }
 
     func setView(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let name = string(for: "viewName", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["viewName"]).flutterError)
+        guard let name = string(for: .viewName, at: call) else {
+            return result(SwiftInstanaAgentPluginError
+                            .missingOrInvalidArgs([Arg.viewName.string])
+                            .flutterError)
         }
         Instana.setView(name: name)
         result("View \(name) set")
     }
 
     func setMeta(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let key = string(for: "key", at: call),
-              let value = string(for: "value", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["key", "value"]).flutterError)
+        guard let key = string(for: .key, at: call),
+              let value = string(for: .value, at: call) else {
+            return result(SwiftInstanaAgentPluginError
+                            .missingOrInvalidArgs([Arg.key.string, Arg.value.string])
+                            .flutterError)
         }
         Instana.setMeta(value: value, key: key)
         result("Meta \(key):\(value) set")
     }
 
     func reportEvent(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let eventName = string(for: "eventName", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["eventName"]).flutterError)
+        guard let eventName = string(for: .eventName, at: call) else {
+            return result(SwiftInstanaAgentPluginError
+                            .missingOrInvalidArgs([Arg.eventName.string])
+                            .flutterError)
         }
-        let startTime = int64(for: "startTime", at: call) ?? Instana.Types.Milliseconds(NSNotFound)
-        let duration = int64(for: "duration", at: call) ?? Instana.Types.Milliseconds(NSNotFound)
-        let viewName = string(for: "viewName", at: call)
-        let backendTracingID = string(for: "backendTracingID", at: call)
-        let meta = stringDict(for: "meta", at: call)
+        let startTime = int64(for: .startTime, at: call) ?? Instana.Types.Milliseconds(NSNotFound)
+        let duration = int64(for: .duration, at: call) ?? Instana.Types.Milliseconds(NSNotFound)
+        let viewName = string(for: .viewName, at: call)
+        let backendTracingID = string(for: .backendTracingID, at: call)
+        let meta = stringDict(for: .meta, at: call)
         Instana.reportEvent(name: eventName,
                             timestamp: startTime,
                             duration: duration,
@@ -153,11 +167,13 @@ public class SwiftInstanaAgentPlugin: NSObject, FlutterPlugin {
     }
 
     func startCapture(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let url = url(for: "url", at: call),
-              let method = string(for: "method", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["url", "method"]).flutterError)
+        guard let url = url(for: .url, at: call),
+              let method = string(for: .method, at: call) else {
+            return result(SwiftInstanaAgentPluginError
+                            .missingOrInvalidArgs([Arg.url.string, Arg.method.string])
+                            .flutterError)
         }
-        let viewName = string(for: "viewName", at: call)
+        let viewName = string(for: .viewName, at: call)
         let marker = Instana.startCapture(url: url, method: method, viewName: viewName)
         let uuid = UUID().uuidString
         markerIDMapper[uuid] = marker
@@ -166,16 +182,16 @@ public class SwiftInstanaAgentPlugin: NSObject, FlutterPlugin {
 
     func finish(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         print(call)
-        guard let id = string(for: "id", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["id"]).flutterError)
+        guard let id = string(for: .id, at: call) else {
+            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs([Arg.id.string]).flutterError)
         }
-        let statusCode = int(for: "responseStatusCode", at: call) ?? 200
-        let errorMsg = string(for: "errorMessage", at: call)
+        let statusCode = int(for: .responseStatusCode, at: call) ?? 200
+        let errorMsg = string(for: .errorMessage, at: call)
         let error = errorMsg != nil ? SwiftInstanaAgentPluginError.captureResultFailed(errorMsg!) : nil
-        let backendTracingID = string(for: "backendTracingID", at: call)
-        let headerSize = int64(for: "responseSizeHeader", at: call) ?? 0
-        let bodySize = int64(for: "responseSizeBody", at: call) ?? 0
-        let bodySizeAfterDecoding = int64(for: "responseSizeBodyDecoded", at: call) ?? 0
+        let backendTracingID = string(for: .backendTracingID, at: call)
+        let headerSize = int64(for: .responseSizeHeader, at: call) ?? 0
+        let bodySize = int64(for: .responseSizeBody, at: call) ?? 0
+        let bodySizeAfterDecoding = int64(for: .responseSizeBodyDecoded, at: call) ?? 0
         let marker = markerIDMapper[id]
         let size: HTTPMarker.Size = HTTPMarker.Size(header: headerSize, body: bodySize, bodyAfterDecoding: bodySizeAfterDecoding)
         let captureResult = HTTPCaptureResult(statusCode: statusCode,
@@ -188,8 +204,9 @@ public class SwiftInstanaAgentPlugin: NSObject, FlutterPlugin {
     }
 
     func cancel(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        guard let id = string(for: "id", at: call) else {
-            return result(SwiftInstanaAgentPluginError.missingOrInvalidArgs(["id"]).flutterError)
+        guard let id = string(for: .id, at: call) else {
+            return result(SwiftInstanaAgentPluginError
+                            .missingOrInvalidArgs([Arg.id.string]).flutterError)
         }
         let marker = markerIDMapper[id]
         marker?.cancel()
@@ -205,42 +222,68 @@ public class SwiftInstanaAgentPlugin: NSObject, FlutterPlugin {
     }
 
     // Helper
-    private func value<T>(for key: String, at call: FlutterMethodCall) -> T? {
+    private func value<T>(for key: Arg, at call: FlutterMethodCall) -> T? {
         guard let args = call.arguments as? [String: Any],
-              let value = args[key] as? T else {
+              let value = args[key.rawValue] as? T else {
             return nil
         }
         return value
     }
 
-    private func string(for key: String, at call: FlutterMethodCall) -> String? {
+    private func string(for key: Arg, at call: FlutterMethodCall) -> String? {
         value(for: key, at: call) as String?
     }
 
-    private func stringDict(for key: String, at call: FlutterMethodCall) -> [String: String]? {
+    private func stringDict(for key: Arg, at call: FlutterMethodCall) -> [String: String]? {
         value(for: key, at: call) as [String: String]?
     }
 
-    private func stringArray(for key: String, at call: FlutterMethodCall) -> [String]? {
+    private func stringArray(for key: Arg, at call: FlutterMethodCall) -> [String]? {
         value(for: key, at: call) as [String]?
     }
 
-    private func int(for key: String, at call: FlutterMethodCall) -> Int? {
+    private func int(for key: Arg, at call: FlutterMethodCall) -> Int? {
         value(for: key, at: call) as Int?
     }
 
-    private func int64(for key: String, at call: FlutterMethodCall) -> Int64? {
+    private func int64(for key: Arg, at call: FlutterMethodCall) -> Int64? {
         value(for: key, at: call) as Int64?
     }
 
-    private func double(for key: String, at call: FlutterMethodCall) -> Double? {
+    private func double(for key: Arg, at call: FlutterMethodCall) -> Double? {
         value(for: key, at: call) as Double?
     }
 
-    private func url(for key: String, at call: FlutterMethodCall) -> URL? {
+    private func url(for key: Arg, at call: FlutterMethodCall) -> URL? {
         guard let url = URL(string: string(for: key, at: call) ?? "") else {
             return nil
         }
         return url
+    }
+}
+
+extension SwiftInstanaAgentPlugin {
+    enum Arg: String {
+        case reportingUrl
+        case key
+        case value
+        case userID
+        case userName
+        case userEmail
+        case viewName
+        case eventName
+        case startTime
+        case duration
+        case backendTracingID
+        case meta
+        case url
+        case method
+        case id
+        case responseStatusCode
+        case errorMessage
+        case responseSizeHeader
+        case responseSizeBody
+        case responseSizeBodyDecoded
+        var string: String { rawValue }
     }
 }
