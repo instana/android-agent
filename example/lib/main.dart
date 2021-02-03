@@ -76,17 +76,25 @@ class _MyAppState extends State<MyApp> {
           ..viewName = 'customViewName'
           ..startTime = DateTime.now().millisecondsSinceEpoch
           ..duration = 3 * 1000
-          ..meta = {'customKey1': 'customValue1', 'customKey2': 'customValue2'});
-    await InstanaAgent.startCapture(url: 'https://example.com/success', method: 'GET').then((marker) => marker
-      ..responseStatusCode = 200
-      ..responseSizeBody = 1000
-      ..responseSizeBodyDecoded = 2400
-      ..finish());
-    await InstanaAgent.startCapture(url: 'https://example.com/cancel', method: 'POST').then((marker) => marker.cancel());
+          ..meta = {
+            'customKey1': 'customValue1',
+            'customKey2': 'customValue2'
+          });
+    await InstanaAgent.startCapture(
+            url: 'https://example.com/success', method: 'GET')
+        .then((marker) => marker
+          ..responseStatusCode = 200
+          ..responseSizeBody = 1000
+          ..responseSizeBodyDecoded = 2400
+          ..finish());
+    await InstanaAgent.startCapture(
+            url: 'https://example.com/cancel', method: 'POST')
+        .then((marker) => marker.cancel());
   }
 
   Future<Album> fetchAlbum() async {
-    final InstrumentedHttpClient httpClient = InstrumentedHttpClient(http.Client());
+    final InstrumentedHttpClient httpClient =
+        InstrumentedHttpClient(http.Client());
 
     Random random = new Random();
     var id = random.nextInt(100);
@@ -128,7 +136,10 @@ class _MyAppState extends State<MyApp> {
                 future: futureAlbum,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    return Text("Title: " + snapshot.data.title + "\nID: " + snapshot.data.id.toString());
+                    return Text("Title: " +
+                        snapshot.data.title +
+                        "\nID: " +
+                        snapshot.data.id.toString());
                   } else if (snapshot.hasError) {
                     return Text("${snapshot.error}");
                   } else {

@@ -13,7 +13,8 @@ class InstrumentedHttpClient extends BaseClient {
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
-    final Marker marker = await InstanaAgent.startCapture(url: request.url.toString(), method: request.method);
+    final Marker marker = await InstanaAgent.startCapture(
+        url: request.url.toString(), method: request.method);
 
     StreamedResponse response;
     try {
@@ -21,7 +22,8 @@ class InstrumentedHttpClient extends BaseClient {
       marker
         ..responseStatusCode = response.statusCode
         ..responseSizeBody = response.contentLength
-        ..backendTracingID = BackendTracingIDParser.fromHeadersMap(response.headers);
+        ..backendTracingID =
+            BackendTracingIDParser.fromHeadersMap(response.headers);
     } finally {
       await marker.finish();
     }
