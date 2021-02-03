@@ -28,9 +28,10 @@ We follow [Semantic Versioning 2.0](https://semver.org/).
 Steps:
 1. Update [CHANGELOG.md](./CHANGELOG.md) with the new version
 2. Update [pubspec.yaml](./pubspec.yaml) with the new version
-3. Commit and push the change
-4. Run `flutter pub publish --dry-run` to verify all is good
-5. Run `flutter pub publish` to publish
+4. Commit and push the change
+5. Create release tag
+6. Run `flutter pub publish --dry-run` to verify all is good
+7. Run `flutter pub publish` to publish
 
 
 For more info, please check the [Flutter docs for Publishing Packages](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#publish) and the [Dart docs for Publishing Packages](https://dart.dev/tools/pub/publishing).
