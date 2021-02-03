@@ -1,7 +1,6 @@
 name: instana_agent
 description: Instana agent for Flutter
 version: 1.0.0
-author: Instana Inc.
 homepage: https://www.instana.com
 repository: https://github.com/instana/flutter-agent
 
