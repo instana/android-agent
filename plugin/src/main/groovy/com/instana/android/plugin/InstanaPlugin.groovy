@@ -42,6 +42,7 @@ class InstanaPlugin implements Plugin<Project> {
         }
         aspectj.includeJar "retrofit"
         aspectj.includeJar "react-native"
+        aspectj.excludeJar "firebase-perf"
 
         aspectj.ajcArgs << '-Xlint:ignore'
     }
