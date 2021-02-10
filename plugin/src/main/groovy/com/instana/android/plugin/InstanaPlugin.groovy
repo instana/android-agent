@@ -18,8 +18,14 @@ class InstanaPlugin implements Plugin<Project> {
         }
 
         // add aspectj plugin
-        if (!project.pluginManager.hasPlugin('com.archinamon.aspectj-ext')) {
-            project.pluginManager.apply('com.archinamon.aspectj-ext')
+        if (project.getGradle().getStartParameter().getTaskRequests().toString().contains("AndroidTest") || project.getGradle().getStartParameter().getTaskRequests().toString().contains("UnitTest")) {
+            if (!project.pluginManager.hasPlugin('com.archinamon.aspectj-junit')) {
+                project.pluginManager.apply('com.archinamon.aspectj-junit')
+            }
+        } else {
+            if (!project.pluginManager.hasPlugin('com.archinamon.aspectj-ext')) {
+                project.pluginManager.apply('com.archinamon.aspectj-ext')
+            }
         }
 
         def aspectj = project.extensions.findByName("aspectj")
