@@ -8,6 +8,27 @@ _2021-02-10_
 - Prevent possible issue when running instrumented tests or unit tests
 - Explicitly exclude `firebase-perf` from transformation targets
 
+## Version 3.5.2
+
+_2021-02-10_
+
+- Prevent possible issue when running instrumented tests or unit tests
+- Explicitly exclude `firebase-perf` from transformation targets
+
+## Version 2.5.2
+
+_2021-02-10_
+
+- Prevent possible issue when running instrumented tests or unit tests
+- Explicitly exclude `firebase-perf` from transformation targets
+
+## Version 1.5.2
+
+_2021-02-10_
+
+- Prevent possible issue when running instrumented tests or unit tests
+- Explicitly exclude `firebase-perf` from transformation targets
+
 ## Version 4.5.1
 
 _2020-12-07_
