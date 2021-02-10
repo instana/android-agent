@@ -1,6 +1,8 @@
 /*
-* Created by Mikel Pascual (mikel@4rtstudio.com) on 13/03/2020.
-*/
+ * (c) Copyright IBM Corp. 2021
+ * (c) Copyright Instana Inc. and contributors 2021
+ */
+
 package com.instana.mobileeum.network
 
 import java.io.IOException

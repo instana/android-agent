@@ -1,3 +1,8 @@
+/*
+ * (c) Copyright IBM Corp. 2021
+ * (c) Copyright Instana Inc. and contributors 2021
+ */
+
 package com.instana.mobileeum.ui.httpurlconnection
 
 import androidx.lifecycle.LiveData

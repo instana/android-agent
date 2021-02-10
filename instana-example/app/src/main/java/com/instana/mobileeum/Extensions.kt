@@ -1,6 +1,8 @@
 /*
-* Created by Mikel Pascual (mikel@4rtstudio.com) on 13/05/2020.
-*/
+ * (c) Copyright IBM Corp. 2021
+ * (c) Copyright Instana Inc. and contributors 2021
+ */
+
 package com.instana.mobileeum
 
 fun String.toMap(): Map<String, String> {
