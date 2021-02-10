@@ -100,5 +100,6 @@ bintray {
             released = new Date()
         }
         publish = true
+        override = true
     }
 }
