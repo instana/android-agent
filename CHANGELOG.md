@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 1.5.3
+
+_2021-03-02_
+
+- Start `overweaving` to avoid issues with other tools that manipulate bytecode
+
 ## Version 1.5.2
 
 _2021-02-10_
