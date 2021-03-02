@@ -45,10 +45,15 @@ class InstanaPlugin implements Plugin<Project> {
                         aspectj.includeJar dependency.name
                     }
         }
-        aspectj.includeJar "retrofit"
-        aspectj.includeJar "react-native"
+
+        aspectj.excludeJar "android-agent-runtime"
+        aspectj.excludeJar "aspectjrt"
         aspectj.excludeJar "firebase-perf"
 
+        aspectj.includeJar "retrofit"
+        aspectj.includeJar "react-native"
+
         aspectj.ajcArgs << '-Xlint:ignore'
+        aspectj.ajcArgs << '-Xset:overWeaving=true'
     }
 }
