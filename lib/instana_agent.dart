@@ -5,7 +5,6 @@
 
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 /// Class providing all methods related to the setup and usage of the Instana Flutter agent
@@ -16,7 +15,7 @@ class InstanaAgent {
   ///
   /// Please run this as soon as possible in your app's lifecycle
   static Future<void> setup(
-      {@required String key, @required String reportingUrl}) async {
+      {required String key, required String reportingUrl}) async {
     return await _channel.invokeMethod(
         'setup', <String, dynamic>{'key': key, 'reportingUrl': reportingUrl});
   }
@@ -24,14 +23,14 @@ class InstanaAgent {
   /// Returns unique ID assigned by Instana to current session
   ///
   /// SessionID will change every time the app cold-starts
-  static Future<String> getSessionID() async {
+  static Future<String?> getSessionID() async {
     return await _channel.invokeMethod('getSessionID', <String, dynamic>{});
   }
 
   /// Sets custom User ID which all new beacons will be associated with
   ///
   /// Max length: 128 characters
-  static Future<void> setUserID(String userID) async {
+  static Future<void> setUserID(String? userID) async {
     await _channel
         .invokeMethod('setUserID', <String, dynamic>{'userID': userID});
   }
@@ -39,7 +38,7 @@ class InstanaAgent {
   /// Sets User name which all new beacons will be associated with
   ///
   /// Max length: 128 characters
-  static Future<void> setUserName(String name) async {
+  static Future<void> setUserName(String? name) async {
     await _channel
         .invokeMethod('setUserName', <String, dynamic>{'userName': name});
   }
@@ -47,7 +46,7 @@ class InstanaAgent {
   /// Sets User email which all new beacons will be associated with
   ///
   /// Max length: 128 characters
-  static Future<void> setUserEmail(String email) async {
+  static Future<void> setUserEmail(String? email) async {
     await _channel
         .invokeMethod('setUserEmail', <String, dynamic>{'userEmail': email});
   }
@@ -55,7 +54,7 @@ class InstanaAgent {
   /// Sets Human-readable name of logical view to which new beacons will be associated
   ///
   /// Max length: 256 characters
-  static Future<void> setView(String name) async {
+  static Future<void> setView(String? name) async {
     await _channel.invokeMethod('setView', <String, dynamic>{'viewName': name});
   }
 
@@ -65,14 +64,14 @@ class InstanaAgent {
   ///
   /// Max Value Length: 1024 characters
   static Future<void> setMeta(
-      {@required String key, @required String value}) async {
+      {required String key, required String value}) async {
     await _channel
         .invokeMethod('setMeta', <String, dynamic>{'key': key, 'value': value});
   }
 
   /// Sends a Custom Event beacon to Instana
   static Future<void> reportEvent(
-      {@required String name, EventOptions options}) async {
+      {required String name, EventOptions? options}) async {
     await _channel.invokeMethod('reportEvent', <String, dynamic>{
       'eventName': name,
       'startTime': options?.startTime?.toDouble(),
@@ -87,7 +86,7 @@ class InstanaAgent {
   ///
   /// Returns a [Marker] you can [finish()] to send a beacon to Instana
   static Future<Marker> startCapture(
-      {@required String url, @required String method, String viewName}) async {
+      {required String url, required String method, String? viewName}) async {
     var currentView =
         await _channel.invokeMethod('getView', <String, dynamic>{});
     var markerId = await _channel.invokeMethod(
@@ -106,36 +105,36 @@ class InstanaAgent {
 /// Please use the [startCapture()] method to obtain your [Marker]
 class Marker {
   Marker(
-      {@required MethodChannel channel,
-      @required this.id,
-      @required this.viewName})
+      {required MethodChannel channel,
+      required this.id,
+      required this.viewName})
       : _channel = channel;
 
   final MethodChannel _channel;
-  final String id;
-  final String viewName;
+  final String? id;
+  final String? viewName;
 
   /// Response's HTTP Status Code
-  int responseStatusCode;
+  int? responseStatusCode;
 
   /// Backend Trace ID obtained from the [BackendTracingIDParser.headerKey] header of the response
   ///
   /// You can use the included [BackendTracingIDParser.fromHeadersMap(headers)] method to extract it from the response
   ///
   /// This will be used to correlate backend requests and tracking beacons
-  String backendTracingID;
+  String? backendTracingID;
 
   /// Response's Header-size in bytes
-  int responseSizeHeader;
+  int? responseSizeHeader;
 
   /// Response's compressed Body-size in bytes
-  int responseSizeBody;
+  int? responseSizeBody;
 
   /// Response's uncompressed Body-size in bytes
-  int responseSizeBodyDecoded;
+  int? responseSizeBodyDecoded;
 
   /// Response's error message
-  String errorMessage;
+  String? errorMessage;
 
   /// Finishes the [Marker], triggering the generation and queueing of a HTTP tracking beacon
   Future<void> finish() async {
@@ -161,27 +160,27 @@ class EventOptions {
   /// Start Time in milliseconds since epoch
   ///
   /// If not set, it will default to the time of creation of the beacon
-  int startTime;
+  int? startTime;
 
   /// Duration in milliseconds
   ///
   /// If not set, it will default to 0
-  int duration;
+  int? duration;
 
   /// View name
   ///
   /// If not set, it will default to the View name set in [InstanaAgent.setView()]
-  String viewName;
+  String? viewName;
 
   /// Maps of Key-Value pairs which this Custom Event will be associated with. This will not affect any other beacons
   ///
   /// Max Key Length: 98 characters
   ///
   /// Max Value Length: 1024 characters
-  Map<String, String> meta;
+  Map<String, String>? meta;
 
   /// Backend Trace ID to associate this Custom Event to
-  String backendTracingID;
+  String? backendTracingID;
 }
 
 /// Helper class to make the manual extraction of the BackendTracingID easier
@@ -192,7 +191,7 @@ class BackendTracingIDParser {
   static final RegExp headerValueRegex = RegExp("^.* ?intid;desc=([^,]+)?.*\$");
 
   /// Returns the BackendTracingID or null
-  static String fromHeadersMap(Map<String, String> headers) {
+  static String? fromHeadersMap(Map<String, String> headers) {
     var result;
     headers.forEach((key, value) {
       if (key.toLowerCase() == headerKey.toLowerCase()) {
