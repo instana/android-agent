@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.0
+
+* Add support for Flutter 2
+* Migrate to null safety
+* Android native agent version 1.5.3
+
 ## 1.0.1
 
 * Fix Android compilation issue
