@@ -109,6 +109,31 @@ class _MyAppState extends State<MyApp> {
 }
 ```
 
+## Error handling
+
+All of the agent's interfaces return an asynchronous `Future`. Error are wrapped in an exception of the [PlatformException type](https://api.flutter.dev/flutter/services/PlatformException-class.html).
+
+We advice developers to follow the [common error-handling techniques for Futures](https://dart.dev/guides/libraries/futures-error-handling) and at least log any possible error.
+
+For example:
+
+```dart
+InstanaAgent.setup(key: 'KEY', reportingUrl: 'REPORTING_URL')
+    .catchError((e) => 
+            log("Captured PlatformException during Instana setup: $e")
+        );
+```
+
+Or similarly in async functions:
+
+```dart
+try {
+  var result = await InstanaAgent.setup(key: 'KEY', reportingUrl: 'REPORTING_URL');
+} catch (e) {
+log("Captured PlatformException during Instana setup: $e");
+}
+```
+
 ## More
 
 The complete documentation for this package, including `custom events` and others can be found within [Instana's public documentation page](https://www.instana.com/docs/mobile_app_monitoring/flutter_api) 
