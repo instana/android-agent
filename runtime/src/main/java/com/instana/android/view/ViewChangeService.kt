@@ -34,8 +34,8 @@ class ViewChangeService(
             return
         }
         val connectionProfile = ConnectionProfile(
-            carrierName = ConstantsAndUtil.getCarrierName(cm, tm),
-            connectionType = ConstantsAndUtil.getConnectionType(cm),
+            carrierName = ConstantsAndUtil.getCarrierName(context, cm, tm),
+            connectionType = ConstantsAndUtil.getConnectionType(context, cm),
             effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(context, cm, tm)
         )
         val view = Beacon.newViewChange(
