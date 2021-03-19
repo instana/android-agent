@@ -50,8 +50,8 @@ class HTTPMarker(
         stopWatch.start()
         sessionId = Instana.sessionId
         connectionProfile = ConnectionProfile(
-            carrierName = Instana.instrumentationService?.run { getCarrierName(connectivityManager, telephonyManager) },
-            connectionType = Instana.instrumentationService?.run { getConnectionType(connectivityManager) },
+            carrierName = Instana.instrumentationService?.run { getCarrierName(context, connectivityManager, telephonyManager) },
+            connectionType = Instana.instrumentationService?.run { getConnectionType(context, connectivityManager) },
             effectiveConnectionType = Instana.instrumentationService?.run { getCellularConnectionType(context, connectivityManager, telephonyManager) }
         )
         Instana.instrumentationService?.run {

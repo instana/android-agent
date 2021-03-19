@@ -43,8 +43,8 @@ class CustomEventService(
 
         val mergedMeta = Instana.meta.clone().apply { putAll(meta) }
         val connectionProfile = ConnectionProfile(
-            carrierName = ConstantsAndUtil.getCarrierName(cm, tm),
-            connectionType = ConstantsAndUtil.getConnectionType(cm),
+            carrierName = ConstantsAndUtil.getCarrierName(context, cm, tm),
+            connectionType = ConstantsAndUtil.getConnectionType(context, cm),
             effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(context, cm, tm)
         )
         val errorMessage = error?.message

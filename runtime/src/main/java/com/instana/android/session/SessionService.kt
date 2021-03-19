@@ -36,8 +36,8 @@ class SessionService(
         val tm = (context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)
         val cm = (context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)
         val connectionProfile = ConnectionProfile(
-            carrierName = if (cm != null && tm != null) getCarrierName(cm, tm) else null,
-            connectionType = if (cm != null) getConnectionType(cm) else null,
+            carrierName = if (cm != null && tm != null) getCarrierName(context, cm, tm) else null,
+            connectionType = if (cm != null) getConnectionType(context, cm) else null,
             effectiveConnectionType = if (cm != null && tm != null) getCellularConnectionType(context, cm, tm) else null
         )
         val session = Beacon.newSessionStart(
