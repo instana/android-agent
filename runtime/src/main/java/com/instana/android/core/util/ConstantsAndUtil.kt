@@ -60,18 +60,26 @@ object ConstantsAndUtil {
         }
     }
 
-    @Suppress("DEPRECATION")
-    fun getConnectionType(cm: ConnectivityManager): ConnectionType? {
+    fun getConnectionType(context: Context, cm: ConnectivityManager): ConnectionType? {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
+            Logger.w("Missing permission 'ACCESS_NETWORK_STATE'. Instana Agent won't be able to detect connection type")
+            return null
+        }
+
         if (Build.VERSION.SDK_INT >= 23) {
             val network = cm.activeNetwork
-            val capabilities = cm.getNetworkCapabilities(network)
-            if (capabilities != null) {
-                return when {
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> ConnectionType.WIRED
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> ConnectionType.WIFI
-                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> ConnectionType.CELLULAR
-                    else -> null
+            try { // TODO remove when https://issuetracker.google.com/issues/175055271 is solved
+                val capabilities = cm.getNetworkCapabilities(network)
+                if (capabilities != null) {
+                    return when {
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> ConnectionType.WIRED
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> ConnectionType.WIFI
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> ConnectionType.CELLULAR
+                        else -> null
+                    }
                 }
+            } catch (e: SecurityException) {
+                Logger.w("Failed to detect connection type", e)
             }
         } else {
             val activeNetwork = cm.activeNetworkInfo
@@ -87,14 +95,14 @@ object ConstantsAndUtil {
         return null
     }
 
-    fun getCarrierName(cm: ConnectivityManager, tm: TelephonyManager): String? =
-        when (getConnectionType(cm)) {
+    fun getCarrierName(context: Context, cm: ConnectivityManager, tm: TelephonyManager): String? =
+        when (getConnectionType(context, cm)) {
             ConnectionType.CELLULAR -> tm.networkOperatorName
             else -> null
         }
 
     fun getCellularConnectionType(context: Context, cm: ConnectivityManager, tm: TelephonyManager): EffectiveConnectionType? {
-        if (getConnectionType(cm) != ConnectionType.CELLULAR) {
+        if (getConnectionType(context, cm) != ConnectionType.CELLULAR) {
             return null
         }
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
