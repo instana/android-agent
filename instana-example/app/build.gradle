@@ -81,15 +81,16 @@ dependencies {
     implementation 'android.arch.work:work-runtime-ktx:1.0.1'
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.3'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.4'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.4'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.3.3'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.0"
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.3.4'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.3.4'
 
     // Network clients
     api21Implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    //noinspection GradleDependency
     api16Implementation 'com.squareup.retrofit2:retrofit:2.6.4'
 
     // Instana Agent
