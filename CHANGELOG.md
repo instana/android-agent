@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 4.5.4, 3.5.4, 2.5.4 and 1.5.4
+
+_2021-03-22_
+
+- Prevent crash on some Android 11 devices when trying to ACCESS_NETWORK_STATE
+
 ## Version 4.5.3, 3.5.3, 2.5.3 and 1.5.3
 
 _2021-03-02_
