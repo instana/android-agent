@@ -1,6 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.4.0'
-    ext.agent_version = '3.5.3'
+    ext.agent_version = '3.5.4'
     repositories {
         google() //required for plugin
         jcenter() //required for plugin
