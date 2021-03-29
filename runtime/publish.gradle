@@ -4,10 +4,7 @@ apply plugin: 'com.jfrog.bintray'
 apply from: "$rootDir/script/resolveValueWithEnvVars.gradle"
 
 ext.lib_version = "$agent_version"
-ext.lib_group_id = "com.instana"
 ext.lib_artifact_id = "android-agent-runtime"
-
-ext["sonatypeStagingProfileId"] = ''
 
 task androidSourcesJar(type: Jar) {
     archiveClassifier.set('sources')
@@ -69,7 +66,7 @@ publishing {
                             username = resolveValueWithEnvVars(props['authentication.ossrh.username'])
                             password = resolveValueWithEnvVars(props['authentication.ossrh.password'])
                         } catch (Exception e) {
-                            logger.warn('Missing OSSRH credentials')
+                            logger.warn('Will not publish: missing OSSRH credentials')
                         }
                     }
                 }
