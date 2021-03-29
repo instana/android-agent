@@ -16,4 +16,4 @@ signing.password=${PGP_KEY_PASSWORD}
 signing.secretASCIIArmoredKey=${PGP_KEY}
 authentication.ossrh.username=${OSSRH_USERNAME}
 authentication.ossrh.password=${OSSRH_PASSWORD}
-sonatypeStagingProfileId=""
+sonatypeStagingProfileId=${OSSRH_STAG_PROFILE_ID}
