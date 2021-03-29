@@ -6,6 +6,7 @@ Changelog
 _2021-03-22_
 
 - Prevent crash on some Android 11 devices when trying to ACCESS_NETWORK_STATE
+- Migrate to MavenCentral following the [deprecation of Jcenter](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/)
 
 ## Version 4.5.3, 3.5.3, 2.5.3 and 1.5.3
 

@@ -42,22 +42,24 @@ For a quick start with a minimum configuration, the following steps shall suffic
 
 ### Before beginning
 
-Make sure that the Google and JCenter's Maven repositories are included in your project-level `build.gradle` file:
+For version 4.5.4/3.5.4/2.5.4/1.5.4 and higher of the plugin, make sure that the Google and MavenCentral repositories are included in your project-level `build.gradle` file:
 
 ```groovy
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 ```
+
+Older versions will exist in JCenter until [Jcenter Service End](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/) in February 1st 2022.
 
 ### Step 1. Add Instana Agent SDK to your app
 In your module (app-level) Gradle file (usually `app/build.gradle`):
@@ -79,7 +81,7 @@ In your module (app-level) Gradle file (usually `app/build.gradle`):
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath "com.instana:android-agent-plugin:4.5.4"
