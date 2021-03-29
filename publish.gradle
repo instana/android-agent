@@ -1,0 +1,17 @@
+apply plugin: 'io.codearte.nexus-staging'
+apply from: "$rootDir/script/resolveValueWithEnvVars.gradle"
+
+ext.lib_group_id = "com.instana"
+
+nexusStaging {
+    packageGroup = "$lib_group_id"
+    try {
+        def props = new Properties()
+        props.load(new FileInputStream("$rootDir/publish.properties"))
+        username = resolveValueWithEnvVars(props['authentication.ossrh.username'])
+        password = resolveValueWithEnvVars(props['authentication.ossrh.password'])
+        stagingProfileId = resolveValueWithEnvVars(props['release.ossrh.stagingProfileId'])
+    } catch (Exception e) {
+        logger.warn('Will not close&release: missing OSSRH credentials')
+    }
+}
