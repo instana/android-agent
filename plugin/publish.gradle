@@ -101,7 +101,7 @@ signing {
         def signingKeyId = resolveValueWithEnvVars(props['signing.keyId'])
         def signingKey = resolveValueWithEnvVars(props['signing.secretASCIIArmoredKey'])
         def signingPassword = resolveValueWithEnvVars(props['signing.password'])
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        useInMemoryPgpKeys(signingKey, signingPassword)
     } else {
         logger.warn('Signing will be skipped: invalid signing config')
         required false
