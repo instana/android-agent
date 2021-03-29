@@ -1,11 +1,6 @@
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
-
-ext.lib_version = "$agent_version"
-ext.lib_group_id = "com.instana"
-ext.lib_artifact_id = "android-agent-plugin"
+apply from: 'publish.gradle'
 
 compileGroovy {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -29,42 +24,4 @@ dependencies {
     implementation "com.android.tools.build:gradle-api:$buildtools_version"
 
     runtime "com.archinamon:android-gradle-aspectj:$aspectj_version"
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier.set('sources')
-    from sourceSets.main.allSource
-}
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier.set('javadoc')
-    from javadoc.destinationDir
-}
-publishing {
-    publications {
-        pluginMaven(MavenPublication) {
-            groupId = "$lib_group_id"
-            artifactId = "$lib_artifact_id"
-            version = "$lib_version"
-
-            artifact tasks.sourcesJar
-            artifact tasks.javadocJar
-        }
-    }
-}
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_API_KEY')
-    publications = ['pluginMaven']
-    pkg {
-        repo = 'public-maven'
-        name = "$lib_artifact_id"
-        userOrg = 'instana'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/instana/android-agent'
-        version {
-            name = "$lib_version"
-            released = new Date()
-        }
-        publish = true
-    }
 }

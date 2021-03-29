@@ -1,0 +1,112 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+apply plugin: 'com.jfrog.bintray'
+apply from: "$rootDir/script/resolveValueWithEnvVars.gradle"
+
+ext.lib_version = "$agent_version"
+ext.lib_group_id = "com.instana"
+ext.lib_artifact_id = "android-agent-plugin"
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
+
+publishing {
+    publications {
+        pluginMaven(MavenPublication) {
+            groupId = "$lib_group_id"
+            artifactId = "$lib_artifact_id"
+            version = "$lib_version"
+
+            pom {
+                name = 'Instana - Android Agent'
+                description = 'Gather end-user Android app performance data'
+                url = 'https://github.com/instana/android-agent'
+
+                organization {
+                    name = 'Instana Inc.'
+                    url = 'https://www.instana.com'
+                }
+                developers {
+                    developer {
+                        name = 'Mikel Pascual'
+                        email = 'mikel.pascual@external.instana.com'
+                        url = 'https://www.instana.com'
+                    }
+                }
+                licenses {
+                    license {
+                        name = 'The MIT License'
+                        url = 'https://github.com/instana/android-agent/blob/master/LICENSE'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:git://github.com/instana/android-agent.git'
+                    developerConnection = 'scm:git:ssh://git@github.com:instana/android-agent.git'
+                    url = 'https://github.com/instana/android-agent'
+                }
+            }
+
+            repositories {
+                maven {
+                    name = 'Sonatype'
+                    url = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+                    credentials {
+                        try {
+                            def props = new Properties()
+                            props.load(new FileInputStream("$rootDir/publish.properties"))
+                            username = resolveValueWithEnvVars(props['authentication.ossrh.username'])
+                            password = resolveValueWithEnvVars(props['authentication.ossrh.password'])
+                        } catch (Exception e) {
+                            logger.warn('Missing OSSRH credentials')
+                        }
+                    }
+                }
+            }
+
+            artifact tasks.sourcesJar
+            artifact tasks.javadocJar
+        }
+    }
+}
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_API_KEY')
+    publications = ['pluginMaven']
+    pkg {
+        repo = 'public-maven'
+        name = "$lib_artifact_id"
+        userOrg = 'instana'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/instana/android-agent'
+        version {
+            name = "$lib_version"
+            released = new Date()
+        }
+        publish = true
+    }
+}
+
+signing {
+    def props = new Properties()
+    def file = new File("$rootDir/publish.properties")
+
+    if (file.exists()) {
+        props.load(new FileInputStream("$rootDir/publish.properties"))
+        def signingKeyId = resolveValueWithEnvVars(props['signing.keyId'])
+        def signingKey = resolveValueWithEnvVars(props['signing.secretASCIIArmoredKey'])
+        def signingPassword = resolveValueWithEnvVars(props['signing.password'])
+        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+    } else {
+        logger.warn('Signing will be skipped: invalid signing config')
+        required false
+    }
+
+    sign publishing.publications
+}

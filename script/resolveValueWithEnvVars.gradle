@@ -1,0 +1,16 @@
+def resolveValueWithEnvVars(original) {
+    if (null == original) {
+        return null
+    }
+
+    def result = original
+    (original =~ /\$\{(\w+)\}|\$(\w+)/).each { literal, nothing, envVarName ->
+        result = result.replace(literal, System.getenv(envVarName) ?: literal)
+    }
+
+    return result
+}
+
+ext {
+    resolveValueWithEnvVars = this.&resolveValueWithEnvVars
+}
