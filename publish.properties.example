@@ -1,0 +1,19 @@
+# All properties are required
+#
+#
+# To provide a value:
+#   example.key=value
+#
+# To refer to a environment variable:
+#   example.key1=${ENV_VAR_NAME}
+#   example.key2=$ENV_VAR_NAME
+#
+# If required, you can mix values and environment variables:
+#   example.key=This was built in a ${ENV_VAR_NAME} machine.
+#
+signing.keyId=${PGP_KEY_ID}
+signing.password=${PGP_KEY_PASSWORD}
+signing.secretASCIIArmoredKey=${PGP_KEY}
+authentication.ossrh.username=${OSSRH_USERNAME}
+authentication.ossrh.password=${OSSRH_PASSWORD}
+sonatypeStagingProfileId=${OSSRH_STAG_PROFILE_ID}
