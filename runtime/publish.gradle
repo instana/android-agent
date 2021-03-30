@@ -1,7 +1,6 @@
 apply plugin: 'digital.wup.android-maven-publish'
 apply plugin: 'signing'
 apply plugin: 'com.jfrog.bintray'
-apply from: "$rootDir/script/resolveValueWithEnvVars.gradle"
 
 ext.lib_version = "$agent_version"
 ext.lib_artifact_id = "android-agent-runtime"
@@ -63,8 +62,8 @@ publishing {
                         try {
                             def props = new Properties()
                             props.load(new FileInputStream("$rootDir/publish.properties"))
-                            username = resolveValueWithEnvVars(props['authentication.ossrh.username'])
-                            password = resolveValueWithEnvVars(props['authentication.ossrh.password'])
+                            username = props['authentication.ossrh.username']
+                            password = props['authentication.ossrh.password']
                         } catch (Exception e) {
                             logger.warn('Will not publish: missing OSSRH credentials')
                         }
@@ -102,9 +101,9 @@ signing {
 
     if (file.exists()) {
         props.load(new FileInputStream("$rootDir/publish.properties"))
-        def signingKeyId = resolveValueWithEnvVars(props['signing.keyId'])
-        def signingKey = resolveValueWithEnvVars(props['signing.secretASCIIArmoredKey'])
-        def signingPassword = resolveValueWithEnvVars(props['signing.password'])
+        def signingKeyId = props['signing.keyId']
+        def signingKey = props['signing.secretASCIIArmoredKey']
+        def signingPassword = props['signing.password']
         useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
     } else {
         logger.warn('Signing will be skipped: invalid signing config')
