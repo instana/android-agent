@@ -72,7 +72,7 @@ object ConstantsAndUtil {
                 val capabilities = cm.getNetworkCapabilities(network)
                 if (capabilities != null) {
                     return when {
-                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> ConnectionType.WIRED
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> ConnectionType.ETHERNET
                         capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> ConnectionType.WIFI
                         capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> ConnectionType.CELLULAR
                         else -> null
@@ -85,7 +85,7 @@ object ConstantsAndUtil {
             val activeNetwork = cm.activeNetworkInfo
             if (activeNetwork != null) { // connected to the internet
                 return when (activeNetwork.type) {
-                    ConnectivityManager.TYPE_ETHERNET -> ConnectionType.WIRED
+                    ConnectivityManager.TYPE_ETHERNET -> ConnectionType.ETHERNET
                     ConnectivityManager.TYPE_WIFI -> ConnectionType.WIFI
                     ConnectivityManager.TYPE_MOBILE -> ConnectionType.CELLULAR
                     else -> null
