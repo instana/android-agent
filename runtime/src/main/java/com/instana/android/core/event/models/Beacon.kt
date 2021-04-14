@@ -350,6 +350,8 @@ class Beacon private constructor(
     /**
      * The connection type
      *
+     * https://wicg.github.io/netinfo/#connectiontype-enum
+     *
      * @see ConnectionType
      */
     fun setConnectionType(value: ConnectionType) {

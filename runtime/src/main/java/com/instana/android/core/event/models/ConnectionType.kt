@@ -7,7 +7,7 @@ package com.instana.android.core.event.models
 
 @Suppress("unused")
 enum class ConnectionType(val internalType: String) {
-    WIRED("wired"),
+    ETHERNET("ethernet"),
     WIFI("wifi"),
     CELLULAR("cellular");
 }
