@@ -17,7 +17,7 @@ Different Android Instana Agent versions provide support for different Android G
 ### Android Agent v1.x.x
 
 - Android Gradle Plugin 3.5.x 
-- Gradle 5.5.1+
+- Gradle 5.4.1+
 
 ### Android Agent v2.x.x
 
