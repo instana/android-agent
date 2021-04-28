@@ -1,4 +1,4 @@
-# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.5.4-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.5.4-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.5.4-brightgreen?color=0db4b3"></a>
+# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.5.5-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.5.5-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.5.5-brightgreen?color=0db4b3"></a>
 
 **[Changelog](CHANGELOG.md)** |
 **[Contributing](CONTRIBUTING.md)** |
@@ -17,7 +17,7 @@ Different Android Instana Agent versions provide support for different Android G
 ### Android Agent v1.x.x
 
 - Android Gradle Plugin 3.5.x 
-- Gradle 5.4.1+
+- Gradle 5.5.1+
 
 ### Android Agent v2.x.x
 
@@ -58,7 +58,7 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:3.5.4'
+    implementation 'com.instana:android-agent-runtime:3.5.5'
 }
 ```
 
@@ -77,7 +77,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:3.5.4"
+        classpath "com.instana:android-agent-plugin:3.5.5"
     }
 }
 ```
