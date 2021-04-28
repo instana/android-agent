@@ -1,6 +1,18 @@
 Changelog
 ==========
 
+## Version 4.5.5, 3.5.5, 2.5.5 and 1.5.5
+
+_2021-04-28_
+
+- Update connection-type identifier for wired/ethernet
+
+## Version 4.5.4.1
+
+_2021-03-30_
+
+- Internal release. No code changes. Intended as a test to verify the new mavenCentral integration in the CI pipelines
+
 ## Version 4.5.4, 3.5.4, 2.5.4 and 1.5.4
 
 _2021-03-22_
