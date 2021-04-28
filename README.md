@@ -1,4 +1,4 @@
-# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-4.5.4-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.5.4-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.5.4-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.5.4-brightgreen?color=0db4b3"></a>
+# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-4.5.5-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.5.5-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.5.5-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.5.5-brightgreen?color=0db4b3"></a>
 
 **[Changelog](CHANGELOG.md)** |
 **[Contributing](CONTRIBUTING.md)** |
@@ -17,7 +17,7 @@ Different Android Instana Agent versions provide support for different Android G
 ### Android Agent v1.x.x
 
 - Android Gradle Plugin 3.5.x 
-- Gradle 5.4.1+
+- Gradle 5.5.1+
 
 ### Android Agent v2.x.x
 
@@ -42,7 +42,7 @@ For a quick start with a minimum configuration, the following steps shall suffic
 
 ### Before beginning
 
-For version 4.5.4/3.5.4/2.5.4/1.5.4 and higher of the plugin, make sure that the Google and MavenCentral repositories are included in your project-level `build.gradle` file:
+For version 4.5.5/3.5.5/2.5.5/1.5.5 and higher of the plugin, make sure that the Google and MavenCentral repositories are included in your project-level `build.gradle` file:
 
 ```groovy
 buildscript {
@@ -65,7 +65,7 @@ Older versions will exist in JCenter until [Jcenter Service End](https://jfrog.c
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:4.5.4'
+    implementation 'com.instana:android-agent-runtime:4.5.5'
 }
 ```
 
@@ -84,7 +84,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:4.5.4"
+        classpath "com.instana:android-agent-plugin:4.5.5"
     }
 }
 ```

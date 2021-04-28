@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 4.5.5, 3.5.5, 2.5.5 and 1.5.5
+
+_2021-04-28_
+
+- Update connection-type identifier for wired/ethernet
+
 ## Version 4.5.4.1
 
 _2021-03-30_
