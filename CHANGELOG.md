@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1
+
+* Android native agent version 1.5.5
+* iOS native agent version 1.1.12
+
 ## 2.0.0
 
 * Add support for Flutter 2
