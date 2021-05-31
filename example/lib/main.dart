@@ -99,10 +99,12 @@ class _MyAppState extends State<MyApp> {
     Random random = new Random();
     var id = random.nextInt(100);
     var url = 'https://jsonplaceholder.typicode.com/albums/' + id.toString();
+    var marker = await InstanaAgent.startCapture(url: url, method: 'GET', viewName: 'Album');
     final http.Request request = http.Request("GET", Uri.parse(url));
 
     final response = await httpClient.send(request);
-
+    marker.responseStatusCode = response.statusCode;
+    marker.finish();
     if (response.statusCode == 200) {
       var responseBody = await response.stream.bytesToString();
       return Album.fromJson(jsonDecode(responseBody));
