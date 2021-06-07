@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 4.5.6, 3.5.6, 2.5.6 and 1.5.6
+
+_2021-06-07_
+
+- Fix trace timing stop-watch
+
 ## Version 4.5.5, 3.5.5, 2.5.5 and 1.5.5
 
 _2021-04-28_
