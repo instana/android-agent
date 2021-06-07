@@ -31,7 +31,7 @@ class StopWatch {
     }
 
     fun stop() {
-        if (startTime != 0L && endTime != 0L) {
+        if (startTime != 0L) {
             endTime = System.currentTimeMillis()
             elapsedTime = endTime - startTime
         }
