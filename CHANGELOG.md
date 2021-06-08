@@ -1,10 +1,8 @@
 # Changelog
 
-## 2.0.3
-* Android native agent version 1.5.6
-
 ## 2.0.2
 * iOS native agent version 1.1.13
+* Android native agent version 1.5.6
 
 ## 2.0.1
 
