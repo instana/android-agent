@@ -1,4 +1,4 @@
-# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-4.5.6-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.5.6-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.5.6-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.5.6-brightgreen?color=0db4b3"></a>
+# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-4.6.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.6.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.6.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.6.0-brightgreen?color=0db4b3"></a>
 
 **[Changelog](CHANGELOG.md)** |
 **[Contributing](CONTRIBUTING.md)** |
@@ -42,7 +42,7 @@ For a quick start with a minimum configuration, the following steps shall suffic
 
 ### Before beginning
 
-For version 4.5.6/3.5.6/2.5.6/1.5.6 and higher of the plugin, make sure that the Google and MavenCentral repositories are included in your project-level `build.gradle` file:
+Make sure that the Google and MavenCentral repositories are included in your project-level `build.gradle` file:
 
 ```groovy
 buildscript {
@@ -59,13 +59,11 @@ allprojects {
 }
 ```
 
-Older versions will exist in JCenter until [Jcenter Service End](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/) in February 1st 2022.
-
 ### Step 1. Add Instana Agent SDK to your app
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:4.5.6'
+    implementation 'com.instana:android-agent-runtime:4.6.0'
 }
 ```
 
@@ -84,7 +82,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:4.5.6"
+        classpath "com.instana:android-agent-plugin:4.6.0"
     }
 }
 ```

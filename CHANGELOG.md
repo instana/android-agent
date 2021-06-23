@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 4.6.0, 3.6.0, 2.6.0 and 1.6.0
+
+_2021-06-23_
+
+- Increase the scope of automatically traced dependencies
+- Improve logging
+
 ## Version 4.5.6, 3.5.6, 2.5.6 and 1.5.6
 
 _2021-06-07_
