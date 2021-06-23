@@ -59,7 +59,7 @@ class InstanaConfig
                 false
             }
             URLUtil.isValidUrl(reportingURL).not() -> {
-                Logger.e("Please provide a valid Reporting URL")
+                Logger.e("Invalid Reporting URL: $reportingURL")
                 false
             }
             key.isBlank() -> {

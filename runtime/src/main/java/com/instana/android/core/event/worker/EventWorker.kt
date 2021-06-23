@@ -35,11 +35,11 @@ open class EventWorker(
             data.isBlank() -> Result.success()
             send(data) -> {
                 files.forEach { it.delete() }
+                Logger.i("Beacon-batch sent with: `size` ${files.size}")
                 if (files.size == batchLimit) {
-                    Logger.i("Beacon-batch reached limit. Will create a new batch")
+                    Logger.i("Detected more beacons in queue. Creating a new beacon-batch")
                     Result.retry()
                 } else {
-                    Logger.i("Beacon-batch sent with: `size` ${files.size}")
                     Result.success()
                 }
             }
@@ -72,6 +72,9 @@ open class EventWorker(
                 .post(requestBody)
                 .build()
             val response = ConstantsAndUtil.client.newCall(request).execute()
+            if (response.isSuccessful.not()) {
+                Logger.e("Failed to flush beacons to Instana with: reportingURL '$reportingURL', responseCode '${response.code()}', errorMessage '${response.message()}'")
+            }
             response.isSuccessful
         } catch (e: IOException) {
             Logger.e("Failed to flush beacons to Instana", e)
