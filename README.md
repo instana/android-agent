@@ -1,4 +1,4 @@
-# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.6.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.6.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.6.0-brightgreen?color=0db4b3"></a>
+# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.6.1-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.6.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.6.0-brightgreen?color=0db4b3"></a>
 
 **[Changelog](CHANGELOG.md)** |
 **[Contributing](CONTRIBUTING.md)** |
@@ -58,7 +58,7 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:3.6.0'
+    implementation 'com.instana:android-agent-runtime:3.6.1'
 }
 ```
 
@@ -77,7 +77,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:3.6.0"
+        classpath "com.instana:android-agent-plugin:3.6.1"
     }
 }
 ```
