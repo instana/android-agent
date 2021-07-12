@@ -48,6 +48,7 @@ class InstanaPlugin implements Plugin<Project> {
 
         aspectj.includeAllJars true
 
+        // Excluded for performance
         aspectj.excludeJar "com.instana:android-agent-runtime"
         aspectj.excludeJar "org.aspectj:aspectjrt"
         aspectj.excludeJar "androidx.annotation"
@@ -94,8 +95,10 @@ class InstanaPlugin implements Plugin<Project> {
         aspectj.excludeJar "org.jetbrains.kotlin"
         aspectj.excludeJar "org.jetbrains.kotlinx"
 
+        // Excluded to prevent incompatibilities
         aspectj.excludeJar "com.google.firebase:firebase-perf"
         aspectj.excludeJar "com.appsflyer:af-android-sdk"
+        aspectj.excludeJar "com.instabug.library:instabug"
 
         aspectj.ajcArgs << '-Xlint:ignore'
         aspectj.ajcArgs << '-Xset:overWeaving=true'
