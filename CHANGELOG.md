@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 4.6.1, 3.6.1, 2.6.1 and 1.6.1
+
+_2021-07-12_
+
+- Prevent issue with Instabug initialization
+
 ## Version 4.6.0, 3.6.0, 2.6.0 and 1.6.0
 
 _2021-06-23_
