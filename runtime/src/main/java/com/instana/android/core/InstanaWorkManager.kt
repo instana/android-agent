@@ -21,6 +21,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingDeque
@@ -169,9 +170,13 @@ class InstanaWorkManager(
             else -> {
                 GlobalScope.launch {
                     withContext(Dispatchers.IO) {
-                        val file = File(getBeaconsDirectory(), beaconId)
-                        file.writeText(beacon.toString(), Charsets.UTF_8)
-                        getWorkManager()?.run { flush(getBeaconsDirectory(), this) }
+                        try {
+                            val file = File(getBeaconsDirectory(), beaconId)
+                            file.writeText(beacon.toString(), Charsets.UTF_8)
+                            getWorkManager()?.run { flush(getBeaconsDirectory(), this) }
+                        } catch (e: IOException) {
+                            Logger.e("Failed to persist beacon in file-system. Dropping beacon: $beacon", e)
+                        }
                     }
                 }
             }
