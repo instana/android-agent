@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 4.6.2, 3.6.2, 2.6.2 and 1.6.2
+
+_2021-07-23_
+
+- Prevent possible crash when Instana is initialized late on the app lifecycle
+- Prevent crash when filesystem is not writeable
+
 ## Version 4.6.1, 3.6.1, 2.6.1 and 1.6.1
 
 _2021-07-12_
