@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.4
+* iOS native agent version 1.1.18 
+
 ## 2.0.3
 * iOS native agent version 1.1.15
 
