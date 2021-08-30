@@ -11,13 +11,25 @@ import 'package:flutter/services.dart';
 class InstanaAgent {
   static const MethodChannel _channel = const MethodChannel('instana_agent');
 
-  /// Initializes Instana with a [key] and [reportingUrl]
+  /// Initializes Instana with a [key] and [reportingUrl] and optionally with SetupOptions
   ///
   /// Please run this as soon as possible in your app's lifecycle
   static Future<void> setup(
-      {required String key, required String reportingUrl}) async {
-    return await _channel.invokeMethod(
-        'setup', <String, dynamic>{'key': key, 'reportingUrl': reportingUrl});
+      {required String key, required String reportingUrl, SetupOptions? options}) async {
+    return await _channel.invokeMethod('setup', <String, dynamic>{
+                              'key': key,
+                              'reportingUrl': reportingUrl,
+                              'collectionEnabled': options?.collectionEnabled
+                              });
+  }
+
+  /// Enable or disable collection (opt-in or opt-out)
+  ///
+  ///
+  /// If needed, you can set collectionEnabled to false via Instana's setup and enable the collection later. (e.g. after giving the consent)
+  /// Note: Any instrumentation is ignored when setting collectionEnabled to false.
+  static Future<void> setCollectionEnabled(bool enable) async {
+    await _channel.invokeMethod('setCollectionEnabled', <String, dynamic>{'collectionEnabled': enable});
   }
 
   /// Returns unique ID assigned by Instana to current session
@@ -153,6 +165,11 @@ class Marker {
   Future<void> cancel() async {
     await _channel.invokeMethod('cancel', <String, dynamic>{'id': id});
   }
+}
+
+class SetupOptions {
+  ///  Enable or disable collection (instrumentation) on setup. Can be changed later via the property `collectionEnabled` (Default: true)
+  bool collectionEnabled = true;
 }
 
 /// This class contains all the options you can provide for the Custom Events reported through [InstanaAgent.reportEvent()]
