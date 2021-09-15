@@ -189,6 +189,10 @@ object ConstantsAndUtil {
         get() = Instana.config?.httpCaptureConfig == HTTPCaptureConfig.AUTO
 
     @JvmStatic
+    val isCollectionEnabled: Boolean
+        get() = Instana.config?.collectionEnabled == true
+
+    @JvmStatic
     fun isBlacklistedURL(url: String): Boolean {
         return Instana.internalURLs.any { it.matches(url) } ||
                 Instana.ignoreURLs.map { it.toRegex() }.any {
