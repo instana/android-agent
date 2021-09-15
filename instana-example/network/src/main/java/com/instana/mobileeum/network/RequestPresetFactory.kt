@@ -13,6 +13,12 @@ object RequestPresetFactory {
             body = null
         ),
         RequestPreset(
+            name = "GET empty response",
+            method = "GET",
+            url = "https://httpstat.us/204",
+            body = null
+        ),
+        RequestPreset(
             name = "GET failure",
             method = "GET",
             url = "https://httpstat.us/404",
