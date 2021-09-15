@@ -1,16 +1,23 @@
+/*
+ * (c) Copyright IBM Corp. 2021
+ * (c) Copyright Instana Inc. and contributors 2021
+ */
+
 package com.instana.android.instrumentation.urlConnection
 
-import android.util.Log
 import com.instana.android.Instana
 import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
 import com.instana.android.core.util.ConstantsAndUtil.checkTag
+import com.instana.android.core.util.ConstantsAndUtil.hasTrackingHeader
 import com.instana.android.core.util.ConstantsAndUtil.isAutoEnabled
 import com.instana.android.core.util.ConstantsAndUtil.isBlacklistedURL
 import com.instana.android.core.util.ConstantsAndUtil.isLibraryCallBoolean
+import com.instana.android.core.util.Logger
 import com.instana.android.instrumentation.HTTPMarker
 import java.util.concurrent.ConcurrentHashMap
 
 
+@Suppress("unused")
 class UrlConnectionInstrumentation {
 
     companion object {
@@ -18,18 +25,8 @@ class UrlConnectionInstrumentation {
         private val httpMarkers = ConcurrentHashMap<String, HTTPMarker>()
 
         @JvmStatic
-        fun logEmpty() {
-            Log.d("MIKEL", "logEmpty")
-        }
-
-        @JvmStatic
-        fun logInstance(urlConnection: java.net.URLConnection) {
-            Log.d("MIKEL", urlConnection.url.toString())
-        }
-
-        @JvmStatic
         fun openConnection(connection: java.net.URLConnection) {
-            Log.i("MIKEL", "HttpURLConnection: intercepting openConnection")
+            Logger.i("HttpURLConnection: intercepting openConnection")
             val header = connection.getRequestProperty(TRACKING_HEADER_KEY)
             val url = connection.url.toString()
             if (isAutoEnabled && !checkTag(header) && !isLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
@@ -43,12 +40,26 @@ class UrlConnectionInstrumentation {
 
         @JvmStatic
         fun disconnect(connection: java.net.HttpURLConnection) {
-            Log.i("MIKEL", "HttpURLConnection: intercepting disconnect")
+            Logger.i("HttpURLConnection: intercepting disconnect")
             val header = connection.getRequestProperty(TRACKING_HEADER_KEY)
             val url = connection.url.toString()
             if (isAutoEnabled && !isLibraryCallBoolean(url) && checkTag(header)) {
                 httpMarkers[header]?.finish(connection)
                 httpMarkers.remove(header)
+            }
+        }
+
+        @JvmStatic
+        fun handleException(connection: java.net.HttpURLConnection, exception: java.io.IOException) {
+            Logger.i("HttpURLConnection: intercepting exception")
+            val header: String = connection.getRequestProperty(TRACKING_HEADER_KEY)
+            val url: String = connection.url.toString()
+            if (isAutoEnabled && hasTrackingHeader(header) && !isLibraryCallBoolean(url) && checkTag(header)) {
+                val marker = httpMarkers[header]
+                if (marker != null) {
+                    marker.finish(connection, exception)
+                    httpMarkers.remove(header)
+                }
             }
         }
     }

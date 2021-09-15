@@ -1,22 +1,29 @@
-package com.instana.android.plugin
+/*
+ * (c) Copyright IBM Corp. 2021
+ * (c) Copyright Instana Inc. and contributors 2021
+ */
+
+package com.instana.android.plugin.transform
 
 import com.android.build.api.transform.QualifiedContent
 import com.android.build.api.transform.Transform
 import com.android.build.api.transform.TransformInvocation
-import com.android.build.api.variant.VariantInfo
 import com.android.build.gradle.AppExtension
+import com.instana.android.plugin.Extension
+import com.instana.android.plugin.IgnoredClasses
+import com.instana.android.plugin.logAll
 import org.gradle.api.Project
 import org.gradle.api.logging.Logging
 
-class Transform (private val project: Project) : Transform() {
+class Transform(private val project: Project) : Transform() {
 
     private val logger = Logging.getLogger(Transform::class.java)
 
     override fun getName(): String {
-        return Transform::class.java.simpleName
+        return "InstanaTransform"
     }
 
-    // This transform is interested in classes only (and not resources)
+    // Classes only (not resources)
     private val typeClasses = setOf(QualifiedContent.DefaultContentType.CLASSES)
 
     override fun getInputTypes(): Set<QualifiedContent.ContentType> {
@@ -24,7 +31,7 @@ class Transform (private val project: Project) : Transform() {
     }
 
 
-    // This transform is interested in classes from all parts of the app
+    // Classes from all parts of the app
     private val scopes = setOf(
         QualifiedContent.Scope.PROJECT,
         QualifiedContent.Scope.SUB_PROJECTS,
@@ -36,7 +43,7 @@ class Transform (private val project: Project) : Transform() {
     }
 
 
-    // This transform can handle incremental builds
+    // Handle incremental builds
     override fun isIncremental(): Boolean {
         return true
     }
@@ -45,21 +52,29 @@ class Transform (private val project: Project) : Transform() {
     override fun transform(transformInvocation: TransformInvocation) {
         val start = System.currentTimeMillis()
 
-        // Find the Gradle extension that contains configuration for this Transform
         val ext = project.extensions.findByType(Extension::class.java) ?: Extension()
-        logger.debug("config logVisits ${ext.logVisits}")
-        logger.debug("config logInstrumentation ${ext.logInstrumentation}")
+        logger.logAll(ext)
+
+        val extIgnores = IgnoredClasses.from(ext.ignoreClassesRegex, logger)
+        val ignores = listOf(
+            IgnoredClasses.instanaLibraries,
+            *IgnoredClasses.troublesomeAnalytics.toTypedArray(),
+            *extIgnores.toTypedArray(),
+        )
 
         val appExtension = project.extensions.findByName("android") as AppExtension
-        val ignores = listOf(
-            // Don't instrument the companion library
-            Regex("com/instana/android/.*")
-        )
         val config = TransformConfig(transformInvocation, appExtension.bootClasspath, ignores, ext)
 
-        TransformImpl(config).doIt()
+        if (ext.enableWeaving) {
+            TransformImpl(config).doIt()
+        } else {
+            logger.warn("Skipping Instana transform")
+            TransformNoop(config).doIt()
+        }
+
         val end = System.currentTimeMillis()
-        logger.info("Transform took ${end-start}ms")
+        logger.info("Instana transform took ${end - start}ms")
+        if (ext.logTimeSpent) project.logger.warn("Instana transform took ${end - start}ms")
     }
 
 }

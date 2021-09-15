@@ -25,7 +25,5 @@ dependencies {
     implementation "com.android.tools.build:gradle-api:$buildtools_version"
 
     implementation "commons-io:commons-io:2.8.0"
-    implementation 'org.ow2.asm:asm:9.2'
-
-    runtime "com.akaita.android:android-gradle-aspectj:$aspectj_version"
+    implementation "org.ow2.asm:asm:9.2"
 }

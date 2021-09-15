@@ -1,6 +1,12 @@
+/*
+ * (c) Copyright IBM Corp. 2021
+ * (c) Copyright Instana Inc. and contributors 2021
+ */
+
 package com.instana.android.plugin
 
 import com.android.build.gradle.AppExtension
+import com.instana.android.plugin.transform.Transform
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.LogLevel
@@ -8,17 +14,16 @@ import org.gradle.api.logging.LogLevel
 class Plugin : Plugin<Project> {
 
     override fun apply(project: Project) {
-        project.logger.log(LogLevel.INFO, "Plugin applied")
-        // Check to see if this is an android project
+        project.logger.log(LogLevel.INFO, "Instana Plugin applied")
+
         val ext = project.extensions.findByName("android")
         if (ext != null && ext is AppExtension) {
-            project.logger.log(LogLevel.INFO, "Registering transform")
-            // Register our class transform
+            project.extensions.create(Extension.name, Extension::class.java)
+
+            project.logger.log(LogLevel.INFO, "Registering Instana transform")
             ext.registerTransform(Transform(project))
-            // Add an extension for gradle configuration
-            project.extensions.create("instana", Extension::class.java)
         } else {
-            throw Exception("${Plugin::class.java.name} plugin may only be applied to Android app projects")
+            throw Exception("Instana plugin must only be applied to Android app projects")
         }
     }
 }
