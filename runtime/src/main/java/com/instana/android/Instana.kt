@@ -9,6 +9,8 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.telephony.TelephonyManager
 import androidx.annotation.RequiresApi
 import androidx.annotation.Size
@@ -39,6 +41,7 @@ import java.util.*
 import java.util.regex.Pattern
 import kotlin.properties.Delegates
 
+
 /**
  * Singleton object that provides all functionality
  *
@@ -47,6 +50,7 @@ import kotlin.properties.Delegates
 object Instana {
 
     private var app: Application? = null
+    private var workManager: InstanaWorkManager? = null
     private var sessionService: SessionService? = null
     private var lifeCycle: InstanaLifeCycle? = null
 
@@ -157,6 +161,25 @@ object Instana {
             deviceProfile.googlePlayServicesMissing = value
         }
 
+    /**
+     * Enable or disable data collection and submission
+     */
+    @JvmStatic
+    fun isCollectionEnabled() = this.config?.collectionEnabled
+
+    /**
+     * Enable or disable data collection and submission
+     */
+    @JvmStatic
+    fun setCollectionEnabled(enabled: Boolean) {
+        this.config?.collectionEnabled = enabled
+
+        val theApp = this.app
+        val theConfig = this.config
+        if (theApp != null && theConfig != null) {
+            initWorkManager(theApp, theConfig)
+        }
+    }
 
     /**
      * Human-readable name of logical view to which beacons will be associated
@@ -279,19 +302,28 @@ object Instana {
     }
 
     private fun initWorkManager(app: Application, config: InstanaConfig) {
-        InstanaWorkManager(config, app).also {
-            crashReporting = CrashService(app, it, config)
-            sessionService = SessionService(app, it, config)
-            customEvents = CustomEventService(
-                context = app,
-                manager = it,
-                cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!!, //TODO don't force-cast
-                tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!,
-                config = config
-            ) //TODO don't force-cast
-            instrumentationService = InstrumentationService(app, it, config)
-            performanceService = PerformanceService(app, config.performanceMonitorConfig, lifeCycle!!) //TODO don't force-cast
-            viewChangeService = ViewChangeService(app, it, config)
+        if (this.workManager != null) {
+            return
+        }
+        if (config.collectionEnabled.not()) {
+            return
+        }
+
+        Handler(Looper.getMainLooper()).post {
+            this.workManager = InstanaWorkManager(config, app).also {
+                crashReporting = CrashService(app, it, config)
+                sessionService = SessionService(app, it, config)
+                customEvents = CustomEventService(
+                    context = app,
+                    manager = it,
+                    cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!!, //TODO don't force-cast
+                    tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!,
+                    config = config
+                ) //TODO don't force-cast
+                instrumentationService = InstrumentationService(app, it, config)
+                performanceService = PerformanceService(app, config.performanceMonitorConfig, lifeCycle!!) //TODO don't force-cast
+                viewChangeService = ViewChangeService(app, it, config)
+            }
         }
     }
 

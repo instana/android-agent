@@ -37,7 +37,11 @@ class InstanaConfig
      *
      * note: this delay does not affect the capture of monitoring beacons. It only delays the transmission of the normally captured beacons
      */
-    var initialBeaconDelayMs: Long = 3000
+    var initialBeaconDelayMs: Long = 3000,
+    /**
+     * 	Enable or disable data collection and submission
+     */
+    var collectionEnabled: Boolean = true
 ) {
     /**
      * Configuration of the Instana Performance Monitoring Service
