@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 4.7.0, 3.7.0, 2.7.0 and 1.7.0
+
+_2021-09-15_
+
+- New 'collectionEnabled' flag to enable/disable beacon collection and transmission on runtime
+- Stop consuming exceptions in OkHttp Interceptor
+
 ## Version 4.6.2, 3.6.2, 2.6.2 and 1.6.2
 
 _2021-07-23_
