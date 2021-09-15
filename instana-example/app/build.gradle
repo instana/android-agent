@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.akaita.android.easylauncher'
+apply plugin: 'com.starter.easylauncher'
 apply plugin: 'com.instana.android-agent-plugin'
 
 android {
@@ -109,7 +109,6 @@ dependencies {
 
 // Apply a different ribbon to the launcher of each app build type
 easylauncher {
-    foregroundIconNames "@mipmap/ic_launcher_foreground"
     buildTypes {
         debug {
             filters = greenRibbonFilter()
@@ -118,4 +117,9 @@ easylauncher {
             filters = blueRibbonFilter()
         }
     }
+}
+
+instana {
+    logVisits = true
+    logInstrumentation = true
 }

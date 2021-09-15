@@ -18,7 +18,7 @@ class DemoApp : Application() {
 
     override fun onCreate() {
         if (BuildConfig.DEBUG) {
-            enableStrictMode()
+//            enableStrictMode()
         }
         super.onCreate()
         Instana.setup(

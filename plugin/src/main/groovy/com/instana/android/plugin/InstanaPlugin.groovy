@@ -11,7 +11,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.ProjectDependency
 
-class InstanaPlugin implements Plugin<Project> {
+class InstanaPluginOld implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
