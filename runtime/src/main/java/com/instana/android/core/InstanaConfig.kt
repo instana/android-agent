@@ -41,7 +41,7 @@ class InstanaConfig
     /**
      * 	Enable or disable data collection and submission
      */
-    var collectionEnabled: Boolean = true,
+    var collectionEnabled: Boolean = true
 ) {
     /**
      * Configuration of the Instana Performance Monitoring Service
