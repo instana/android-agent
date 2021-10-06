@@ -15,21 +15,28 @@ class InstanaAgent {
   ///
   /// Please run this as soon as possible in your app's lifecycle
   static Future<void> setup(
-      {required String key, required String reportingUrl, SetupOptions? options}) async {
+      {required String key,
+      required String reportingUrl,
+      SetupOptions? options}) async {
     return await _channel.invokeMethod('setup', <String, dynamic>{
-                              'key': key,
-                              'reportingUrl': reportingUrl,
-                              'collectionEnabled': options?.collectionEnabled
-                              });
+      'key': key,
+      'reportingUrl': reportingUrl,
+      'collectionEnabled': options?.collectionEnabled
+    });
   }
 
   /// Enable or disable collection (opt-in or opt-out)
   ///
-  ///
   /// If needed, you can set collectionEnabled to false via Instana's setup and enable the collection later. (e.g. after giving the consent)
   /// Note: Any instrumentation is ignored when setting collectionEnabled to false.
   static Future<void> setCollectionEnabled(bool enable) async {
-    await _channel.invokeMethod('setCollectionEnabled', <String, dynamic>{'collectionEnabled': enable});
+    await _channel.invokeMethod(
+        'setCollectionEnabled', <String, dynamic>{'collectionEnabled': enable});
+  }
+
+  /// Returns the current state of the collectionEnabled flag
+  static Future<bool?> isCollectionEnabled() async {
+    return await _channel.invokeMethod('isCollectionEnabled', <String, dynamic>{});
   }
 
   /// Returns unique ID assigned by Instana to current session
