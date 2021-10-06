@@ -32,16 +32,20 @@ class _MyAppState extends State<MyApp> {
     /// Initializes Instana. Must be run only once as soon as possible in the app's lifecycle
     var options = SetupOptions();
     options.collectionEnabled = false;
-//    InstanaAgent.setup(key: 'key', reportingUrl: 'URL', options: options);
-    InstanaAgent.setup(key: 'key', reportingUrl: 'URL');
+    InstanaAgent.setup(key: 'key', reportingUrl: 'URL', options: options);
 
     setUserIdentifiers();
+
+    InstanaAgent.setCollectionEnabled(true);
 
     /// optional
     setView();
 
     /// optional
     reportCustomEvents();
+
+    /// optional
+    futureAlbum = fetchAlbum();
   }
 
   /// Set user identifiers
