@@ -37,35 +37,54 @@ class InstanaAgentPlugin : FlutterPlugin, MethodCallHandler {
             "setup" -> {
                 val key: String? = call.argument("key")
                 val reportingUrl: String? = call.argument("reportingUrl")
+                val collectionEnabled: Boolean? = call.argument("collectionEnabled")
                 nativeLink.setUpInstana(
+                    result = result,
+                    app = app,
+                    reportingUrl = reportingUrl,
+                    key = key,
+                    collectionEnabled = collectionEnabled
+                )
+            }
+            "setCollectionEnabled" -> {
+                val collectionEnabled: Boolean? = call.argument("collectionEnabled")
+                if (collectionEnabled != null) {
+                    nativeLink.setCollectionEnabled(
                         result = result,
-                        app = app,
-                        reportingUrl = reportingUrl,
-                        key = key)
+                        collectionEnabled = collectionEnabled
+                    )
+                }
             }
             "setUserID" -> {
                 val userID: String? = call.argument("userID")
                 nativeLink.setUserId(
-                        result = result,
-                        userID = userID)
+                    result = result,
+                    userID = userID
+                )
             }
             "setUserName" -> {
                 val userName: String? = call.argument("userName")
                 nativeLink.setUserName(
-                        result = result,
-                        userName = userName)
+                    result = result,
+                    userName = userName
+                )
             }
             "setUserEmail" -> {
                 val userEmail: String? = call.argument("userEmail")
                 nativeLink.setUserEmail(
-                        result = result,
-                        userEmail = userEmail)
+                    result = result,
+                    userEmail = userEmail
+                )
             }
             "setView" -> {
                 val viewName: String? = call.argument("viewName")
                 nativeLink.setView(
-                        result = result,
-                        viewName = viewName)
+                    result = result,
+                    viewName = viewName
+                )
+            }
+            "isCollectionEnabled" -> {
+                result.success(nativeLink.isCollectionEnabled())
             }
             "getView" -> {
                 result.success(nativeLink.getView())
@@ -77,9 +96,10 @@ class InstanaAgentPlugin : FlutterPlugin, MethodCallHandler {
                 val key: String? = call.argument("key")
                 val value: String? = call.argument("value")
                 nativeLink.setMeta(
-                        result = result,
-                        key = key,
-                        value = value)
+                    result = result,
+                    key = key,
+                    value = value
+                )
             }
             "reportEvent" -> {
                 val eventName: String? = call.argument("eventName")
@@ -89,45 +109,51 @@ class InstanaAgentPlugin : FlutterPlugin, MethodCallHandler {
                 val meta: HashMap<String?, String?>? = call.argument("meta")
                 val backendTracingID: String? = call.argument("backendTracingID")
                 nativeLink.reportEvent(
-                        result = result,
-                        eventName = eventName,
-                        startTime = startTime,
-                        duration = duration,
-                        viewName = viewName,
-                        meta = meta,
-                        backendTracingID = backendTracingID)
+                    result = result,
+                    eventName = eventName,
+                    startTime = startTime,
+                    duration = duration,
+                    viewName = viewName,
+                    meta = meta,
+                    backendTracingID = backendTracingID
+                )
             }
             "startCapture" -> {
                 val url: String? = call.argument("url")
                 val method: String? = call.argument("method")
                 val viewName: String? = call.argument("viewName")
                 nativeLink.startCapture(
-                        result = result,
-                        url = url,
-                        method = method,
-                        viewName = viewName)
+                    result = result,
+                    url = url,
+                    method = method,
+                    viewName = viewName
+                )
             }
             "finish" -> {
                 val markerId: String? = call.argument("id")
                 val responseStatusCode: Int? = call.argument("responseStatusCode")
-                val responseSizeEncodedBytes: Long? = (call.argument("responseSizeBody") as? Int)?.toLong()
-                val responseSizeDecodedBytes: Long? = (call.argument("responseSizeBodyDecoded") as? Int)?.toLong()
+                val responseSizeEncodedBytes: Long? =
+                    (call.argument("responseSizeBody") as? Int)?.toLong()
+                val responseSizeDecodedBytes: Long? =
+                    (call.argument("responseSizeBodyDecoded") as? Int)?.toLong()
                 val backendTraceId: String? = call.argument("backendTracingID")
                 val errorMessage: String? = call.argument("errorMessage")
                 nativeLink.finishCapture(
-                        result = result,
-                        markerId = markerId,
-                        responseStatusCode = responseStatusCode,
-                        responseSizeEncodedBytes = responseSizeEncodedBytes,
-                        responseSizeDecodedBytes = responseSizeDecodedBytes,
-                        backendTraceId = backendTraceId,
-                        errorMessage = errorMessage)
+                    result = result,
+                    markerId = markerId,
+                    responseStatusCode = responseStatusCode,
+                    responseSizeEncodedBytes = responseSizeEncodedBytes,
+                    responseSizeDecodedBytes = responseSizeDecodedBytes,
+                    backendTraceId = backendTraceId,
+                    errorMessage = errorMessage
+                )
             }
             "cancel" -> {
                 val markerId: String? = call.argument("id")
                 nativeLink.cancelCapture(
-                        result = result,
-                        markerId = markerId)
+                    result = result,
+                    markerId = markerId
+                )
             }
             else -> {
                 result.notImplemented()
