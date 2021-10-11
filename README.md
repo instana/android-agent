@@ -1,4 +1,4 @@
-# Android Instana Agent <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-4.7.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-3.7.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-2.7.0-brightgreen?color=0db4b3"></a> <a href="https://bintray.com/instana/public-maven"><img alt="Bintray" src="https://img.shields.io/badge/jcenter-1.7.0-brightgreen?color=0db4b3"></a>
+# Android Instana Agent <a href="https://mvnrepository.com/artifact/com.instana/android-agent-plugin"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.instana/android-agent-plugin?color=0db4b3"></a>
 
 **[Changelog](CHANGELOG.md)** |
 **[Contributing](CONTRIBUTING.md)** |
@@ -11,28 +11,6 @@
 Android Instana Agent works on Android 4.1+ (API level 16+) and on Java 8+. 
 
 Migration to AndroidX is required.
-
-Different Android Instana Agent versions provide support for different Android Gradle Plugin versions:
-
-### Android Agent v1.x.x
-
-- Android Gradle Plugin 3.5.x 
-- Gradle 5.4.1+
-
-### Android Agent v2.x.x
-
-- Android Gradle Plugin 3.6.x
-- Gradle 6.0+
-
-### Android Agent v3.x.x
-
-- Android Gradle Plugin 4.0.x
-- Gradle 6.1.1+
-
-### Android Agent v4.x.x
-
-- Android Gradle Plugin 4.1.x
-- Gradle 6.5+
 
 ## Getting started
 
@@ -63,7 +41,7 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:4.7.0'
+    implementation 'com.instana:android-agent-runtime:5.0.0'
 }
 ```
 
@@ -82,7 +60,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:4.7.0"
+        classpath "com.instana:android-agent-plugin:5.0.0"
     }
 }
 ```
@@ -134,7 +112,7 @@ Instana Android Agent is currently capable of automatically tracking events for 
 - [HttpURLConnection](https://developer.android.com/reference/java/net/HttpURLConnection)
 - [Retrofit](https://square.github.io/retrofit/)
 
-You can use *manual tracking* to add support for any client yourself, or please consider [contributing](#contributing) to the project.
+You can use *manual tracking* to add support for any client yourself, or please consider [contributing](CONTRIBUTING.md) to the project.
 
 ### Additional configuration settings
 

@@ -1,6 +1,16 @@
 Changelog
 ==========
 
+## Version 5.0.0
+
+_2021-10-11_
+
+- Completely rewritten Plugin
+- Removed strong dependency on Gradle version. Currently confirmed to work with Gradle versions up to 7.0.2
+- Added support for incremental builds 
+- New Groovy DSL for Plugin configuration
+- Fixed `error indicator` for CustomEvents
+
 ## Version 4.7.0, 3.7.0, 2.7.0 and 1.7.0
 
 _2021-09-15_
