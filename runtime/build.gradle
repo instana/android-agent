@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.archinamon.aspectj-ext'
 apply from: 'publish.gradle'
 
 android {
@@ -26,6 +25,11 @@ android {
         }
     }
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -36,7 +40,6 @@ android {
 
 repositories {
     google()
-    jcenter()
 }
 
 dependencies {

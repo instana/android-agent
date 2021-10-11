@@ -32,7 +32,8 @@ class HttpURLConnectionViewModel : ViewModel() {
         _response.postValue("")
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                _response.postValue(HttpURLConnection.executeRequest(method, url, body))
+                val response = HttpURLConnection.executeRequest(method, url, body)
+                _response.postValue(response)
             }
         }
     }

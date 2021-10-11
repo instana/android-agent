@@ -603,7 +603,8 @@ class Beacon private constructor(
             error: String?,
             name: String
         ): Beacon {
-            return Beacon(BeaconType.CUSTOM, duration, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
+            val errorCount = if (error != null) 1L else 0L
+            return Beacon(BeaconType.CUSTOM, duration, appKey, sessionId, errorCount, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     view?.run { setView(this) }
                     meta.forEach { setMeta(it.key, it.value) }

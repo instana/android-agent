@@ -1,8 +1,8 @@
 apply plugin: 'java-gradle-plugin'
-apply plugin: 'groovy'
+apply plugin: "org.jetbrains.kotlin.jvm"
 apply from: 'publish.gradle'
 
-compileGroovy {
+compileKotlin {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
@@ -14,7 +14,7 @@ java {
 
 repositories {
     google()
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -22,6 +22,8 @@ dependencies {
     implementation localGroovy()
     implementation "com.android.tools.build:gradle:$buildtools_version"
     implementation "com.android.tools.build:gradle-api:$buildtools_version"
+    implementation "com.android.tools.build:gradle-api:$buildtools_version"
 
-    runtime "com.akaita.android:android-gradle-aspectj:$aspectj_version"
+    implementation "commons-io:commons-io:2.8.0"
+    implementation "org.ow2.asm:asm:9.2"
 }

@@ -1,14 +1,13 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.akaita.android.easylauncher'
 apply plugin: 'com.instana.android-agent-plugin'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
 
     defaultConfig {
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionName "5.0"
         versionCode 1
         vectorDrawables.useSupportLibrary = true
@@ -107,15 +106,10 @@ dependencies {
     androidTestImplementation 'org.hamcrest:hamcrest-library:1.3'
 }
 
-// Apply a different ribbon to the launcher of each app build type
-easylauncher {
-    foregroundIconNames "@mipmap/ic_launcher_foreground"
-    buildTypes {
-        debug {
-            filters = greenRibbonFilter()
-        }
-        release {
-            filters = blueRibbonFilter()
-        }
-    }
+instana {
+    enableWeaving = true
+    ignoreClassesRegex = ['com\\.library\\.to\\.ignore\\..*']
+    logVisits = true
+    logInstrumentation = true
+    logTimeSpent = true
 }

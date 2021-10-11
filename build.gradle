@@ -1,29 +1,24 @@
 apply from: 'publish.gradle'
 
 buildscript {
-    ext.kotlin_version = '1.4.20'
-    ext.agent_version = '4.7.0'
-    ext.buildtools_version = '4.1.0'
-    ext.aspectj_version = '4.3.0'
+    ext.kotlin_version = '1.5.30'
+    ext.agent_version = '4.5.4+asm'
+    ext.buildtools_version = '4.2.0'
     repositories {
         google()
-        jcenter()
         mavenCentral()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$buildtools_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.akaita.android:android-gradle-aspectj:$aspectj_version"
-        classpath 'digital.wup:android-maven-publish:3.6.3'
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
