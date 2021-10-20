@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 5.0.1
+
+_2021-10-20_
+
+- Fix HttpURLConnection exception handling which caused `CIRCULAR REFERENCE` issues on R8 
+- Skip internal GMS classes
+
 ## Version 5.0.0
 
 _2021-10-11_
