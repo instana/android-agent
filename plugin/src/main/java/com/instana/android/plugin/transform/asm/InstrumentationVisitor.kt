@@ -114,6 +114,8 @@ class InstrumentationVisitor(
                 || (owner == "java/net/HttpURLConnection" && name == "setRequestMethod" && descriptor == "(Ljava/lang/String;)Ljava/io/OutputStream;")
                 || (owner == "java/net/HttpURLConnection" && name == "connect" && descriptor == "()V")
             ) {
+                var skippedInstrumentation = false
+
                 val tryStart = Label()
                 val tryEnd = Label()
                 val catchStart = Label()
@@ -128,18 +130,27 @@ class InstrumentationVisitor(
                 super.visitJumpInsn(GOTO, catchEnd) // When no exception, skip catch block
 
                 super.visitLabel(catchStart)
-                dup2()
-                super.visitMethodInsn(
-                    INVOKESTATIC,
-                    "com/instana/android/instrumentation/urlConnection/UrlConnectionInstrumentation",
-                    "handleException",
-                    "(Ljava/net/HttpURLConnection;Ljava/io/IOException;)V",
-                    false
-                )
+                if ((access and Opcodes.ACC_STATIC) != 0) {
+                    skippedInstrumentation = true
+                    if (config.logInstrumentation) {
+                        logger.debug("Skipped Instrumentation of opcode: $opcode owner: $owner name: $name desc: $descriptor")
+                        logger.debug("  Method was static O_o")
+                    }
+                } else {
+                    loadThis()
+                    dup()
+                    super.visitMethodInsn(
+                        INVOKESTATIC,
+                        "com/instana/android/instrumentation/urlConnection/UrlConnectionInstrumentation",
+                        "handleException",
+                        "(Ljava/net/HttpURLConnection;Ljava/io/IOException;)V",
+                        false
+                    )
+                }
                 super.visitInsn(Opcodes.ATHROW)
                 super.visitLabel(catchEnd)
 
-                if (config.logInstrumentation) {
+                if (skippedInstrumentation.not() && config.logInstrumentation) {
                     logger.debug("Instrumented opcode: $opcode owner: $owner name: $name desc: $descriptor")
                     logger.debug("  Instrumented exceptions related to HttpURLConnection")
                 }
