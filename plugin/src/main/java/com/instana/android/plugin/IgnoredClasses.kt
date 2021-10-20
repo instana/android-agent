@@ -13,6 +13,7 @@ object IgnoredClasses {
 
     val troublesomeAnalytics = listOf(
         Regex("com/appsflyer/.*"),
+        Regex("com/google/android/gms/internal/.*"),
         Regex("com/google/firebase/perf/.*"),
         Regex("com/instabug/library/.*"),
     )
