@@ -16,7 +16,9 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.URL
 import java.util.*
+import java.util.jar.JarEntry
 import java.util.jar.JarFile
+import java.util.jar.JarOutputStream
 
 class TransformImpl(config: TransformConfig) {
 
@@ -130,42 +132,43 @@ class TransformImpl(config: TransformConfig) {
         for (input in jarInputs) {
             // Build a unique name for the output file based on the path of the input jar.
             logger.debug("TransformInput jar $input")
-            val outDir = outputProvider.getContentLocation(input.name, input.contentTypes, input.scopes, Format.DIRECTORY)
+            val outJar = outputProvider.getContentLocation(input.name, input.contentTypes, input.scopes, Format.JAR)
             logger.debug("  Jar input ${input.file}")
-            logger.debug("  Dir output $outDir")
+            logger.debug("  Jar output $outJar")
 
             val doTransform = !transformInvocation.isIncremental || input.status == Status.ADDED || input.status == Status.CHANGED
             if (doTransform) {
-                TransformUtils.ensureDirectoryExists(outDir)
-                FileUtils.cleanDirectory(outDir)
+                TransformUtils.ensureDirectoryExists(outJar.parentFile)
                 val inJar = JarFile(input.file)
-                var count = 0
-                for (entry in inJar.entries()) {
-                    val outFile = File(outDir, entry.name)
-                    if (!entry.isDirectory) {
-                        TransformUtils.ensureDirectoryExists(outFile.parentFile)
-                        inJar.getInputStream(entry).use { inputStream ->
-                            IOUtils.buffer(FileOutputStream(outFile)).use { outputStream ->
+
+                val os = FileOutputStream(outJar)
+                JarOutputStream(os).use { jarOutputStream ->
+                    var count = 0
+                    for (entry in inJar.entries()) {
+                        if (!entry.isDirectory) {
+                            val newEntry = JarEntry(entry.name)
+                            jarOutputStream.putNextEntry(newEntry)
+                            inJar.getInputStream(entry).use { inputStream ->
                                 if (isInstrumentableClassFile(entry.name)) {
                                     try {
-                                        processClassStream(entry.name, inputStream, outputStream)
+                                        processClassStream(entry.name, inputStream, jarOutputStream)
                                     } catch (e: Exception) {
                                         logger.error("Can't process class ${entry.name}", e)
                                         throw e
                                     }
                                 } else {
-                                    TransformUtils.copyStream(inputStream, outputStream)
+                                    TransformUtils.copyStream(inputStream, jarOutputStream)
                                 }
                             }
+                            count++
                         }
-                        count++
                     }
+                    logger.debug("  Entries copied: $count")
                 }
-                logger.debug("  Entries copied: $count")
             } else if (input.status == Status.REMOVED) {
                 logger.debug("  REMOVED")
-                if (outDir.exists()) {
-                    FileUtils.forceDelete(outDir)
+                if (outJar.exists()) {
+                    FileUtils.forceDelete(outJar)
                 }
             }
         }
