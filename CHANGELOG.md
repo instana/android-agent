@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 5.0.2
+
+_2021-12-01_
+
+- Update WorkManager to 2.7.1 to avoid crash in Android 12 ([ref in WorkManager Release Notes](https://developer.android.com/jetpack/androidx/releases/work#2.7.0-alpha02))
+- Fix compilation errors in case-insensitive file-systems
+
 ## Version 5.0.1
 
 _2021-10-20_
