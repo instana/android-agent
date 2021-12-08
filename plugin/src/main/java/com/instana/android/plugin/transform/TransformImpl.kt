@@ -195,7 +195,7 @@ class TransformImpl(config: TransformConfig) {
             instrBytes
         } catch (e: Exception) {
             // If instrumentation fails, just write the original bytes
-            logger.error("Failed to instrument $name, using original contents", e)
+            logger.warn("Failed to instrument $name, using original contents", e)
             classBytes
         }
         IOUtils.write(bytesToWrite, outputStream)
