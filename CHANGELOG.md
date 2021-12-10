@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 5.0.3
+
+_2021-12-10_
+
+- Update log levels during compilation time
+- Don't instrument Firebase
+
 ## Version 5.0.2
 
 _2021-12-01_
