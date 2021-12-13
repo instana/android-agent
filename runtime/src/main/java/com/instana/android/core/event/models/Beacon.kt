@@ -556,7 +556,7 @@ class Beacon private constructor(
             decodedResponseSizeBytes: Long?,
             error: String?
         ): Beacon {
-            val errorCount = if (error != null) 1L else 0L
+            val errorCount = if (error != null || responseCode in 400..599) 1L else 0L
             return Beacon(BeaconType.HTTP_REQUEST, duration, appKey, sessionId, errorCount, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     view?.run { setView(this) }
