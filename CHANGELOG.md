@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 5.0.4
+
+_2022-03-01_
+
+- Report responses with server-error or client-error HTTP responses codes as failed
+- Don't instrument NewRelic
+
 ## Version 5.0.3
 
 _2021-12-10_
