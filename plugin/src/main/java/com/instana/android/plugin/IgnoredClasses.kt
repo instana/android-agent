@@ -16,6 +16,7 @@ object IgnoredClasses {
         Regex("com/google/android/gms/internal/.*"),
         Regex("com/google/firebase/.*"),
         Regex("com/instabug/library/.*"),
+        Regex("com/newrelic/.*"),
     )
 
     fun from(list: List<String>, logger: Logger): List<Regex> {
