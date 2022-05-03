@@ -11,8 +11,8 @@ open class Extension {
     var enableWeaving = true
     var ignoreClassesRegex = emptyList<String>()
     var logTimeSpent = true
-    var logVisits = true
-    var logInstrumentation = true
+    var logVisits = false
+    var logInstrumentation = false
 
     companion object {
         const val name = "instana"
