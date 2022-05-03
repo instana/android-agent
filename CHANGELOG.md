@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 5.0.5
+
+_2022-05-03_
+
+- Fix `java.lang.VerifyError [...] but expected Reference: java.net.HttpURLConnection [...]` error
+- Silence false error-reports in build-time (now configurable)
+
 ## Version 5.0.4
 
 _2022-03-01_
