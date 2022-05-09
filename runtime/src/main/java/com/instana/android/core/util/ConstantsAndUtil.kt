@@ -25,6 +25,7 @@ import com.instana.android.instrumentation.HTTPCaptureConfig
 import okhttp3.OkHttpClient
 import java.net.MalformedURLException
 import java.net.URL
+import java.util.regex.Pattern
 
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -189,15 +190,23 @@ object ConstantsAndUtil {
         get() = Instana.config?.httpCaptureConfig == HTTPCaptureConfig.AUTO
 
     @JvmStatic
-    val isCollectionEnabled: Boolean
-        get() = Instana.config?.collectionEnabled == true
-
-    @JvmStatic
     fun isBlacklistedURL(url: String): Boolean {
         return Instana.internalURLs.any { it.matches(url) } ||
                 Instana.ignoreURLs.map { it.toRegex() }.any {
                     it.matches(url) || it.matches(url.removeTrailing("/"))
                 }
+    }
+
+    fun redactQueryParams(url: String): String {
+        val regexList =
+            if (Instana.redactHTTPQuery.size > 0) Instana.redactHTTPQuery.map { it.toRegex() }
+            else Instana.config?.defaultRedactedQueryParams ?: emptyList()
+
+        return URLUtils.redactURLQueryParams(
+            url = url,
+            replacement = Instana.config?.defaultRedactedQueryParamValue ?: "",
+            regex = regexList
+        )
     }
 
     internal fun forceRedundantURLPort(url: String): String {

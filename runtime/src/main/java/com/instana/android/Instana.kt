@@ -82,6 +82,12 @@ object Instana {
     val ignoreURLs = mutableListOf<Pattern>()
 
     /**
+     * List of Query parameters that Instana will replace with <redacted> *before* reporting them to Instana's server, defined by a list of Regex(Kotlin) or Pattern(Java)
+     */
+    @JvmStatic
+    val redactHTTPQuery = mutableListOf<Pattern>()
+
+    /**
      * Map of Key-Value pairs which all new beacons will be associated with
      *
      * Max Key Length: 98 characters
