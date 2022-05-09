@@ -5,7 +5,6 @@
 
 package com.instana.android.plugin.transform
 
-import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -34,7 +33,7 @@ class TransformUtils {
         }
 
         fun copyStream(inputStream: InputStream, outputStream: OutputStream) {
-            IOUtils.copy(inputStream, outputStream)
+            inputStream.copyTo(outputStream)
         }
     }
 }

@@ -7,7 +7,6 @@ package com.instana.android.plugin.transform
 
 import com.android.build.api.transform.*
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 import org.gradle.api.logging.Logging
 import java.io.File
 import java.io.FileOutputStream
@@ -96,8 +95,8 @@ class TransformNoop(config: TransformConfig) {
                     val relativeFile = TransformUtils.normalizedRelativeFilePath(di.file, file)
                     val destFile = File(outDir, relativeFile)
                     TransformUtils.ensureDirectoryExists(destFile.parentFile)
-                    IOUtils.buffer(file.inputStream()).use { inputStream ->
-                        IOUtils.buffer(destFile.outputStream()).use { outputStream ->
+                    file.inputStream().buffered().use { inputStream ->
+                        destFile.outputStream().buffered().use { outputStream ->
                             TransformUtils.copyStream(inputStream, outputStream)
                         }
                     }
@@ -132,7 +131,7 @@ class TransformNoop(config: TransformConfig) {
                     if (!entry.isDirectory) {
                         TransformUtils.ensureDirectoryExists(outFile.parentFile)
                         inJar.getInputStream(entry).use { inputStream ->
-                            IOUtils.buffer(FileOutputStream(outFile)).use { outputStream ->
+                            FileOutputStream(outFile).buffered().use { outputStream ->
                                 TransformUtils.copyStream(inputStream, outputStream)
                             }
                         }
