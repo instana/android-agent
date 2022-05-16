@@ -8,7 +8,6 @@ package com.instana.android.plugin.transform
 import com.android.build.api.transform.*
 import com.instana.android.plugin.transform.asm.ClassInstrumenter
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
 import org.gradle.api.logging.Logging
 import java.io.File
 import java.io.FileOutputStream
@@ -106,8 +105,8 @@ class TransformImpl(config: TransformConfig) {
                     val relativeFile = TransformUtils.normalizedRelativeFilePath(input.file, file)
                     val destFile = File(outDir, relativeFile)
                     TransformUtils.ensureDirectoryExists(destFile.parentFile)
-                    IOUtils.buffer(file.inputStream()).use { inputStream ->
-                        IOUtils.buffer(destFile.outputStream()).use { outputStream ->
+                    file.inputStream().buffered().use { inputStream ->
+                        destFile.outputStream().buffered().use { outputStream ->
                             if (isInstrumentableClassFile(relativeFile)) {
                                 try {
                                     processClassStream(relativeFile, inputStream, outputStream)
@@ -189,7 +188,7 @@ class TransformImpl(config: TransformConfig) {
     }
 
     private fun processClassStream(name: String, inputStream: InputStream, outputStream: OutputStream) {
-        val classBytes = IOUtils.toByteArray(inputStream)
+        val classBytes = inputStream.readBytes()
         val bytesToWrite = try {
             val instrBytes = instrumenter.instrument(classBytes)
             instrBytes
@@ -200,7 +199,7 @@ class TransformImpl(config: TransformConfig) {
             }
             classBytes
         }
-        IOUtils.write(bytesToWrite, outputStream)
+        outputStream.write(bytesToWrite)
     }
 
 }

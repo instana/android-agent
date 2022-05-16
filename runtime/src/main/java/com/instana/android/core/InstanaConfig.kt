@@ -17,10 +17,12 @@ class InstanaConfig
      * Instana monitoring configuration key
      */
     val key: String,
+
     /**
      * URL pointing to the Instana instance to which to the send monitoring data to
      */
     val reportingURL: String,
+
     /**
      * Determine the HttpMonitoring mode
      */
@@ -30,6 +32,7 @@ class InstanaConfig
      * Determine in which conditions beacons will be transmitted or hold off
      */
     var suspendReporting: SuspendReportingType = SuspendReportingType.LOW_BATTERY,
+
     /**
      * Delay after which the first beacon will be sent, in milliseconds
      *
@@ -38,11 +41,12 @@ class InstanaConfig
      * note: this delay does not affect the capture of monitoring beacons. It only delays the transmission of the normally captured beacons
      */
     var initialBeaconDelayMs: Long = 3000,
+
     /**
      * 	Enable or disable data collection and submission
      */
     var collectionEnabled: Boolean = true,
-) {
+    ) {
     /**
      * Configuration of the Instana Performance Monitoring Service
      */
@@ -55,6 +59,16 @@ class InstanaConfig
      */
     internal val reportingURLWithPort = ConstantsAndUtil.forceRedundantURLPort(reportingURL)
     internal val reportingURLWithoutPort = ConstantsAndUtil.forceNoRedundantURLPort(reportingURL)
+
+    /**
+     * Will use these for filtering query parameters
+     */
+    internal val defaultRedactedQueryParams = listOf(
+        "key".toRegex(RegexOption.IGNORE_CASE),
+        "secret".toRegex(RegexOption.IGNORE_CASE),
+        "password".toRegex(RegexOption.IGNORE_CASE)
+    )
+    internal val defaultRedactedQueryParamValue = "<redacted>"
 
     fun isValid(): Boolean {
         return when {

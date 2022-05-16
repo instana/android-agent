@@ -6,6 +6,7 @@
 package com.instana.android.instrumentation.urlConnection
 
 import com.instana.android.Instana
+import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
 import com.instana.android.core.util.ConstantsAndUtil.checkTag
 import com.instana.android.core.util.ConstantsAndUtil.hasTrackingHeader
@@ -29,8 +30,10 @@ class UrlConnectionInstrumentation {
             Logger.i("HttpURLConnection: intercepting openConnection")
             val header = connection.getRequestProperty(TRACKING_HEADER_KEY)
             val url = connection.url.toString()
+            val redactedUrl = ConstantsAndUtil.redactQueryParams(url)
+
             if (isAutoEnabled && !checkTag(header) && !isLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
-                val marker = Instana.startCapture(url)
+                val marker = Instana.startCapture(redactedUrl)
                 if (marker != null) {
                     connection.setRequestProperty(TRACKING_HEADER_KEY, marker.headerValue())
                     httpMarkers[marker.headerValue()] = marker
@@ -43,6 +46,7 @@ class UrlConnectionInstrumentation {
             Logger.i("HttpURLConnection: intercepting disconnect")
             val header = connection.getRequestProperty(TRACKING_HEADER_KEY)
             val url = connection.url.toString()
+
             if (isAutoEnabled && !isLibraryCallBoolean(url) && checkTag(header)) {
                 httpMarkers[header]?.finish(connection)
                 httpMarkers.remove(header)
@@ -54,6 +58,7 @@ class UrlConnectionInstrumentation {
             Logger.i("HttpURLConnection: intercepting exception")
             val header: String = connection.getRequestProperty(TRACKING_HEADER_KEY)
             val url: String = connection.url.toString()
+
             if (isAutoEnabled && hasTrackingHeader(header) && !isLibraryCallBoolean(url) && checkTag(header)) {
                 val marker = httpMarkers[header]
                 if (marker != null) {

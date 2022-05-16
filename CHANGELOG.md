@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 5.1.0
+
+_2022-05-10_
+
+- Add `Instana.redactHTTPQuery` to hide URL Query parameters
+
 ## Version 5.0.5
 
 _2022-05-03_

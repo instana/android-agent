@@ -6,6 +6,7 @@
 package com.instana.android.instrumentation.okhttp3
 
 import com.instana.android.Instana
+import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.ConstantsAndUtil.TRACKING_HEADER_KEY
 import com.instana.android.core.util.ConstantsAndUtil.checkTag
 import com.instana.android.core.util.ConstantsAndUtil.hasTrackingHeader
@@ -33,40 +34,41 @@ object OkHttp3GlobalInterceptor : Interceptor {
         val intercepted = chain.request()
         val header = intercepted.header(TRACKING_HEADER_KEY)
         val url = intercepted.url().toString()
+        val redactedUrl = ConstantsAndUtil.redactQueryParams(url)
 
         val request: Request
         var marker: HTTPMarker? = null
 
         if (isAutoEnabled && !hasTrackingHeader(header) && !isBlacklistedURL(url)) {
             if (!checkTag(header) && !isLibraryCallBoolean(url)) {
-                marker = Instana.startCapture(url)
+                marker = Instana.startCapture(redactedUrl)
                 request = if (marker != null) {
-                    Logger.d("Automatically marked OkHttp3 request with: `url` $url")
+                    Logger.d("Automatically marked OkHttp3 request with: `url` $redactedUrl")
                     httpMarkers[marker.headerValue()] = marker
                     chain.request().newBuilder().header(TRACKING_HEADER_KEY, marker.headerValue()).build()
                 } else {
-                    Logger.e("Failed to automatically mark OkHttp3 request with: `url` $url")
+                    Logger.e("Failed to automatically mark OkHttp3 request with: `url` $redactedUrl")
                     intercepted
                 }
             } else {
-                Logger.d("Skipped already tagged OkHttp3 request with: `url` $url")
+                Logger.d("Skipped already tagged OkHttp3 request with: `url` $redactedUrl")
                 request = intercepted
             }
         } else {
-            Logger.d("Ignored OkHttp3 request with: `url` $url")
+            Logger.d("Ignored OkHttp3 request with: `url` $redactedUrl")
             request = intercepted
         }
 
         return try {
             val response = chain.proceed(request)
-            Logger.d("Finishing OkHttp3 request with: `url` $url")
+            Logger.d("Finishing OkHttp3 request with: `url` $redactedUrl")
             marker?.run {
                 finish(response)
                 httpMarkers.remove(marker.headerValue(), marker)
             }
             response
         } catch (e: Exception) {
-            Logger.d("Finishing OkHttp3 request with: `url` $url, `error` ${e.message}")
+            Logger.d("Finishing OkHttp3 request with: `url` $redactedUrl, `error` ${e.message}")
             marker?.run {
                 finish(request, e)
                 httpMarkers.remove(marker.headerValue(), marker)
@@ -76,16 +78,19 @@ object OkHttp3GlobalInterceptor : Interceptor {
     }
 
     fun cancel(request: Request) {
+        @Suppress("UNNECESSARY_SAFE_CALL") // Crash reports suggest `request.url()` is indeed nullable
+        val url = request.url()?.toString() ?: return
+        val redactedUrl = ConstantsAndUtil.redactQueryParams(url)
+
         val cancelledTrackerValue: String? = request.header(TRACKING_HEADER_KEY)
         if (cancelledTrackerValue == null) {
-            Logger.w("No marker found for cancelled OkHttp3 request with: 'url' ${request.url()}")
+            Logger.w("No marker found for cancelled OkHttp3 request with: 'url' $redactedUrl")
             return
         }
 
         var marker = httpMarkers[cancelledTrackerValue]
         if (marker == null) {
-            @Suppress("UNNECESSARY_SAFE_CALL") // Crash reports suggest `request.url()` is indeed nullable
-            marker = request.url()?.let { Instana.startCapture(it.toString()) }
+            marker = Instana.startCapture(redactedUrl)
         }
         marker?.run {
             cancel()
