@@ -3,7 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_okhttp3">
+    app:startDestination="@+id/navigation_list">
+
+    <fragment
+        android:id="@+id/navigation_list"
+        android:name="com.instana.mobileeum.ui.list.ListFragment"
+        android:label="@string/title_list"
+        tools:layout="@layout/fragment_list" />
 
     <fragment
         android:id="@+id/navigation_okhttp3"
@@ -31,7 +37,7 @@
 
     <fragment
         android:id="@+id/navigation_performance"
-        android:name="com.instana.mobileeum.ui.performance.PerformanceFragment"
+        android:name="com.instana.mobileeum.ui.list.ListFragment"
         android:label="@string/title_performance"
         tools:layout="@layout/fragment_performance" />
 </navigation>

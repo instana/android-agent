@@ -7,6 +7,7 @@
     <string name="title_transitives">Trans</string>
     <string name="title_custom">Custom</string>
     <string name="title_performance">Perf</string>
+    <string name="title_list">List</string>
 
     <!-- Request -->
     <string name="request_parameters">Request parameters</string>
