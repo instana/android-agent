@@ -8,9 +8,10 @@
 
 ## Requirements
 
-Android Instana Agent works on Android 4.1+ (API level 16+) and on Java 8+. 
-
-Migration to AndroidX is required.
+- Android 4.1+ (API level 16+) 
+- Java 8+ 
+- AndroidX
+- targetSdk 31+
 
 ## Getting started
 
