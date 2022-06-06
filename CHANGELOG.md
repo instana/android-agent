@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 5.2.0
+
+_2022-06-06_
+
+- Add `Instana.captureHeaders` to allow capturing custom headers for each request/response
+
 ## Version 5.1.0
 
 _2022-05-10_
