@@ -48,7 +48,7 @@ data class HTTPMarkerData(
     @param:Size(max = 16384)
     val errorMessage: String? = null,
     @param:Size(max = 16384)
-    val headers: MaxCapacityMap<String, String>? = null
+    val headers: Map<String, String>? = null
 ) {
     class Builder {
         var requestMethod: String? = null
@@ -63,7 +63,7 @@ data class HTTPMarkerData(
             private set
         var errorMessage: String? = null
             private set
-        var headers = MaxCapacityMap<String, String>(64)
+        var headers: Map<String, String>? = null
             private set
 
         /**
@@ -109,7 +109,7 @@ data class HTTPMarkerData(
         /**
          * A map of headers associated with the request/response
          */
-        fun headers(@Size(max = 64) headers: Map<String, String>?) = apply { headers?.also { this.headers.putAll(headers) } }
+        fun headers(@Size(max = 64) headers: Map<String, String>?) = apply { this.headers = headers }
 
         fun build() = HTTPMarkerData(
             requestMethod = requestMethod,

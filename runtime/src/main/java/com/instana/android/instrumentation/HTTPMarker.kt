@@ -227,6 +227,8 @@ class HTTPMarker(
         status = MarkerStatus.ENDED
         stopWatch.stop()
 
+        httpMarkerData.headers?.run { headers.putAll(this) }
+
         sendBeacon(
             connectionMethod = httpMarkerData.requestMethod,
             responseCode = httpMarkerData.responseStatusCode,
@@ -234,7 +236,7 @@ class HTTPMarker(
             decodedResponseSizeBytes = httpMarkerData.responseSizeDecodedBytes,
             backendTraceId = httpMarkerData.backendTraceId,
             errorMessage = httpMarkerData.errorMessage,
-            headers = httpMarkerData.headers ?: MaxCapacityMap(0)
+            headers = headers
         )
     }
     //endregion
@@ -268,7 +270,7 @@ class HTTPMarker(
             duration = stopWatch.totalTimeMillis,
             method = connectionMethod,
             url = url,
-            headers = headers?.getAll() ?: emptyMap(),
+            headers = headers.getAll(),
             responseCode = responseCode,
             requestSizeBytes = null,
             encodedResponseSizeBytes = encodedResponseSizeBytes,
