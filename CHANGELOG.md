@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 5.2.1
+
+_2022-06-06_
+
+- Fix custom header capture for manual tracking
+
 ## Version 5.2.0
 
 _2022-06-06_
