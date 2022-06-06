@@ -33,6 +33,7 @@ class DemoApp : Application() {
         Instana.userName = "instana android agent demo"
         Instana.meta.put("testKey", "testValue")
         Instana.ignoreURLs.add("""^.*google\.com$""".toRegex().toPattern())
+        Instana.captureHeaders.add(""".*""".toRegex().toPattern())
         Instana.googlePlayServicesMissing =
             GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS
 
