@@ -33,9 +33,11 @@ class UrlConnectionInstrumentation {
             val redactedUrl = ConstantsAndUtil.redactQueryParams(url)
 
             if (isAutoEnabled && !checkTag(header) && !isLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
-                val marker = Instana.startCapture(redactedUrl)
+                val marker = Instana.startCapture(url = redactedUrl)
                 if (marker != null) {
                     connection.setRequestProperty(TRACKING_HEADER_KEY, marker.headerValue())
+                    val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(connection)
+                    marker.headers.putAll(requestHeaders)
                     httpMarkers[marker.headerValue()] = marker
                 }
             }

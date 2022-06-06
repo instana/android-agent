@@ -53,6 +53,7 @@ class InstanaWorkManagerShould : BaseTest() {
             duration = duration,
             method = method,
             url = url,
+            headers = emptyMap(),
             responseCode = responseCode,
             requestSizeBytes = null,
             encodedResponseSizeBytes = null,

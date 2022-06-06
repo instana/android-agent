@@ -29,6 +29,7 @@ import java.util.*
 class HTTPMarker(
     private val url: String,
     private val viewName: String?,
+    requestHeaders: Map<String, String>?,
     private val context: Context,
     private val manager: InstanaWorkManager,
     private val config: InstanaConfig
@@ -40,6 +41,8 @@ class HTTPMarker(
     private var connectionProfile: ConnectionProfile
     private val sessionId: String?
     private var status: MarkerStatus
+
+    val headers = MaxCapacityMap<String, String>(64)
 
     fun headerValue(): String = markerId
 
@@ -59,6 +62,7 @@ class HTTPMarker(
             if (carrierName == EMPTY_STR) carrierName = null
             addTag(markerId)
         }
+        requestHeaders?.run { headers.putAll(this) }
     }
 
     fun cancel() {
@@ -81,7 +85,8 @@ class HTTPMarker(
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
             backendTraceId = null,
-            errorMessage = errorMessage
+            errorMessage = errorMessage,
+            headers = headers
         )
     }
 
@@ -98,6 +103,9 @@ class HTTPMarker(
         status = MarkerStatus.ENDING
         stopWatch.stop()
 
+        val responseHeaders = ConstantsAndUtil.getCapturedResponseHeaders(response)
+        headers.putAll(responseHeaders)
+
         val method = response.request().method()
         val requestSize = response.request().body()?.contentLength()
         val encodedResponseSize = response.body()?.contentLength()
@@ -109,7 +117,8 @@ class HTTPMarker(
             encodedResponseSizeBytes = encodedResponseSize,
             decodedResponseSizeBytes = decodedResponseSize,
             backendTraceId = getBackendTraceId(response),
-            errorMessage = null
+            errorMessage = null,
+            headers = headers
         )
     }
 
@@ -134,7 +143,8 @@ class HTTPMarker(
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
             backendTraceId = null,
-            errorMessage = error.toString()
+            errorMessage = error.toString(),
+            headers = headers
         )
     }
     //endregion
@@ -152,6 +162,9 @@ class HTTPMarker(
         status = MarkerStatus.ENDING
         stopWatch.stop()
 
+        val responseHeaders = ConstantsAndUtil.getCapturedResponseHeaders(connection)
+        headers.putAll(responseHeaders)
+
         val method = connection.requestMethod
         val encodedResponseSize = connection.encodedResponseSizeOrNull()
         val decodedResponseSize = connection.decodedResponseSizeOrNull()?.toLong()
@@ -164,7 +177,8 @@ class HTTPMarker(
             encodedResponseSizeBytes = encodedResponseSize,
             decodedResponseSizeBytes = decodedResponseSize,
             backendTraceId = getBackendTraceId(connection),
-            errorMessage = errorMessage
+            errorMessage = errorMessage,
+            headers = headers
         )
     }
 
@@ -180,6 +194,10 @@ class HTTPMarker(
         status = MarkerStatus.ENDING
         stopWatch.stop()
 
+        val responseHeaders = ConstantsAndUtil.getCapturedRequestHeaders(connection)
+        headers.putAll(responseHeaders)
+
+
         val method = connection.requestMethod
         val responseCode = connection.responseCodeOrNull()
         val errorMessage = error.message
@@ -190,7 +208,8 @@ class HTTPMarker(
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
             backendTraceId = getBackendTraceId(connection),
-            errorMessage = errorMessage
+            errorMessage = errorMessage,
+            headers = headers
         )
     }
     //endregion
@@ -214,7 +233,8 @@ class HTTPMarker(
             encodedResponseSizeBytes = httpMarkerData.responseSizeEncodedBytes,
             decodedResponseSizeBytes = httpMarkerData.responseSizeDecodedBytes,
             backendTraceId = httpMarkerData.backendTraceId,
-            errorMessage = httpMarkerData.errorMessage
+            errorMessage = httpMarkerData.errorMessage,
+            headers = httpMarkerData.headers ?: MaxCapacityMap(0)
         )
     }
     //endregion
@@ -225,7 +245,8 @@ class HTTPMarker(
         encodedResponseSizeBytes: Long? = null,
         decodedResponseSizeBytes: Long? = null,
         backendTraceId: String? = null,
-        errorMessage: String? = null
+        errorMessage: String? = null,
+        headers: MaxCapacityMap<String, String>
     ) {
         if (sessionId == null) {
             Logger.e("Tried to end HTTPMarker with null sessionId")
@@ -247,6 +268,7 @@ class HTTPMarker(
             duration = stopWatch.totalTimeMillis,
             method = connectionMethod,
             url = url,
+            headers = headers?.getAll() ?: emptyMap(),
             responseCode = responseCode,
             requestSizeBytes = null,
             encodedResponseSizeBytes = encodedResponseSizeBytes,

@@ -7,6 +7,7 @@ package com.instana.android.instrumentation
 
 import androidx.annotation.IntRange
 import androidx.annotation.Size
+import com.instana.android.core.util.MaxCapacityMap
 
 /**
  * Represents request/response properties related to a Marker
@@ -45,7 +46,9 @@ data class HTTPMarkerData(
     @param:Size(max = 128)
     val backendTraceId: String? = null,
     @param:Size(max = 16384)
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    @param:Size(max = 16384)
+    val headers: MaxCapacityMap<String, String>? = null
 ) {
     class Builder {
         var requestMethod: String? = null
@@ -59,6 +62,8 @@ data class HTTPMarkerData(
         var backendTraceId: String? = null
             private set
         var errorMessage: String? = null
+            private set
+        var headers = MaxCapacityMap<String, String>(64)
             private set
 
         /**
@@ -101,13 +106,19 @@ data class HTTPMarkerData(
          */
         fun errorMessage(@Size(max = 16384) errorMessage: String?) = apply { this.errorMessage = errorMessage }
 
+        /**
+         * A map of headers associated with the request/response
+         */
+        fun headers(@Size(max = 64) headers: Map<String, String>?) = apply { headers?.also { this.headers.putAll(headers) } }
+
         fun build() = HTTPMarkerData(
             requestMethod = requestMethod,
             responseStatusCode = responseStatusCode,
             responseSizeEncodedBytes = responseSizeEncodedBytes,
             responseSizeDecodedBytes = responseSizeDecodedBytes,
             backendTraceId = backendTraceId,
-            errorMessage = errorMessage
+            errorMessage = errorMessage,
+            headers = headers
         )
     }
 }

@@ -174,6 +174,8 @@ class Beacon private constructor(
      *
      * m_user  Tom Mason
      * m_email tom.mason@example.com
+     *
+     * @Size(max=64)
      */
     fun setMeta(@Size(max = 98) key: String, @Size(max = 1024) value: String) {
         stringMap["m_${key.truncate(98, "Meta Key")}"] = value.truncate(1024, "Meta Value")
@@ -394,6 +396,22 @@ class Beacon private constructor(
     }
 
     /**
+     * HTTP headers in key/value pairs, in lower case.
+     *
+     * To be transmitted to backend as multiple h_ prefixed key value pairs. For example:
+     *
+     * h_host  example.com
+     * h_content-type application/json
+     *
+     * Short serialization key prefix: h_
+     *
+     * @Size(max=64)
+     */
+    fun setHttpCallHeaders(@Size(max = 98) key: String, @Size(max = 1024) value: String) {
+        stringMap["h_${key.truncate(98, "Header Key")}"] = value.truncate(1024, "Header Value")
+    }
+
+    /**
      * Only available for [BeaconType.HTTP_REQUEST]. Indicates the size of the encoded
      * (e.g. zipped) HTTP response body. Does not include the size of headers. Can be equal to [.setDecodedBodySize]
      * when the response is not compressed.
@@ -549,6 +567,7 @@ class Beacon private constructor(
             duration: Long,
             method: String?,
             url: String,
+            headers: Map<String, String>,
             backendTraceId: String?,
             responseCode: Int?,
             requestSizeBytes: Long?, //TODO ignored?
@@ -563,6 +582,7 @@ class Beacon private constructor(
                     meta.forEach { setMeta(it.key, it.value) }
                     method?.run { setHttpCallMethod(this) }
                     setHttpCallUrl(url)
+                    headers.forEach { setHttpCallHeaders(it.key, it.value) }
                     responseCode?.run { setHttpCallStatus(this) }
                     encodedResponseSizeBytes?.run { setEncodedBodySize(this) }
                     decodedResponseSizeBytes?.run { setDecodedBodySize(this) }

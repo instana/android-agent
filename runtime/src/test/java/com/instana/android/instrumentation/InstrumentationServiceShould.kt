@@ -23,13 +23,13 @@ class InstrumentationServiceShould : BaseTest() {
 
     @Test
     fun markCall() {
-        val instrumentation = instrumentationService.markCall("Url", "POST")
+        val instrumentation = instrumentationService.markCall("Url", "Home", null)
         assertNotNull(instrumentation)
     }
 
     @Test
     fun markCallWithUrl() {
-        val instrumentation = instrumentationService.markCall("Url", null)
+        val instrumentation = instrumentationService.markCall("Url", null, null)
         assertNotNull(instrumentation)
     }
 }

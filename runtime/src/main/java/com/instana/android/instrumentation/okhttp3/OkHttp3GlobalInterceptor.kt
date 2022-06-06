@@ -41,7 +41,11 @@ object OkHttp3GlobalInterceptor : Interceptor {
 
         if (isAutoEnabled && !hasTrackingHeader(header) && !isBlacklistedURL(url)) {
             if (!checkTag(header) && !isLibraryCallBoolean(url)) {
-                marker = Instana.startCapture(redactedUrl)
+                val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(intercepted)
+                marker = Instana.startCapture(
+                    url = redactedUrl,
+                    requestHeaders = requestHeaders
+                )
                 request = if (marker != null) {
                     Logger.d("Automatically marked OkHttp3 request with: `url` $redactedUrl")
                     httpMarkers[marker.headerValue()] = marker
@@ -90,7 +94,11 @@ object OkHttp3GlobalInterceptor : Interceptor {
 
         var marker = httpMarkers[cancelledTrackerValue]
         if (marker == null) {
-            marker = Instana.startCapture(redactedUrl)
+            val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(request)
+            marker = Instana.startCapture(
+                url = redactedUrl,
+                requestHeaders = requestHeaders
+            )
         }
         marker?.run {
             cancel()

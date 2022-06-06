@@ -28,7 +28,7 @@ class InstrumentationService(
         config.httpCaptureConfig = type
     }
 
-    fun markCall(url: String, viewName: String?): HTTPMarker = HTTPMarker(url, viewName, context, manager, config)
+    fun markCall(url: String, viewName: String?, requestHeaders: Map<String,String>?): HTTPMarker = HTTPMarker(url, viewName, requestHeaders, context, manager, config)
 
     fun hasTag(header: String): Boolean = tags.contains(header)
 

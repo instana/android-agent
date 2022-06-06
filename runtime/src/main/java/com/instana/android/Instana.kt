@@ -82,6 +82,12 @@ object Instana {
     val ignoreURLs = mutableListOf<Pattern>()
 
     /**
+     * List of Header Names which will be tracked by Instana for each monitored request/response, defined by a list of Regex(Kotlin) or Pattern(Java)
+     */
+    @JvmStatic
+    val captureHeaders = mutableListOf<Pattern>()
+
+    /**
      * List of Query parameters that Instana will replace with <redacted> *before* reporting them to Instana's server, defined by a list of Regex(Kotlin) or Pattern(Java)
      */
     @JvmStatic
@@ -95,7 +101,7 @@ object Instana {
      * Max Value Length: 1024 characters
      */
     @JvmStatic
-    val meta = MaxCapacityMap<String, String>(50)
+    val meta = MaxCapacityMap<String, String>(64)
 
     /**
      * User ID which all new beacons will be associated with
@@ -219,9 +225,9 @@ object Instana {
      */
     @JvmStatic
     @JvmOverloads
-    fun startCapture(@Size(max = 4096) url: String, @Size(max = 256) viewName: String? = view): HTTPMarker? {
+    fun startCapture(@Size(max = 4096) url: String, @Size(max = 256) viewName: String? = view, requestHeaders: Map<String, String>? = emptyMap()): HTTPMarker? {
         if (instrumentationService == null) Logger.e("Tried to start capture before Instana agent initialized with: `url` $url")
-        return instrumentationService?.markCall(url, viewName)
+        return instrumentationService?.markCall(url, viewName, requestHeaders)
     }
 
     /**

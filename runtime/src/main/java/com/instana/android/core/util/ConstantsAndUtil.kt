@@ -23,8 +23,12 @@ import com.instana.android.core.event.models.EffectiveConnectionType
 import com.instana.android.core.event.models.Platform
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
+import java.net.URLConnection
 import java.util.regex.Pattern
 
 
@@ -155,10 +159,8 @@ object ConstantsAndUtil {
         return Pair(version ?: EMPTY_STR, versionCode)
     }
 
-    @JvmStatic
     fun hasTrackingHeader(header: String?): Boolean = header != null
 
-    @JvmStatic
     fun checkTag(header: String?): Boolean =
         if (header != null) {
             Instana.instrumentationService?.hasTag(header) ?: false
@@ -178,23 +180,60 @@ object ConstantsAndUtil {
         }
     }
 
-    @JvmStatic
     fun isLibraryCallBoolean(url: String?): Boolean =
         url?.let {
             it.contains(Instana.config?.reportingURLWithPort ?: "") ||
                     it.contains(Instana.config?.reportingURLWithoutPort ?: "")
         } ?: true
 
-    @JvmStatic
     val isAutoEnabled: Boolean
         get() = Instana.config?.httpCaptureConfig == HTTPCaptureConfig.AUTO
 
-    @JvmStatic
     fun isBlacklistedURL(url: String): Boolean {
         return Instana.internalURLs.any { it.matches(url) } ||
                 Instana.ignoreURLs.map { it.toRegex() }.any {
                     it.matches(url) || it.matches(url.removeTrailing("/"))
                 }
+    }
+
+    private fun isHeaderToCapture(header: String): Boolean {
+        return Instana.captureHeaders.any { it.toRegex().matches(header) }
+    }
+
+    fun getCapturedRequestHeaders(connection: URLConnection): Map<String, String> {
+        @Suppress("UNCHECKED_CAST")
+        return connection.requestProperties.keys
+            .filterNotNull()
+            .filter { headerName -> isHeaderToCapture(headerName) }
+            .associateWith { headerName -> connection.requestProperties[headerName]?.joinToString(",") }
+            .filterValues { value -> value != null } as Map<String, String>
+    }
+
+    fun getCapturedResponseHeaders(connection: URLConnection): Map<String, String> {
+        @Suppress("UNCHECKED_CAST")
+        return connection.headerFields.keys
+            .filterNotNull()
+            .filter { headerName -> isHeaderToCapture(headerName) }
+            .associateWith { headerName -> connection.headerFields[headerName]?.joinToString(",") }
+            .filterValues { value -> value != null } as Map<String, String>
+    }
+
+    fun getCapturedResponseHeaders(response: Response): Map<String, String> {
+        @Suppress("UNCHECKED_CAST")
+        return response.headers().names()
+            .filterNotNull()
+            .filter { headerName -> isHeaderToCapture(headerName) }
+            .associateWith { headerName -> response.header(headerName) }
+            .filterValues { value -> value != null } as Map<String, String>
+    }
+
+    fun getCapturedRequestHeaders(request: Request): Map<String, String> {
+        @Suppress("UNCHECKED_CAST")
+        return request.headers().names()
+            .filterNotNull()
+            .filter { headerName -> isHeaderToCapture(headerName) }
+            .associateWith { headerName -> request.header(headerName) }
+            .filterValues { value -> value != null } as Map<String, String>
     }
 
     fun redactQueryParams(url: String): String {
