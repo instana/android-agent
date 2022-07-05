@@ -7,7 +7,6 @@ package com.instana.android.instrumentation
 
 import androidx.annotation.IntRange
 import androidx.annotation.Size
-import com.instana.android.core.util.MaxCapacityMap
 
 /**
  * Represents request/response properties related to a Marker

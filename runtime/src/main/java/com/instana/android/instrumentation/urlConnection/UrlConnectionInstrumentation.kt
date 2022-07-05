@@ -14,6 +14,7 @@ import com.instana.android.core.util.ConstantsAndUtil.isAutoEnabled
 import com.instana.android.core.util.ConstantsAndUtil.isBlacklistedURL
 import com.instana.android.core.util.ConstantsAndUtil.isLibraryCallBoolean
 import com.instana.android.core.util.Logger
+import com.instana.android.core.util.getRequestHeadersMap
 import com.instana.android.instrumentation.HTTPMarker
 import java.util.concurrent.ConcurrentHashMap
 
@@ -36,7 +37,7 @@ class UrlConnectionInstrumentation {
                 val marker = Instana.startCapture(url = redactedUrl)
                 if (marker != null) {
                     connection.setRequestProperty(TRACKING_HEADER_KEY, marker.headerValue())
-                    val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(connection)
+                    val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(connection.getRequestHeadersMap())
                     marker.headers.putAll(requestHeaders)
                     httpMarkers[marker.headerValue()] = marker
                 }

@@ -23,13 +23,8 @@ import com.instana.android.core.event.models.EffectiveConnectionType
 import com.instana.android.core.event.models.Platform
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
-import java.net.URLConnection
-import java.util.regex.Pattern
 
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -200,39 +195,19 @@ object ConstantsAndUtil {
         return Instana.captureHeaders.any { it.toRegex().matches(header) }
     }
 
-    fun getCapturedRequestHeaders(connection: URLConnection): Map<String, String> {
+    internal fun getCapturedRequestHeaders(headers: Map<String, String>): Map<String, String> {
         @Suppress("UNCHECKED_CAST")
-        return connection.requestProperties.keys
-            .filterNotNull()
+        return headers.keys
             .filter { headerName -> isHeaderToCapture(headerName) }
-            .associateWith { headerName -> connection.requestProperties[headerName]?.joinToString(",") }
+            .associateWith { headerName -> headers[headerName] }
             .filterValues { value -> value != null } as Map<String, String>
     }
 
-    fun getCapturedResponseHeaders(connection: URLConnection): Map<String, String> {
+    internal fun getCapturedResponseHeaders(headers: Map<String, String>): Map<String, String> {
         @Suppress("UNCHECKED_CAST")
-        return connection.headerFields.keys
-            .filterNotNull()
+        return headers.keys
             .filter { headerName -> isHeaderToCapture(headerName) }
-            .associateWith { headerName -> connection.headerFields[headerName]?.joinToString(",") }
-            .filterValues { value -> value != null } as Map<String, String>
-    }
-
-    fun getCapturedResponseHeaders(response: Response): Map<String, String> {
-        @Suppress("UNCHECKED_CAST")
-        return response.headers().names()
-            .filterNotNull()
-            .filter { headerName -> isHeaderToCapture(headerName) }
-            .associateWith { headerName -> response.header(headerName) }
-            .filterValues { value -> value != null } as Map<String, String>
-    }
-
-    fun getCapturedRequestHeaders(request: Request): Map<String, String> {
-        @Suppress("UNCHECKED_CAST")
-        return request.headers().names()
-            .filterNotNull()
-            .filter { headerName -> isHeaderToCapture(headerName) }
-            .associateWith { headerName -> request.header(headerName) }
+            .associateWith { headerName -> headers[headerName] }
             .filterValues { value -> value != null } as Map<String, String>
     }
 

@@ -62,7 +62,8 @@ class HTTPMarker(
             if (carrierName == EMPTY_STR) carrierName = null
             addTag(markerId)
         }
-        requestHeaders?.run { headers.putAll(this) }
+
+        headers.putAll(ConstantsAndUtil.getCapturedRequestHeaders(requestHeaders ?: emptyMap()))
     }
 
     fun cancel() {
@@ -103,8 +104,7 @@ class HTTPMarker(
         status = MarkerStatus.ENDING
         stopWatch.stop()
 
-        val responseHeaders = ConstantsAndUtil.getCapturedResponseHeaders(response)
-        headers.putAll(responseHeaders)
+        headers.putAll(ConstantsAndUtil.getCapturedResponseHeaders(response.headers().toMap()))
 
         val method = response.request().method()
         val requestSize = response.request().body()?.contentLength()
@@ -162,8 +162,7 @@ class HTTPMarker(
         status = MarkerStatus.ENDING
         stopWatch.stop()
 
-        val responseHeaders = ConstantsAndUtil.getCapturedResponseHeaders(connection)
-        headers.putAll(responseHeaders)
+        headers.putAll(ConstantsAndUtil.getCapturedResponseHeaders(connection.getResponseHeadersMap()))
 
         val method = connection.requestMethod
         val encodedResponseSize = connection.encodedResponseSizeOrNull()
@@ -194,9 +193,7 @@ class HTTPMarker(
         status = MarkerStatus.ENDING
         stopWatch.stop()
 
-        val responseHeaders = ConstantsAndUtil.getCapturedRequestHeaders(connection)
-        headers.putAll(responseHeaders)
-
+        headers.putAll(ConstantsAndUtil.getCapturedRequestHeaders(connection.getRequestHeadersMap()))
 
         val method = connection.requestMethod
         val responseCode = connection.responseCodeOrNull()
@@ -227,7 +224,7 @@ class HTTPMarker(
         status = MarkerStatus.ENDED
         stopWatch.stop()
 
-        httpMarkerData.headers?.run { headers.putAll(this) }
+        headers.putAll(ConstantsAndUtil.getCapturedResponseHeaders(httpMarkerData.headers ?: emptyMap()))
 
         sendBeacon(
             connectionMethod = httpMarkerData.requestMethod,

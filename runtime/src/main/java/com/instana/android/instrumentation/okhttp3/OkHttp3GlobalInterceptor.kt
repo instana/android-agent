@@ -14,6 +14,7 @@ import com.instana.android.core.util.ConstantsAndUtil.isAutoEnabled
 import com.instana.android.core.util.ConstantsAndUtil.isBlacklistedURL
 import com.instana.android.core.util.ConstantsAndUtil.isLibraryCallBoolean
 import com.instana.android.core.util.Logger
+import com.instana.android.core.util.toMap
 import com.instana.android.instrumentation.HTTPMarker
 import okhttp3.Interceptor
 import okhttp3.Request
@@ -41,7 +42,7 @@ object OkHttp3GlobalInterceptor : Interceptor {
 
         if (isAutoEnabled && !hasTrackingHeader(header) && !isBlacklistedURL(url)) {
             if (!checkTag(header) && !isLibraryCallBoolean(url)) {
-                val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(intercepted)
+                val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(intercepted.headers().toMap())
                 marker = Instana.startCapture(
                     url = redactedUrl,
                     requestHeaders = requestHeaders
@@ -94,7 +95,7 @@ object OkHttp3GlobalInterceptor : Interceptor {
 
         var marker = httpMarkers[cancelledTrackerValue]
         if (marker == null) {
-            val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(request)
+            val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(request.headers().toMap())
             marker = Instana.startCapture(
                 url = redactedUrl,
                 requestHeaders = requestHeaders

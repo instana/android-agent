@@ -5,6 +5,7 @@
 
 package com.instana.android.core.util
 
+import okhttp3.Headers
 import okhttp3.Response
 import okio.Buffer
 import okio.GzipSource
@@ -23,4 +24,9 @@ fun Response.decodedContentLength(): Long? {
     }
 
     return buffer.size()
+}
+
+fun Headers.toMap(): Map<String, String> {
+    return this.toMultimap()
+        .mapValues { entry -> entry.value.joinToString(",") }
 }
