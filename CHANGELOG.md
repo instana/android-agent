@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 5.2.3
+
+_2022-08-03_
+
+- Fix issue with custom header capture and query parameters with no associated value
+
 ## Version 5.2.2
 
 _2022-07-05_
