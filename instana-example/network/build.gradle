@@ -3,11 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 32
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 30
+        targetSdkVersion 32
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
@@ -36,20 +36,24 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'androidx.core:core-ktx:1.3.1'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.core:core-ktx:1.8.0'
 
     // Network clients
-    api21Implementation 'com.squareup.okhttp3:okhttp:4.7.2'
-    api21Implementation("com.squareup.okhttp3:logging-interceptor:4.5.0")
+    api21Implementation 'com.squareup.okhttp3:okhttp:4.9.1'
+    api21Implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
     api21Implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     api21Implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    //noinspection GradleDependency
     api16Implementation 'com.squareup.okhttp3:okhttp:3.12.12'
+    //noinspection GradleDependency
     api16Implementation("com.squareup.okhttp3:logging-interceptor:3.12.12")
+    //noinspection GradleDependency
     api16Implementation 'com.squareup.retrofit2:retrofit:2.6.4'
+    //noinspection GradleDependency
     api16Implementation 'com.squareup.retrofit2:converter-gson:2.6.4'
 
-    testImplementation 'junit:junit:4.13'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 }

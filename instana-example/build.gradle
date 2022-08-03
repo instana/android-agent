@@ -1,6 +1,6 @@
 buildscript {
-    ext.agent_version = '5.2.0'
-    ext.kotlin_version = '1.7.0'
+    ext.kotlin_version = '1.7.10'
+    ext.agent_version = '5.2.2'
     repositories {
         google()
         mavenCentral()
