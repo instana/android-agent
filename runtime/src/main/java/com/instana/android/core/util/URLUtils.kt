@@ -12,13 +12,13 @@ class URLUtils {
 
             val redactedParams = originalQuery.split("&").map { param ->
                 val paramParts = param.split("=")
-                val paramName = paramParts[0]
-                val paramValue = paramParts[1]
+                val paramName = paramParts.elementAtOrNull(0)
+                val paramValue = paramParts.elementAtOrNull(1)
 
-                if (regex.any { reg -> reg.find(paramName) != null }) {
-                    "$paramName=$replacement"
-                } else {
-                    "$paramName=$paramValue"
+                when {
+                    paramName == null || paramValue == null -> param
+                    regex.any { reg -> reg.find(paramName) != null } -> "$paramName=$replacement"
+                    else -> "$paramName=$paramValue"
                 }
             }
             val redactedQuery = redactedParams.joinToString("&")

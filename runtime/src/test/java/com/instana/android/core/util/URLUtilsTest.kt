@@ -84,4 +84,30 @@ class URLUtilsTest {
         assertEquals("https://example.com?hidden2=$replacement&param2=2",
             URLUtils.redactURLQueryParams("https://example.com?hidden2=1&param2=2", replacement, regex))
     }
+
+    @Test
+    fun redactURLQueryParams_parameterWithoutValue() {
+        assertEquals("https://example.com",
+            URLUtils.redactURLQueryParams("https://example.com", replacement, regex))
+        assertEquals("https://example.com?param1",
+            URLUtils.redactURLQueryParams("https://example.com?param1", replacement, regex))
+        assertEquals("https://example.com?param1&param2=2",
+            URLUtils.redactURLQueryParams("https://example.com?param1&param2=2", replacement, regex))
+        assertEquals("https://example.com?password=$replacement",
+            URLUtils.redactURLQueryParams("https://example.com?password=1", replacement, regex))
+        assertEquals("https://example.com?password=$replacement&param2",
+            URLUtils.redactURLQueryParams("https://example.com?password=1&param2", replacement, regex))
+        assertEquals("https://example.com?param1&password=$replacement",
+            URLUtils.redactURLQueryParams("https://example.com?param1&password=2", replacement, regex))
+        assertEquals("https://example.com?key=$replacement&param2",
+            URLUtils.redactURLQueryParams("https://example.com?key=1&param2", replacement, regex))
+        assertEquals("https://example.com?secret=$replacement&param2",
+            URLUtils.redactURLQueryParams("https://example.com?secret=1&param2", replacement, regex))
+        assertEquals("https://example.com?secret1=1&param2#anchor",
+            URLUtils.redactURLQueryParams("https://example.com?secret1=1&param2#anchor", replacement, regex))
+        assertEquals("https://example.com?hidden1=$replacement&param2",
+            URLUtils.redactURLQueryParams("https://example.com?hidden1=1&param2", replacement, regex))
+        assertEquals("https://example.com?hidden2=$replacement&param2",
+            URLUtils.redactURLQueryParams("https://example.com?hidden2=1&param2", replacement, regex))
+    }
 }
