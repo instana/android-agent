@@ -18,7 +18,7 @@ object IgnoredClasses {
         Regex("com/instabug/library/.*"),
         Regex("com/newrelic/.*"),
         Regex("androidx/window/embedding/EmbeddingAdapter.*"),
-        )
+    )
 
     fun from(list: List<String>, logger: Logger): List<Regex> {
         return list.map { it.replace("\\.", "/") }
