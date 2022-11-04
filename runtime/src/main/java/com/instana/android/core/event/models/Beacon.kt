@@ -488,25 +488,25 @@ class Beacon private constructor(
     @Suppress("DuplicatedCode") // I rather duplicate a few lines of code and keep type safety
     override fun toString(): String {
         val sb = StringBuilder()
-        booleanMap.forEach {
+        for (it in booleanMap) {
             sb.append(it.key)
                 .append("\t")
                 .append(it.value)
                 .append("\n")
         }
-        intMap.forEach {
+        for (it in intMap) {
             sb.append(it.key)
                 .append("\t")
                 .append(it.value)
                 .append("\n")
         }
-        longMap.forEach {
+        for (it in longMap) {
             sb.append(it.key)
                 .append("\t")
                 .append(it.value)
                 .append("\n")
         }
-        stringMap.forEach {
+        for (it in stringMap) {
             sb.append(it.key)
                 .append("\t")
                 .append(it.value.escape())
@@ -551,7 +551,7 @@ class Beacon private constructor(
             return Beacon(BeaconType.SESSION_START, 0, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     view?.run { setView(this) }
-                    meta.forEach { setMeta(it.key, it.value) }
+                    for (it in meta) { setMeta(it.key, it.value) }
                 }
         }
 
@@ -579,10 +579,10 @@ class Beacon private constructor(
             return Beacon(BeaconType.HTTP_REQUEST, duration, appKey, sessionId, errorCount, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     view?.run { setView(this) }
-                    meta.forEach { setMeta(it.key, it.value) }
+                    for (it in meta) { setMeta(it.key, it.value) }
                     method?.run { setHttpCallMethod(this) }
                     setHttpCallUrl(url)
-                    headers.forEach { setHttpCallHeaders(it.key, it.value) }
+                    for (it in headers) { setHttpCallHeaders(it.key, it.value) }
                     responseCode?.run { setHttpCallStatus(this) }
                     encodedResponseSizeBytes?.run { setEncodedBodySize(this) }
                     decodedResponseSizeBytes?.run { setDecodedBodySize(this) }
@@ -604,7 +604,7 @@ class Beacon private constructor(
             return Beacon(BeaconType.VIEW_CHANGE, 0, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     setView(view)
-                    meta.forEach { setMeta(it.key, it.value) }
+                    for (it in meta) { setMeta(it.key, it.value) }
                 }
         }
 
@@ -627,7 +627,7 @@ class Beacon private constructor(
             return Beacon(BeaconType.CUSTOM, duration, appKey, sessionId, errorCount, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     view?.run { setView(this) }
-                    meta.forEach { setMeta(it.key, it.value) }
+                    for (it in meta) { setMeta(it.key, it.value) }
                     setCustomEventName(name)
                     setTimestamp(startTime)
                     backendTraceId?.run { setBackendTraceId(backendTraceId) }
@@ -648,7 +648,7 @@ class Beacon private constructor(
             return Beacon(BeaconType.CRASH, 0, "", sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     view?.run { setView(this) }
-                    meta.forEach { setMeta(it.key, it.value) }
+                    for (it in meta) { setMeta(it.key, it.value) }
                 }
         }
     }

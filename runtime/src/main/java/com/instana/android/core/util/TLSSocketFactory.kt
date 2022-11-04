@@ -5,11 +5,13 @@
 
 package com.instana.android.core.util
 
+import android.annotation.SuppressLint
 import java.io.IOException
 import java.net.InetAddress
 import java.net.Socket
 import java.net.UnknownHostException
 import java.security.KeyStore
+import java.security.cert.X509Certificate
 import javax.net.ssl.*
 
 class TLSSocketFactory : SSLSocketFactory() {
@@ -77,6 +79,22 @@ class TLSSocketFactory : SSLSocketFactory() {
             return trustManagerFactory.trustManagers
                 .mapNotNull { it as? X509TrustManager }
                 .firstOrNull()
+        }
+
+        fun newInsecureSocketFactory(): Pair<SSLSocketFactory, InsecureTrustAllManager> {
+            val insecureTrustAllManager = InsecureTrustAllManager()
+            val insecureSocketFactory = SSLContext.getInstance("TLS").apply {
+                init(null, arrayOf<TrustManager>(insecureTrustAllManager), null)
+            }.socketFactory
+
+            return Pair(insecureSocketFactory, insecureTrustAllManager)
+        }
+
+        @SuppressLint("CustomX509TrustManager")
+        class InsecureTrustAllManager : X509TrustManager {
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+            override fun checkClientTrusted(certs: Array<X509Certificate>, authType: String) = Unit
+            override fun checkServerTrusted(certs: Array<X509Certificate>, authType: String) = Unit
         }
     }
 }

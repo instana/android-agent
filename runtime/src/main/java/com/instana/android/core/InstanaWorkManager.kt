@@ -55,7 +55,7 @@ class InstanaWorkManager(
         Executors.newScheduledThreadPool(1).schedule({
             isInitialDelayComplete = true
             updateQueueItems(initialDelayQueue)
-            initialDelayQueue.forEach { queue(it) }
+            for (it in initialDelayQueue) { queue(it) }
             getWorkManager()?.run { flush(getBeaconsDirectory(), this) }
         }, config.initialBeaconDelayMs, TimeUnit.MILLISECONDS)
     }
@@ -70,7 +70,7 @@ class InstanaWorkManager(
             if (item.getView() == null) Instana.firstView?.run { item.setView(this) }
             if (item.getRooted() == null) Instana.deviceProfile.rooted?.run { item.setRooted(this) }
             if (item.getGooglePlayServicesMissing() == null) Instana.googlePlayServicesMissing?.run { item.setGooglePlayServicesMissing(this) }
-            Instana.meta.getAll().forEach {
+            for (it in Instana.meta.getAll()) {
                 if (item.getMeta(it.key) == null) item.setMeta(it.key, it.value)
             }
         }

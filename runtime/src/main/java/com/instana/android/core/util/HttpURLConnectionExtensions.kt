@@ -52,9 +52,13 @@ fun HttpURLConnection.errorMessageOrNull(): String? {
             responseCode
             null
         } catch (e: Exception) {
-            e.toString()
+            "responseCode - $e"
         }
-        compareValues(encodedResponseSizeOrNull(), 0) > 0 -> errorStream?.use { it.readCopy() }
+        compareValues(encodedResponseSizeOrNull(), 0) > 0 -> try {
+            errorStream?.use { it.readCopy() }
+        } catch (e: Exception) {
+            "errorStream - $e"
+        }
         else -> null
     }
 }
