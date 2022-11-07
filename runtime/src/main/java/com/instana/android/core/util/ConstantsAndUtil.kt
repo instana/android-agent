@@ -47,6 +47,12 @@ object ConstantsAndUtil {
                 client = OkHttpClient.Builder()
                     .sslSocketFactory(TLSSocketFactory(), trustManager)
                     .build()
+            } else if (Instana.config?.debugTrustInsecureReportingURL == true) {
+                val (insecureSocketFactory, insecureTrustAllManager) = TLSSocketFactory.newInsecureSocketFactory()
+                client = OkHttpClient.Builder()
+                    .sslSocketFactory(insecureSocketFactory, insecureTrustAllManager)
+                    .hostnameVerifier { _, _ -> true }
+                    .build()
             }
         }
         client ?: OkHttpClient()

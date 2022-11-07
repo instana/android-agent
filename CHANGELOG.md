@@ -1,6 +1,18 @@
 Changelog
 ==========
 
+## Version 5.2.4
+
+_2022-11-03_
+
+- Fix exception handling for closed stream in HttpURLConnection
+- Test purpose flag `debugTrustInsecureReportingURL` to allow self signed instana reporting url
+- Ignore `EmbeddingAdapter` during auto instrumentation
+- Remove usage of `Map.forEach` which not supported in lower platform
+- Drop invalid old beacons with keys not in use
+- Flag `initialSetupTimeoutMs` to wait for instana initialization if not in MainLooper
+- Improve instana-example to demonstrate how to enable instana based on current build type
+
 ## Version 5.2.3
 
 _2022-08-03_

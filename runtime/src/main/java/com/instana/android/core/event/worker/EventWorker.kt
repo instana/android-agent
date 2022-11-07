@@ -72,7 +72,13 @@ open class EventWorker(
                 .post(requestBody)
                 .build()
             val response = ConstantsAndUtil.client.newCall(request).execute()
-            if (response.isSuccessful.not()) {
+            if (response.isSuccessful) {
+                // success
+            } else if (response.code() == 400) {
+                // unknown key, delete beacon otherwise it will block new beacons
+                Logger.e("Failed to flush beacons to Instana with: Unknown key. reportingURL '$reportingURL', errorMessage '${response.message()}'")
+                return true
+            } else {
                 Logger.e("Failed to flush beacons to Instana with: reportingURL '$reportingURL', responseCode '${response.code()}', errorMessage '${response.message()}'")
             }
             response.isSuccessful

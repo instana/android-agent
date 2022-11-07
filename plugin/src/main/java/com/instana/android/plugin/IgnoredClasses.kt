@@ -17,6 +17,7 @@ object IgnoredClasses {
         Regex("com/google/firebase/.*"),
         Regex("com/instabug/library/.*"),
         Regex("com/newrelic/.*"),
+        Regex("androidx/window/embedding/EmbeddingAdapter.*"),
     )
 
     fun from(list: List<String>, logger: Logger): List<Regex> {

@@ -321,20 +321,43 @@ object Instana {
             return
         }
 
-        Handler(Looper.getMainLooper()).post {
-            this.workManager = InstanaWorkManager(config, app).also {
-                crashReporting = CrashService(app, it, config)
-                sessionService = SessionService(app, it, config)
-                customEvents = CustomEventService(
-                    context = app,
-                    manager = it,
-                    cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!!, //TODO don't force-cast
-                    tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!,
-                    config = config
-                ) //TODO don't force-cast
-                instrumentationService = InstrumentationService(app, it, config)
-                performanceService = PerformanceService(app, config.performanceMonitorConfig, lifeCycle!!) //TODO don't force-cast
-                viewChangeService = ViewChangeService(app, it, config)
+        val pthis = this
+        val runnable = object : Runnable {
+
+            @get:Synchronized
+            var isDone: Boolean = false
+                private set
+
+            @Synchronized
+            override fun run() {
+                pthis.workManager = InstanaWorkManager(config, app).also {
+                    val cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!! //TODO don't force-cast
+                    val tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!
+
+                    crashReporting = CrashService(app, it, config)
+                    sessionService = SessionService(app, it, config)
+                    customEvents = CustomEventService(app, it, cm, tm, config) //TODO don't force-cast
+                    instrumentationService = InstrumentationService(app, it, config)
+                    performanceService = PerformanceService(app, config.performanceMonitorConfig, lifeCycle!!) //TODO don't force-cast
+                    viewChangeService = ViewChangeService(app, it, config)
+                }
+                this.isDone = true
+                (this as Object).notifyAll()
+            }
+        }
+
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            runnable.run()
+        } else {
+            Handler(Looper.getMainLooper()).post(runnable)
+
+            synchronized(runnable) {
+                if (!runnable.isDone) {
+                    (runnable as Object).wait(config.initialSetupTimeoutMs)
+                }
+            }
+            if (!runnable.isDone) {
+                Logger.w("The initialization of Instana agent is not finished yet")
             }
         }
     }

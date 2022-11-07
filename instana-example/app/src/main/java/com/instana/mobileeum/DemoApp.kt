@@ -21,36 +21,51 @@ class DemoApp : Application() {
 //            enableStrictMode()
         }
         super.onCreate()
-        Instana.setup(
-            this,
-            InstanaConfig(
-                reportingURL = BuildConfig.INSTANA_REPORTING_URL,
-                key = BuildConfig.INSTANA_KEY
+
+        if (BuildConfig.INSTANA_REPORTING_URL.isNotBlank()) {
+            Instana.setup(
+                this,
+                InstanaConfig(
+                    reportingURL = BuildConfig.INSTANA_REPORTING_URL,
+                    key = BuildConfig.INSTANA_KEY
+                )
             )
-        )
-        Instana.userId = "1234567890"
-        Instana.userEmail = "instana@example.com"
-        Instana.userName = "instana android agent demo"
-        Instana.meta.put("testKey", "testValue")
-        Instana.ignoreURLs.add("""^.*google\.com$""".toRegex().toPattern())
-        Instana.captureHeaders.add("""^accept$""".toRegex(RegexOption.IGNORE_CASE).toPattern())
-        Instana.captureHeaders.add("""^accept-encoding$""".toRegex(RegexOption.IGNORE_CASE).toPattern())
-        Instana.captureHeaders.add("""^cache-control$""".toRegex(RegexOption.IGNORE_CASE).toPattern())
-        Instana.captureHeaders.add("""^content-encoding$""".toRegex(RegexOption.IGNORE_CASE).toPattern())
-        Instana.captureHeaders.add("""^content-type$""".toRegex(RegexOption.IGNORE_CASE).toPattern())
-        Instana.googlePlayServicesMissing =
-            GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS
+            Instana.userId = "1234567890"
+            Instana.userEmail = "instana@example.com"
+            Instana.userName = "instana android agent demo"
+            Instana.meta.put("testKey", "testValue")
+            Instana.ignoreURLs.add("""^.*google\.com$""".toRegex().toPattern())
+            Instana.captureHeaders.add("""^accept$""".toRegex(RegexOption.IGNORE_CASE).toPattern())
+            Instana.captureHeaders.add(
+                """^accept-encoding$""".toRegex(RegexOption.IGNORE_CASE).toPattern()
+            )
+            Instana.captureHeaders.add(
+                """^cache-control$""".toRegex(RegexOption.IGNORE_CASE).toPattern()
+            )
+            Instana.captureHeaders.add(
+                """^content-encoding$""".toRegex(RegexOption.IGNORE_CASE).toPattern()
+            )
+            Instana.captureHeaders.add(
+                """^content-type$""".toRegex(RegexOption.IGNORE_CASE).toPattern()
+            )
+            Instana.googlePlayServicesMissing =
+                GoogleApiAvailability.getInstance()
+                    .isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS
 
-        Instana.performanceService?.anrMonitor?.enabled = false
-        Instana.performanceService?.frameSkipMonitor?.enabled = false
-        Instana.performanceService?.lowMemoryMonitor?.enabled = false
+            Instana.performanceService?.anrMonitor?.enabled = false
+            Instana.performanceService?.frameSkipMonitor?.enabled = false
+            Instana.performanceService?.lowMemoryMonitor?.enabled = false
 
-        Instana.logLevel = Log.VERBOSE
-//        Instana.logger = object : Logger {
-//            override fun log(level: Int, tag: String, message: String, error: Throwable?) {
-//                Log.d("example", "intercepted Instana Android Agent log message: '$message'")
-//            }
-//        }
+            Instana.logLevel = Log.VERBOSE
+            // Instana.logger = object : Logger {
+            //     override fun log(level: Int, tag: String, message: String, error: Throwable?) {
+            //         Log.d("example", "intercepted Instana Android Agent log message: '$message'")
+            //     }
+            // }
+            Log.i("example", "Instana is enabled")
+        } else {
+            Log.i("example", "Instana is disabled")
+        }
     }
 
     private fun enableStrictMode() {

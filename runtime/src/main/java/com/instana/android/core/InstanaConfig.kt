@@ -46,7 +46,21 @@ class InstanaConfig
      * 	Enable or disable data collection and submission
      */
     var collectionEnabled: Boolean = true,
-    ) {
+
+    /*
+     * If Instana is not initialized on the main thread, the current thread will be blocked until
+     * Instana finished initialization, this timeout is the maximum time to wait in milliseconds.
+     * On the other hand, if Instana is initialized on main thread, then the setup function will
+     * just do all the initialization tasks, and this timeout will not be followed
+     */
+    val initialSetupTimeoutMs: Long = 1500,
+
+    /**
+     * For debug purpose only
+     * Do not verify https certificates of the reporting URL
+     */
+    val debugTrustInsecureReportingURL: Boolean = false
+) {
     /**
      * Configuration of the Instana Performance Monitoring Service
      */

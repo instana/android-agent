@@ -1,7 +1,23 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.instana.android-agent-plugin'
+
+println gradle.startParameter.taskRequests
+
+def buildType = gradle.startParameter.taskRequests.stream()
+        .flatMap { it.args.stream() }
+        .map { it.contains("Release") ? "Release" : it.contains("Debug") ? "Debug" : null}
+        .filter(Objects::nonNull)
+        .findFirst()
+
+buildType.ifPresent { println "buildType is ${it}" }
+
+def enableInstana = true
+//def enableInstana = buildType.orElse("").matches("Debug")
+if (enableInstana) {
+    println "instana> apply instana plugin"
+    apply plugin: 'com.instana.android-agent-plugin'
+}
 
 android {
     compileSdkVersion 32
@@ -11,11 +27,12 @@ android {
         versionName "5.0"
         versionCode 1
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
 
         def instanaProperties = new Properties()
         instanaProperties.load(new FileInputStream("$project.projectDir/instana.properties"))
-        buildConfigField 'String', 'INSTANA_KEY', "${instanaProperties["instana.key"]}"
-        buildConfigField 'String', 'INSTANA_REPORTING_URL', "${instanaProperties["instana.reportingURL"]}"
+        buildConfigField 'String', 'INSTANA_KEY', enableInstana ? "${instanaProperties["instana.key"]}" : '""'
+        buildConfigField 'String', 'INSTANA_REPORTING_URL', enableInstana ? "${instanaProperties["instana.reportingURL"]}" : '""'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -96,7 +113,8 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.12.0'
 
     // Instana Agent
-    implementation "com.instana:android-agent-runtime:$agent_version"
+    // implementation "com.instana:android-agent-runtime:$agent_version"
+    implementation project(':runtime')
 
     // Check for Google Play Services availability
     implementation 'com.google.android.gms:play-services-basement:18.1.0'
@@ -111,10 +129,13 @@ dependencies {
     implementation 'com.github.chuckerteam.chucker:library:3.5.2'
 }
 
-instana {
-    enableWeaving = true
-    ignoreClassesRegex = ['com\\.library\\.to\\.ignore\\..*']
-    logVisits = true
-    logInstrumentation = true
-    logTimeSpent = true
+if (enableInstana) {
+    println "instana> plugin configuration"
+    instana {
+        enableWeaving = true
+        ignoreClassesRegex = ['com\\.library\\.to\\.ignore\\..*']
+        logVisits = true
+        logInstrumentation = true
+        logTimeSpent = true
+    }
 }
