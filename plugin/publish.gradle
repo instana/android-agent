@@ -81,10 +81,11 @@ signing {
 
     if (file.exists()) {
         props.load(new FileInputStream("$rootDir/publish.properties"))
-        def signingKeyId = props['signing.keyId']
-        def signingKey = props['signing.secretASCIIArmoredKey']
-        def signingPassword = props['signing.password']
-        useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        // def signingKeyId = props['signing.keyId']
+        def signingKey = (new File(props['signing.file.secretASCIIArmoredKey'])).text
+        def signingPassword = (new File(props['signing.file.password'])).text.trim()
+        // useInMemoryPgpKeys(signingKeyId, signingKey, signingPassword)
+        useInMemoryPgpKeys(signingKey, signingPassword)
     } else {
         logger.warn('Signing will be skipped: invalid signing config')
         required false

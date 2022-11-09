@@ -12,8 +12,8 @@
 #   example.key=This was built in a ${ENV_VAR_NAME} machine.
 #
 signing.keyId=${PGP_KEY_ID}
-signing.password=${PGP_KEY_PASSWORD}
-signing.secretASCIIArmoredKey=${PGP_KEY}
+signing.file.password=${PGP_KEY_PASSWORD_FILE}
+signing.file.secretASCIIArmoredKey=${PGP_KEY_FILE}
 authentication.ossrh.username=${OSSRH_USERNAME}
 authentication.ossrh.password=${OSSRH_PASSWORD}
 sonatypeStagingProfileId=${OSSRH_STAG_PROFILE_ID}
