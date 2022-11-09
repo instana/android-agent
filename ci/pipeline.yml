@@ -23,8 +23,8 @@ android-agent-git-repo-releasetag: &android-agent-git-repo-releasetag
   tag_filter: "release*"
 
 android-agent-github-com-repo-master: &android-agent-github-com-repo-master
-  uri: https://github.ibm.com/lsrlibj/android-agent.git
-  username: ((ibm-github-e-api-token))
+  uri: https://github.com/instana/android-agent.git
+  username: ((instanacd-github-api-token))
   password: x-oauth-basic
   branch: master
 

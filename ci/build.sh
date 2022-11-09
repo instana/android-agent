@@ -4,7 +4,7 @@ set -o pipefail
 set -x
 
 
-echo skip to debug push_github_com job 3
+echo "[NOTE] disable new publishment until next release"
 exit 0
 
 apk add --no-progress gettext
