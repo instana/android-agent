@@ -4,9 +4,6 @@ set -o pipefail
 set -x
 
 
-echo "[NOTE] disable new publishment until next release"
-exit 0
-
 apk add --no-progress gettext
 which envsubst
 
@@ -56,7 +53,7 @@ envsubst < publish.properties.example > publish.properties
 
 ls -lh
 
-echo "[NOTE] disable new publishment until we got the pipeline PR fully merged!"
+echo "[NOTE] disable new publishment until next release tag"
 # echo Publish Instana Android Plugin and Agent
 # ./gradlew --stacktrace publish closeAndReleaseRepository
 
