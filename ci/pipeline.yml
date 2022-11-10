@@ -16,15 +16,15 @@ android-agent-git-repo-notagfilter: &android-agent-git-repo-notagfilter
   uri: https://github.ibm.com/instana/android-agent.git
   username: ((ibm-github-e-api-token))
   password: x-oauth-basic
-  branch: ci_pipeline
+  branch: master
 
 android-agent-git-repo-releasetag: &android-agent-git-repo-releasetag
   <<: *android-agent-git-repo-notagfilter
   tag_filter: "release*"
 
 android-agent-github-com-repo-master: &android-agent-github-com-repo-master
-  uri: https://github.ibm.com/lsrlibj/android-agent.git
-  username: ((ibm-github-e-api-token))
+  uri: https://github.com/instana/android-agent.git
+  username: ((instanacd-github-api-token))
   password: x-oauth-basic
   branch: master
 
@@ -53,7 +53,7 @@ jobs:
       - set_pipeline: self
         file: android-agent-source-notagfilter/ci/pipeline.yml
         vars:
-          branch: ci_pipeline
+          branch: master
           ibm-github-e-api-token: ((ibm-github-e-api-token))
 
   - name: build-publish
