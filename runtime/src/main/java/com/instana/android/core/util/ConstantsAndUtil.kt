@@ -41,6 +41,7 @@ object ConstantsAndUtil {
     val client: OkHttpClient by lazy {
         var client: OkHttpClient? = null
         if (Instana.config?.debugTrustInsecureReportingURL == true) {
+            Logger.w("debugTrustInsecureReportingURL is on, this option allows instana to report data even for server connections otherwise considered insecure.")
             val (insecureSocketFactory, insecureTrustAllManager) = TLSSocketFactory.newInsecureSocketFactory()
             client = OkHttpClient.Builder()
                 .sslSocketFactory(insecureSocketFactory, insecureTrustAllManager)
