@@ -16,15 +16,13 @@ import com.instana.android.core.util.Debouncer
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.RateLimiter
 import com.instana.android.core.util.isDirectoryEmpty
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingDeque
+import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -49,10 +47,11 @@ class InstanaWorkManager(
     private var beaconsDirectory: File? = null
     private var initialDelayQueue: Queue<Beacon> = LinkedBlockingDeque()
     private var isInitialDelayComplete = false
+    private val initialExecutorFuture: ScheduledFuture<*>
 
     init {
         constraints = configureWorkManager(config)
-        Executors.newScheduledThreadPool(1).schedule({
+        initialExecutorFuture = Executors.newScheduledThreadPool(1).schedule({
             isInitialDelayComplete = true
             updateQueueItems(initialDelayQueue)
             for (it in initialDelayQueue) { queue(it) }
@@ -145,18 +144,22 @@ class InstanaWorkManager(
         if (directory.isDirectoryEmpty()) return
 
         flushDebouncer.enqueue {
-            val tag = directory.absolutePath
-            manager.enqueueUniqueWork(
-                tag,
-                ExistingWorkPolicy.REPLACE,
-                EventWorker.createWorkRequest(
-                    constraints = constraints,
-                    directory = directory,
-                    initialDelayMs = flushDelayMs,
-                    tag = tag
-                )
-            )
+            flushInternal(directory, manager)
         }
+    }
+
+    private fun flushInternal(directory: File, manager: WorkManager): Operation {
+        val tag = directory.absolutePath
+        return manager.enqueueUniqueWork(
+            tag,
+            ExistingWorkPolicy.REPLACE,
+            EventWorker.createWorkRequest(
+                constraints = constraints,
+                directory = directory,
+                initialDelayMs = flushDelayMs,
+                tag = tag
+            )
+        )
     }
 
     @Synchronized
@@ -178,6 +181,43 @@ class InstanaWorkManager(
                             Logger.e("Failed to persist beacon in file-system. Dropping beacon: $beacon", e)
                         }
                     }
+                }
+            }
+        }
+    }
+
+    @Synchronized
+    fun queueAndFlushBlocking(beacon: Beacon) {
+        val beaconId = beacon.getBeaconId()
+        Logger.d("Blocking Queue beacon with: `beaconId` $beaconId")
+
+        if (beaconId.isNullOrBlank()) {
+            Logger.e("Tried to queue beacon with no beaconId: $beacon")
+            return
+        }
+
+        runBlocking {
+            withContext(Dispatchers.IO) {
+                try {
+                    val file = File(getBeaconsDirectory(), beaconId)
+                    file.writeText(beacon.toString(), Charsets.UTF_8)
+                } catch (e: IOException) {
+                    Logger.e("Failed to persist beacon in file-system. Dropping beacon: $beacon", e)
+                }
+                try {
+                    if (!initialExecutorFuture.isDone) {
+                        initialExecutorFuture.get()
+                    }
+                } catch (e: IOException) {
+                    Logger.e("Failed to flush initial beacons", e)
+                }
+                try {
+                    getWorkManager()?.run {
+                        Logger.i("Enqueue beacon flushing task")
+                        flushInternal(getBeaconsDirectory(), this).result.get(1500, TimeUnit.MILLISECONDS)
+                    }
+                } catch (e: IOException) {
+                    Logger.e("Failed to enqueue flushing task", e)
                 }
             }
         }

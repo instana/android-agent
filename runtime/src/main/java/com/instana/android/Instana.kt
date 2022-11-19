@@ -334,7 +334,7 @@ object Instana {
                     val cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!! //TODO don't force-cast
                     val tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!
 
-                    crashReporting = CrashService(app, it, config)
+                    crashReporting = CrashService(app, it, config, cm, tm)
                     sessionService = SessionService(app, it, config)
                     customEvents = CustomEventService(app, it, cm, tm, config) //TODO don't force-cast
                     instrumentationService = InstrumentationService(app, it, config)
