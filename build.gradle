@@ -2,7 +2,7 @@ apply from: 'publish.gradle'
 
 buildscript {
     ext.kotlin_version = '1.4.30'
-    ext.agent_version = '5.2.4'
+    ext.agent_version = '5.2.5-alpha'
     ext.buildtools_version = '4.0.0'
     repositories {
         google()

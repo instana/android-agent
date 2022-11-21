@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 5.2.5-alpha
+
+_2022-11-21_
+
+- catch unhandled exception and report crash beacon if `enableCrashReporting = true` (default is false)
+- fix `debugTrustInsecureReportingURL` to support all Android version
+
 ## Version 5.2.4
 
 _2022-11-03_
