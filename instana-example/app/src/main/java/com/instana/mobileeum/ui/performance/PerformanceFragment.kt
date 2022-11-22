@@ -41,6 +41,22 @@ class PerformanceFragment : Fragment() {
             waitingResponse = true
             viewModel.forceANR()
         }
+        root.unhandledException.setOnClickListener {
+            waitingResponse = true
+            viewModel.forceUnhandledException()
+        }
+        root.unhandledExceptionRunBlocking.setOnClickListener {
+            waitingResponse = true
+            viewModel.forceUnhandledExceptionInCoroutineBlocking()
+        }
+        root.unhandledExceptionGlobalScope.setOnClickListener {
+            waitingResponse = true
+            viewModel.forceUnhandledExceptionInGlobalScope()
+        }
+        root.unhandledExceptionMainLooper.setOnClickListener {
+            waitingResponse = true
+            viewModel.forceUnhandledExceptionInMainLooper()
+        }
 
         // Status
         viewModel.response.observe(viewLifecycleOwner, Observer {

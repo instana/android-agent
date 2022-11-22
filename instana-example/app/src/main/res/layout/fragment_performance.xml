@@ -37,6 +37,34 @@
             android:layout_marginTop="16dp"
             android:text="Force ANR" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/unhandledException"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Force Unhandled EX" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/unhandledExceptionRunBlocking"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Force Unhandled EX (runBlocking)" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/unhandledExceptionGlobalScope"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Force Unhandled EX (GlobalScope)" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/unhandledExceptionMainLooper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Force Unhandled EX (MainLooper)" />
+
         <TextView
             android:id="@+id/status"
             android:layout_width="match_parent"

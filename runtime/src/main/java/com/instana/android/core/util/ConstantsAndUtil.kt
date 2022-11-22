@@ -40,18 +40,19 @@ object ConstantsAndUtil {
 
     val client: OkHttpClient by lazy {
         var client: OkHttpClient? = null
-        if (Build.VERSION.SDK_INT < 20) {
+        if (Instana.config?.debugTrustInsecureReportingURL == true) {
+            Logger.w("debugTrustInsecureReportingURL is on, this option allows instana to report data even for server connections otherwise considered insecure.")
+            val (insecureSocketFactory, insecureTrustAllManager) = TLSSocketFactory.newInsecureSocketFactory()
+            client = OkHttpClient.Builder()
+                .sslSocketFactory(insecureSocketFactory, insecureTrustAllManager)
+                .hostnameVerifier { _, _ -> true }
+                .build()
+        } else if (Build.VERSION.SDK_INT < 20) {
             // Enable TLSv1.2 support: https://developer.android.com/reference/javax/net/ssl/SSLSocket.html#protocols
             val trustManager = TLSSocketFactory.getTrustManagers()
             if (trustManager != null) {
                 client = OkHttpClient.Builder()
                     .sslSocketFactory(TLSSocketFactory(), trustManager)
-                    .build()
-            } else if (Instana.config?.debugTrustInsecureReportingURL == true) {
-                val (insecureSocketFactory, insecureTrustAllManager) = TLSSocketFactory.newInsecureSocketFactory()
-                client = OkHttpClient.Builder()
-                    .sslSocketFactory(insecureSocketFactory, insecureTrustAllManager)
-                    .hostnameVerifier { _, _ -> true }
                     .build()
             }
         }

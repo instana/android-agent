@@ -47,6 +47,8 @@ class InstanaConfig
      */
     var collectionEnabled: Boolean = true,
 
+    val enableCrashReporting: Boolean = false,
+
     /*
      * If Instana is not initialized on the main thread, the current thread will be blocked until
      * Instana finished initialization, this timeout is the maximum time to wait in milliseconds.
@@ -65,7 +67,6 @@ class InstanaConfig
      * Configuration of the Instana Performance Monitoring Service
      */
     var performanceMonitorConfig: PerformanceMonitorConfig = PerformanceMonitorConfig()
-    val enableCrashReporting: Boolean = false
     val breadcrumbsBufferSize: Int = 20
 
     /**

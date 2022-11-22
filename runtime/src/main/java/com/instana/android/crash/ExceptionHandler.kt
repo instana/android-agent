@@ -8,6 +8,7 @@ package com.instana.android.crash
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.RestrictTo
+import com.instana.android.core.util.Logger
 import java.lang.Thread.UncaughtExceptionHandler
 
 /**
@@ -39,6 +40,7 @@ class ExceptionHandler(
                 crashService.submitCrash(thread, throwable)
             }
         }
+        Logger.i("Handover control to default Exception Handler")
         originalHandler.uncaughtException(thread, throwable)
     }
 }

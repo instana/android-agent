@@ -485,6 +485,13 @@ class Beacon private constructor(
         stringMap["st"] = value.truncate(16384, "StackTrace")
     }
 
+    /**
+     * A stacktrace of active threads.
+     */
+    fun setAllStackTraces(@Size(max = 5242880) value: String) {
+        stringMap["ast"] = value.truncate(5242880, "AllStackTraces")
+    }
+
     @Suppress("DuplicatedCode") // I rather duplicate a few lines of code and keep type safety
     override fun toString(): String {
         val sb = StringBuilder()
@@ -636,19 +643,26 @@ class Beacon private constructor(
         }
 
         fun newCrash(
+            appKey: String,
             appProfile: AppProfile,
             deviceProfile: DeviceProfile,
             connectionProfile: ConnectionProfile,
             userProfile: UserProfile,
             sessionId: String,
             view: String?,
-            meta: Map<String, String>
+            meta: Map<String, String>,
+            error: String?,
+            stackTrace: String?,
+            allStackTraces: String?
         ): Beacon {
             // TODO might need to set batchSize
-            return Beacon(BeaconType.CRASH, 0, "", sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
+            return Beacon(BeaconType.CRASH, 0, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     view?.run { setView(this) }
                     for (it in meta) { setMeta(it.key, it.value) }
+                    error?.run { setErrorMessage(this) }
+                    stackTrace?.run { setStackTrace(this) }
+                    allStackTraces?.run { setAllStackTraces(this) }
                 }
         }
     }

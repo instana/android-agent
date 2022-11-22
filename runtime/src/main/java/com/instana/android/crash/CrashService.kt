@@ -6,10 +6,18 @@
 package com.instana.android.crash
 
 import android.app.Application
+import android.net.ConnectivityManager
+import android.telephony.TelephonyManager
 import android.util.Log
+import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
-import com.instana.android.core.util.ConstantsAndUtil.getAppVersionNameAndVersionCode
+import com.instana.android.core.event.models.Beacon
+import com.instana.android.core.event.models.ConnectionProfile
+import com.instana.android.core.util.ConstantsAndUtil
+import com.instana.android.core.util.ThreadUtil
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.lang.Thread.currentThread
 import java.util.*
 import java.util.concurrent.LinkedBlockingDeque
@@ -21,9 +29,12 @@ class CrashService(
     private val app: Application,
     private val manager: InstanaWorkManager,
     private val config: InstanaConfig,
+    private val cm: ConnectivityManager,
+    private val tm: TelephonyManager,
     defaultThreadHandler: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler()
 ) {
 
+    private val appKey = config.key
     private var breadCrumbs: Queue<String> = LinkedBlockingDeque()
     private var handler: ExceptionHandler? = null
 
@@ -46,47 +57,63 @@ class CrashService(
     }
 
     fun submitCrash(thread: Thread?, throwable: Throwable?) {
-        val breadCrumbsCopy = breadCrumbs.toList()
+        // val breadCrumbsCopy = breadCrumbs.toList()
         val stackTrace = Log.getStackTraceString(throwable)
 
-        val stackTraces = Thread.getAllStackTraces()
+        val allStackTraces = dumpAllThreads(thread, throwable)
 
-        if (!stackTraces.containsKey(thread)) {
-            stackTraces[thread] = thread?.stackTrace
-        }
+        // val (versionCode: String, version: String) = ConstantsAndUtil.getAppVersionNameAndVersionCode(app)
 
-        if (throwable != null) { // unhandled errors use the exception trace
-            stackTraces[thread] = throwable.stackTrace
-        }
+        // val reportedMeta: Map<String, String> = emptyMap()
+        // val mergedMeta = Instana.meta.clone().apply { putAll(reportedMeta) }
+        val mergedMeta = Instana.meta
 
-        val threadList = getAppThreads()
-        val appStackTraces = getStackTracesFor(threadList)
+        val connectionProfile = ConnectionProfile(
+            carrierName = ConstantsAndUtil.getCarrierName(app, cm, tm),
+            connectionType = ConstantsAndUtil.getConnectionType(app, cm),
+            effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(app, cm, tm)
+        )
+        val errorMessage = if (throwable?.message?.isNotBlank() == true) {
+            "${throwable.javaClass.name} (${throwable.message})"
+        } else throwable?.javaClass?.name
 
-        val (versionCode: String, version: String) = getAppVersionNameAndVersionCode(app)
-
-        // TODO send crash
+        // send crash
+        val beacon = Beacon.newCrash(
+            appKey = appKey,
+            appProfile = Instana.appProfile,
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = connectionProfile,
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId ?: "",
+            view = null,
+            meta = mergedMeta.getAll(),
+            error = errorMessage,
+            stackTrace = stackTrace,
+            allStackTraces = allStackTraces,
+        )
+        manager.queueAndFlushBlocking(beacon)
 
         breadCrumbs.clear()
     }
 
-    private fun getStackTracesFor(threadList: Array<Thread?>): HashMap<String, String> {
-        val traces = hashMapOf<String, String>()
-        threadList.forEach { thread ->
-            thread?.let { notNull ->
-                val trace = notNull.stackTrace.map { it.toString() }.toString()
-                traces.put(notNull.name, trace)
-            }
-        }
-        return traces
-    }
+    private fun dumpAllThreads(crashedThread: Thread?, throwable: Throwable?): String {
+        val stackTraces = Thread.getAllStackTraces()
 
-    private fun getAppThreads(): Array<Thread?> {
-        val rootGroup = currentThread().threadGroup ?: return emptyArray()
-
-        var threadList = arrayOfNulls<Thread>(rootGroup.activeCount())
-        while (rootGroup.enumerate(threadList, false) == threadList.size) {
-            threadList = arrayOfNulls(threadList.size * 2)
+        if (!stackTraces.containsKey(crashedThread)) {
+            stackTraces[crashedThread] = crashedThread?.stackTrace
         }
-        return threadList
+
+        if (throwable != null) { // unhandled errors use the exception trace
+            stackTraces[crashedThread] = throwable.stackTrace
+        }
+
+        // val threadList = getAppThreads()
+        // val appStackTraces = getStackTracesFor(threadList)
+
+        val sw = StringWriter()
+        val pw = PrintWriter(sw)
+        stackTraces.forEach { (t, u) -> ThreadUtil.println(pw, t, u) }
+        pw.flush()
+        return sw.toString()
     }
 }
