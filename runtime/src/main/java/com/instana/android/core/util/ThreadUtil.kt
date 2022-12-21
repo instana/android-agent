@@ -14,7 +14,7 @@ object ThreadUtil {
 
     fun getStackTracesFor(threadList: Array<Thread?>): HashMap<String, String> {
         val traces = hashMapOf<String, String>()
-        threadList.forEach { thread ->
+        for (thread in threadList) {
             thread?.let { notNull ->
                 val trace = notNull.stackTrace.map { it.toString() }.toString()
                 traces.put(notNull.name, trace)
@@ -46,7 +46,7 @@ object ThreadUtil {
         out.print(thread.state.name)
         out.println()
 
-        stackTrace.forEach { st ->
+        for (st in stackTrace) {
             out.print("    ")
             out.print(st.className)
             out.print(".")
