@@ -112,7 +112,7 @@ class CrashService(
 
         val sw = StringWriter()
         val pw = PrintWriter(sw)
-        stackTraces.forEach { (t, u) -> ThreadUtil.println(pw, t, u) }
+        for ((t, u) in stackTraces) { ThreadUtil.println(pw, t, u) }
         pw.flush()
         return sw.toString()
     }
