@@ -26,7 +26,6 @@ class DemoApp : Application() {
             Instana.setup(this, InstanaConfig(
                 reportingURL = BuildConfig.INSTANA_REPORTING_URL,
                 key = BuildConfig.INSTANA_KEY,
-                enableCrashReporting = true,
                 debugTrustInsecureReportingURL = true
             ))
             Instana.userId = "1234567890"

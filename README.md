@@ -119,7 +119,7 @@ You can use *manual tracking* to add support for any client yourself, or please 
 
 The configuration described in `Step 3` is the minimum configuration you must provide to Instana Agent to function. 
 
-Please check for additional options in the [Android API documentation](https://docs.instana.io/products/mobile_app_monitoring/android_api/).
+Please check for additional options in the [Android API documentation](https://www.ibm.com/docs/en/instana-observability/current?topic=monitoring-android-api).
 
 ## Examples
 
