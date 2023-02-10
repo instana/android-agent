@@ -1,6 +1,10 @@
 Changelog
 ==========
 
+_2023-02-10_
+
+- Upgrade android-agent runtime compileSdk version to 31
+
 ## Version 5.2.5-beta
 
 _2022-11-21_
