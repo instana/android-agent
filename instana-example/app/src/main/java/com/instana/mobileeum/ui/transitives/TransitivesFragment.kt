@@ -14,15 +14,18 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.instana.mobileeum.R
+import com.instana.mobileeum.databinding.FragmentTransitivesBinding
 import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_transitives.view.*
 
 class TransitivesFragment : Fragment() {
 
     private lateinit var viewModel: TransitivesViewModel
     private var waitingResponse = false
+
+    private var _binding: FragmentTransitivesBinding? = null
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,33 +33,39 @@ class TransitivesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         viewModel = ViewModelProvider(this).get(TransitivesViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_transitives, container, false)
+        _binding = FragmentTransitivesBinding.inflate(inflater, container, false)
+        val root = binding.root
 
         // Trigger libraries with traced transitive dependencies
-        root.retrofit.setOnClickListener {
+        binding.retrofit.setOnClickListener {
             waitingResponse = true
             viewModel.executeRetrofitRequest()
         }
-        root.picasso.setOnClickListener {
+        binding.picasso.setOnClickListener {
             Picasso.get()
                 .load("https://picsum.photos/300/300")
                 .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
-                .into(root.picasso_image)
+                .into(binding.picassoImage)
         }
-        root.glide.setOnClickListener {
+        binding.glide.setOnClickListener {
             Glide.with(this)
                 .load("https://picsum.photos/300/300")
                 .skipMemoryCache(true)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .into(root.glide_image)
+                .into(binding.glideImage)
         }
 
         // Handle asynchronous responses
         viewModel.response.observe(viewLifecycleOwner, Observer {
-            root.status.text = it
-            if (waitingResponse) root.scrollView.fullScroll(View.FOCUS_DOWN)
+            binding.status.text = it
+            if (waitingResponse) binding.scrollView.fullScroll(View.FOCUS_DOWN)
         })
 
         return root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

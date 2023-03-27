@@ -14,6 +14,7 @@ import android.os.Looper
 import android.telephony.TelephonyManager
 import androidx.annotation.RequiresApi
 import androidx.annotation.Size
+import androidx.annotation.VisibleForTesting
 import com.instana.android.android.agent.BuildConfig
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaLifeCycle
@@ -50,7 +51,8 @@ import kotlin.properties.Delegates
 object Instana {
 
     private var app: Application? = null
-    private var workManager: InstanaWorkManager? = null
+    @VisibleForTesting
+    internal var workManager: InstanaWorkManager? = null
     private var sessionService: SessionService? = null
     private var lifeCycle: InstanaLifeCycle? = null
 

@@ -16,7 +16,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
-@Config(minSdk = 21, maxSdk = 28)
+@Config(minSdk = 31, maxSdk = 31)
 abstract class BaseTest {
     internal val app = ApplicationProvider.getApplicationContext<Application>()
     internal val mockWorkManager = mock<InstanaWorkManager>()

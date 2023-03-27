@@ -5,17 +5,10 @@
 
 package com.instana.android
 
-import androidx.work.testing.WorkManagerTestInitHelper
 import com.instana.android.core.InstanaConfig
 import org.junit.Test
 
 class InstanaShould : BaseTest() {
-
-    // TODO depending on the order in which these tests are run, it could be that `getInstrumentationService` sets up the agent and `getCrashReporting` doesn't. But `getCrashReporting` will still succeed
-
-    init {
-        WorkManagerTestInitHelper.initializeTestWorkManager(app)
-    }
 
     @Test
     fun init() {

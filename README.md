@@ -11,7 +11,7 @@
 - Android 4.1+ (API level 16+) 
 - Java 8+ 
 - AndroidX
-- targetSdk 31+
+- targetSdk 33+
 
 ## Getting started
 

@@ -45,8 +45,8 @@ class InstanaWorkManager(
 
     private val constraints: Constraints
     private var beaconsDirectory: File? = null
-    private var initialDelayQueue: Queue<Beacon> = LinkedBlockingDeque()
-    private var isInitialDelayComplete = false
+    internal var initialDelayQueue: Queue<Beacon> = LinkedBlockingDeque()
+    internal var isInitialDelayComplete = false
     private val initialExecutorFuture: ScheduledFuture<*>
 
     init {
@@ -87,7 +87,7 @@ class InstanaWorkManager(
     @VisibleForTesting
     internal fun getWorkManager(): WorkManager? {
         try {
-            return WorkManager.getInstance()
+            return WorkManager.getInstance(context)
         } catch (e: IllegalStateException) {
             Logger.e("WorkManager has not been properly initialized. Please check your code and your dependencies for similar issues", e)
         }
@@ -96,7 +96,7 @@ class InstanaWorkManager(
             .build()
         return try {
             WorkManager.initialize(context, config)
-            WorkManager.getInstance()
+            WorkManager.getInstance(context)
         } catch (e: Throwable) {
             Logger.e("Instana Agent failed to initialize WorkManager. Beacons will not be sent until the issue is solved", e)
             null

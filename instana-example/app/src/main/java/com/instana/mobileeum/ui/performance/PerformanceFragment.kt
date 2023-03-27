@@ -12,13 +12,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.instana.mobileeum.R
-import kotlinx.android.synthetic.main.fragment_performance.view.*
+import com.instana.mobileeum.databinding.FragmentPerformanceBinding
 
 class PerformanceFragment : Fragment() {
 
     private lateinit var viewModel: PerformanceViewModel
     private var waitingResponse = false
+
+    private var _binding: FragmentPerformanceBinding? = null
+    // This property is only valid between onCreateView and onDestroyView.
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,44 +29,50 @@ class PerformanceFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         viewModel = ViewModelProvider(this).get(PerformanceViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_performance, container, false)
+        _binding = FragmentPerformanceBinding.inflate(inflater, container, false)
+        val root = binding.root
 
         // Actions
-        root.lowMemory.setOnClickListener {
+        binding.lowMemory.setOnClickListener {
             waitingResponse = true
             viewModel.forceLowMemory(requireActivity().application)
         }
-        root.frameSkip.setOnClickListener {
+        binding.frameSkip.setOnClickListener {
             waitingResponse = true
             viewModel.forceFrameSkip()
         }
-        root.anr.setOnClickListener {
+        binding.anr.setOnClickListener {
             waitingResponse = true
             viewModel.forceANR()
         }
-        root.unhandledException.setOnClickListener {
+        binding.unhandledException.setOnClickListener {
             waitingResponse = true
             viewModel.forceUnhandledException()
         }
-        root.unhandledExceptionRunBlocking.setOnClickListener {
+        binding.unhandledExceptionRunBlocking.setOnClickListener {
             waitingResponse = true
             viewModel.forceUnhandledExceptionInCoroutineBlocking()
         }
-        root.unhandledExceptionGlobalScope.setOnClickListener {
+        binding.unhandledExceptionGlobalScope.setOnClickListener {
             waitingResponse = true
             viewModel.forceUnhandledExceptionInGlobalScope()
         }
-        root.unhandledExceptionMainLooper.setOnClickListener {
+        binding.unhandledExceptionMainLooper.setOnClickListener {
             waitingResponse = true
             viewModel.forceUnhandledExceptionInMainLooper()
         }
 
         // Status
         viewModel.response.observe(viewLifecycleOwner, Observer {
-            root.status.text = it
-            if (waitingResponse) root.scrollView.fullScroll(View.FOCUS_DOWN)
+            binding.status.text = it
+            if (waitingResponse) binding.scrollView.fullScroll(View.FOCUS_DOWN)
         })
 
         return root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

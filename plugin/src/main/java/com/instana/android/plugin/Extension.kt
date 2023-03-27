@@ -8,7 +8,6 @@ package com.instana.android.plugin
 import org.gradle.api.logging.Logger
 
 open class Extension {
-    var enableWeaving = true
     var ignoreClassesRegex = emptyList<String>()
     var logTimeSpent = true
     var logVisits = false
@@ -20,7 +19,6 @@ open class Extension {
 }
 
 fun Logger.logAll(ext:Extension){
-    debug("Plugin configuration enableWeaving: ${ext.enableWeaving}")
     debug("Plugin configuration ignoreClassesRegex: ${ext.ignoreClassesRegex}")
     debug("Plugin configuration logTimeSpent: ${ext.logTimeSpent}")
     debug("Plugin configuration logVisits: ${ext.logVisits}")

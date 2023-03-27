@@ -5,39 +5,35 @@
 
 package com.instana.android.core.event
 
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import androidx.work.testing.WorkManagerTestInitHelper
 import com.instana.android.BaseTest
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.*
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import org.junit.Ignore
+import org.junit.Assert.*
 import org.junit.Test
-import org.mockito.Mockito.`when`
 import java.util.*
 
 
 class InstanaWorkManagerShould : BaseTest() {
 
-    private val mockManager = mock<WorkManager>()
-
     private var manager: InstanaWorkManager
 
     init {
-        WorkManagerTestInitHelper.initializeTestWorkManager(app)
         manager = InstanaWorkManager(InstanaConfig(API_KEY, SERVER_URL, initialBeaconDelayMs = 0), app)
-        `when`(manager.getWorkManager()).thenReturn(mockManager)
     }
 
     @Test
-    @Ignore
     fun addEventToManager() {
-        manager.queue(createBeacon("url", "method", 10L, 200, "name"))
-        verify(mockManager).enqueueUniqueWork(any(), any(), any<OneTimeWorkRequest>())
+        Thread.sleep(200)
+        assertTrue(manager.isInitialDelayComplete)
+
+        val beacon = createBeacon("url", "method", 10L, 200, "name")
+
+        manager.isInitialDelayComplete = false
+        manager.queue(beacon)
+
+        val delayQueueItem = manager.initialDelayQueue.peek()
+        assertNotNull("initialDelayQueue should not be empty", delayQueueItem)
     }
 
     private fun createBeacon(url: String, method: String, duration: Long, responseCode: Int, view: String) =

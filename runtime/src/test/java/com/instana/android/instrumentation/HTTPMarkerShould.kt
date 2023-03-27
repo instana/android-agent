@@ -5,13 +5,12 @@
 
 package com.instana.android.instrumentation
 
-import androidx.work.testing.WorkManagerTestInitHelper
 import com.instana.android.BaseTest
 import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.nhaarman.mockitokotlin2.*
-import junit.framework.Assert.assertNotNull
+import org.junit.Assert.assertNotNull
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
@@ -24,10 +23,6 @@ class HTTPMarkerShould : BaseTest() {
 
     private val mockManager = mock<InstanaWorkManager>()
     private val config = InstanaConfig(API_KEY, SERVER_URL)
-
-    init {
-        WorkManagerTestInitHelper.initializeTestWorkManager(app)
-    }
 
     @Before
     fun setUp() {

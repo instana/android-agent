@@ -1,6 +1,16 @@
 Changelog
 ==========
 
+## Version 6.0.0
+
+_2023-03-21_
+
+- Upgrade AGP version to 7.2.2, Gradle version to 7.3.3, Kotlin version to 1.5.32
+- Remove deprecated Transform API used by Instana plugin, improve app build time
+- Upgrade android-agent targetSdk to 33, fix unit test cases
+- Upgrade dependent library versions for android-agent and instana-example app
+- Upgrade instana-example app targetSdk to 33, remove deprecated APIs
+
 _2023-02-10_
 
 - Upgrade android-agent runtime compileSdk version to 31

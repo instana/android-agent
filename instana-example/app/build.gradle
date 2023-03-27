@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 
 println gradle.startParameter.taskRequests
 
@@ -20,10 +19,10 @@ if (enableInstana) {
 }
 
 android {
-    compileSdkVersion 32
+    compileSdk 33
 
     defaultConfig {
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionName "5.0"
         versionCode 1
         vectorDrawables.useSupportLibrary = true
@@ -85,6 +84,11 @@ android {
     testOptions {
         animationsDisabled true
     }
+
+    buildFeatures {
+        viewBinding = true
+    }
+    namespace 'com.instana.mobileeum'
 }
 
 dependencies {
@@ -94,7 +98,6 @@ dependencies {
     // Language and support
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
-    implementation 'android.arch.work:work-runtime-ktx:1.0.1'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
@@ -113,14 +116,14 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.12.0'
 
     // Instana Agent
-    // implementation "com.instana:android-agent-runtime:$agent_version"
-    implementation project(':runtime')
+    implementation "com.instana:android-agent-runtime:$agent_version"
+//    implementation project(':runtime')
 
     // Check for Google Play Services availability
     implementation 'com.google.android.gms:play-services-basement:18.1.0'
     implementation 'com.google.android.gms:play-services-base:18.1.0'
 
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.3'
     androidTestImplementation 'androidx.test:rules:1.4.0'
     androidTestImplementation 'androidx.test:runner:1.4.0'
@@ -132,7 +135,6 @@ dependencies {
 if (enableInstana) {
     println "instana> plugin configuration"
     instana {
-        enableWeaving = true
         ignoreClassesRegex = ['com\\.library\\.to\\.ignore\\..*']
         logVisits = true
         logInstrumentation = true

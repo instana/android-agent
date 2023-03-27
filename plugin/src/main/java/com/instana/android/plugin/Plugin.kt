@@ -11,7 +11,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.logging.LogLevel
 
-class Plugin : Plugin<Project> {
+abstract class Plugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         project.logger.log(LogLevel.INFO, "Instana Plugin applied")
@@ -20,8 +20,8 @@ class Plugin : Plugin<Project> {
         if (ext != null && ext is AppExtension) {
             project.extensions.create(Extension.name, Extension::class.java)
 
-            project.logger.log(LogLevel.INFO, "Registering Instana transform")
-            ext.registerTransform(Transform(project))
+            project.logger.log(LogLevel.INFO, "Preparing Instana transform")
+            Transform().doIt(project)
         } else {
             throw Exception("Instana plugin must only be applied to Android app projects")
         }

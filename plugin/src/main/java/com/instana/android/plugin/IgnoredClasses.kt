@@ -9,19 +9,19 @@ import org.gradle.api.logging.Logger
 
 object IgnoredClasses {
 
-    val instanaLibraries = Regex("com/instana/android/.*")
+    val instanaLibraries = Regex("com\\.instana\\.android\\..*")
 
     val troublesomeAnalytics = listOf(
-        Regex("com/appsflyer/.*"),
-        Regex("com/google/android/gms/internal/.*"),
-        Regex("com/google/firebase/.*"),
-        Regex("com/instabug/library/.*"),
-        Regex("com/newrelic/.*"),
-        Regex("androidx/window/embedding/EmbeddingAdapter.*"),
+        Regex("com\\.appsflyer\\..*"),
+        Regex("com\\.google\\.android\\.gms\\.internal\\..*"),
+        Regex("com\\.google\\.firebase\\..*"),
+        Regex("com\\.instabug\\.library\\..*"),
+        Regex("com\\.newrelic\\..*"),
+        Regex("androidx\\.window\\.embedding\\.EmbeddingAdapter.*"),
     )
 
     fun from(list: List<String>, logger: Logger): List<Regex> {
-        return list.map { it.replace("\\.", "/") }
+        return list.map { it.replace("/","\\.") }
             .mapNotNull {
                 try {
                     Regex(it)

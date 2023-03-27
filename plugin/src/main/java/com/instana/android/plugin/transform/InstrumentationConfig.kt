@@ -5,10 +5,7 @@
 
 package com.instana.android.plugin.transform
 
-import java.net.URL
-
 data class InstrumentationConfig(
-    val runtimeClasspath: List<URL>,
     val logVisits: Boolean,
     val logInstrumentation: Boolean,
 )

@@ -3,5 +3,5 @@ rootProject.name = 'instana-example'
 include ':app'
 include ':network'
 
-include 'runtime'
-project(':runtime').projectDir = file('../runtime')
+//include 'runtime'
+//project(':runtime').projectDir = file('../runtime')
