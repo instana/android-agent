@@ -3,7 +3,7 @@ Changelog
 
 ## Version 6.0.0
 
-_2023-03-21_
+_2023-03-30_
 
 - Upgrade AGP version to 7.2.2, Gradle version to 7.3.3, Kotlin version to 1.5.32
 - Remove deprecated Transform API used by Instana plugin, improve app build time

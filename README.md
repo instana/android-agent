@@ -10,8 +10,12 @@
 
 - Android 4.1+ (API level 16+) 
 - Java 8+ 
+- Gradle 7.3.3+
 - AndroidX
 - targetSdk 33+
+
+Note:
+  If you have to use Gradle version lower than 7.3.3 in your project, please use android-agent version lower than 6.0.0.
 
 ## Getting started
 
@@ -42,7 +46,7 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:5.2.4'
+    implementation 'com.instana:android-agent-runtime:6.0.0'
 }
 ```
 
@@ -61,7 +65,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:5.2.4"
+        classpath "com.instana:android-agent-plugin:6.0.0"
     }
 }
 ```
