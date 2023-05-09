@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 6.0.1
+
+_2023-04-27_
+
+- Fix unit test for Android Studio Electric Eel built on February 17, 2023 or later
+- Gradle 8 compatibility fix for instana-example
+
 ## Version 6.0.0
 
 _2023-04-06_

@@ -87,6 +87,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     namespace 'com.instana.mobileeum'
 }
