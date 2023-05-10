@@ -77,7 +77,7 @@ class PerformanceViewModel : ViewModel() {
         try {
             forceUnhandledExceptionInner(mark)
         } catch (ex: Exception) {
-            throw RuntimeException("Inner Exception found", ex)
+            throw RuntimeException("Inner Exception found- $mark", ex)
         }
     }
 

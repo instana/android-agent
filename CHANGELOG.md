@@ -1,9 +1,12 @@
 Changelog
 ==========
 
-_2023-02-10_
+## Version 5.2.6
+
+_2023-05-10_
 
 - Upgrade android-agent runtime compileSdk version to 31
+- Set view name for crash beacon
 
 ## Version 5.2.5-beta
 
