@@ -85,7 +85,7 @@ class CrashService(
             connectionProfile = connectionProfile,
             userProfile = Instana.userProfile,
             sessionId = Instana.sessionId ?: "",
-            view = null,
+            view = Instana.view,
             meta = mergedMeta.getAll(),
             error = errorMessage,
             stackTrace = stackTrace,

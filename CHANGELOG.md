@@ -3,10 +3,11 @@ Changelog
 
 ## Version 6.0.1
 
-_2023-04-27_
+_2023-05-10_
 
 - Fix unit test for Android Studio Electric Eel built on February 17, 2023 or later
 - Gradle 8 compatibility fix for instana-example
+- Set view name for crash beacon
 
 ## Version 6.0.0
 
