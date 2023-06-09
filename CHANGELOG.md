@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 6.0.2
+
+_2023-06-10_
+
+- Fix beacon loss issue when send beacons in one batch reached limit 100
+- Fix instana-example app build issue if upgraded to gradle 8
+
 ## Version 6.0.1
 
 _2023-05-10_

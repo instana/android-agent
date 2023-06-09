@@ -50,8 +50,12 @@ open class EventWorker(
     private fun readAllFiles(directory: File, limit: Int): Pair<String, Array<File>> {
         val files = directory.listFiles() ?: emptyArray()
         val sb = StringBuffer()
-        files.take(limit).forEach { sb.append("${it.readText(Charsets.UTF_8)}\n") }
-        return sb.toString() to files
+        var retFiles: Array<File> = arrayOf()
+        files.take(limit).forEach {
+            sb.append("${it.readText(Charsets.UTF_8)}\n")
+            retFiles += it
+        }
+        return sb.toString() to retFiles
     }
 
     /**
