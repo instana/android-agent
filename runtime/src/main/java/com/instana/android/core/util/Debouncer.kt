@@ -7,12 +7,10 @@ package com.instana.android.core.util
 
 import java.util.*
 
-internal class Debouncer(
-    private val millis: Long
-) {
+internal class Debouncer {
     private var timer: Timer? = null
 
-    fun enqueue(action: () -> Unit) {
+    fun enqueue(millis: Long, action: () -> Unit) {
         timer?.cancel()
 
         val task = object : TimerTask() {

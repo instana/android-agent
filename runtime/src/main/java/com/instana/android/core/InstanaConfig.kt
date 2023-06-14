@@ -49,6 +49,8 @@ class InstanaConfig
 
     val enableCrashReporting: Boolean = false,
 
+    val slowSendIntervalMillis: Long? = null,
+
     /*
      * If Instana is not initialized on the main thread, the current thread will be blocked until
      * Instana finished initialization, this timeout is the maximum time to wait in milliseconds.

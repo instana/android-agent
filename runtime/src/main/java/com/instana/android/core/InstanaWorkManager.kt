@@ -10,6 +10,7 @@ import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.work.*
 import com.instana.android.Instana
+import com.instana.android.Instana.config
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.worker.EventWorker
 import com.instana.android.core.util.Debouncer
@@ -41,13 +42,29 @@ class InstanaWorkManager(
     /**
      * Protects WorkManager from receiving too many scheduled tasks, which can generate Sqlite errors
      */
-    private val flushDebouncer = Debouncer(2000)
+    private val flushIntervalMillis = 2000L
+    private val flushDebouncer = Debouncer()
 
     private val constraints: Constraints
     private var beaconsDirectory: File? = null
     internal var initialDelayQueue: Queue<Beacon> = LinkedBlockingDeque()
     internal var isInitialDelayComplete = false
     private val initialExecutorFuture: ScheduledFuture<*>
+
+    internal var sendFirstBeacon = true // first beacon is sent all by itself, not in a batch
+    internal var slowSendStartTime: Long? = null
+        set (value) {
+            if (value == null) {
+                if (field != null) {
+                    Logger.d("Slow send ended at ${System.currentTimeMillis()}")
+                    field = null
+                }
+            } else if (field == null) {
+                // if slow send started, do not update so as to keep the earliest time
+                field = value
+                Logger.d("Slow send started at ${value!!}")
+            }
+        }
 
     init {
         constraints = configureWorkManager(config)
@@ -136,6 +153,13 @@ class InstanaWorkManager(
             .build()
     }
 
+    internal fun canDoSlowSend(): Boolean {
+        return config?.slowSendIntervalMillis != null
+    }
+    internal fun isInSlowSendMode(): Boolean {
+        return canDoSlowSend() && (slowSendStartTime != null || sendFirstBeacon)
+    }
+
     /**
      * Send all beacons together once beacon-creation stops for 1s
      */
@@ -143,7 +167,12 @@ class InstanaWorkManager(
         Logger.i("Scheduling beacons for flushing")
         if (directory.isDirectoryEmpty()) return
 
-        flushDebouncer.enqueue {
+        var intervalMillis = flushIntervalMillis
+        if (isInSlowSendMode() && !sendFirstBeacon) {
+            intervalMillis = config!!.slowSendIntervalMillis!!
+        }
+
+        flushDebouncer.enqueue(intervalMillis) {
             flushInternal(directory, manager)
         }
     }

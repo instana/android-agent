@@ -665,5 +665,11 @@ class Beacon private constructor(
                     allStackTraces?.run { setAllStackTraces(this) }
                 }
         }
+
+        // Hack way to add meta key/value pair to beacon string before sending to server
+        fun addMetaData(beaconStr: String, key: String, value: String): String {
+            val meta = "m_$key\t$value\n"
+            return beaconStr + meta
+        }
     }
 }

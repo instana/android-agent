@@ -8,6 +8,7 @@ package com.instana.android.core.event.worker
 import android.content.Context
 import androidx.work.*
 import com.instana.android.Instana
+import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 import okhttp3.MediaType
@@ -29,21 +30,41 @@ open class EventWorker(
             return Result.failure()
         }
 
+        val manager = Instana.workManager!!
+        val limit = if (manager.isInSlowSendMode()) 1 else batchLimit
+
         val directory = File(directoryAbsPath)
-        val (data, files) = readAllFiles(directory, batchLimit)
+        val (data, files) = readAllFiles(directory, limit)
+        if (data.isBlank()) {
+            return Result.success()
+        }
+
+        val sendRet = send(data)
+        if (manager.sendFirstBeacon) {
+            manager.sendFirstBeacon = false
+        }
+
         return when {
-            data.isBlank() -> Result.success()
-            send(data) -> {
+            sendRet -> {
                 files.forEach { it.delete() }
                 Logger.i("Beacon-batch sent with: `size` ${files.size}")
-                if (files.size == batchLimit) {
+                if (manager.isInSlowSendMode()) {
+                    manager.slowSendStartTime = null  // not in slow send mode anymore
+                }
+                if (files.size == limit) {
                     Logger.i("Detected more beacons in queue. Creating a new beacon-batch")
                     Result.retry()
                 } else {
                     Result.success()
                 }
+            } else -> {
+                if (manager.canDoSlowSend()) {
+                    manager.slowSendStartTime = System.currentTimeMillis()
+                    Result.failure()
+                } else {
+                    Result.retry()
+                }
             }
-            else -> Result.retry()
         }
     }
 
@@ -51,8 +72,14 @@ open class EventWorker(
         val files = directory.listFiles() ?: emptyArray()
         val sb = StringBuffer()
         var retFiles: Array<File> = arrayOf()
+
+        val meta = Instana.workManager!!.slowSendStartTime?.toString()
         files.take(limit).forEach {
-            sb.append("${it.readText(Charsets.UTF_8)}\n")
+            var beaconStr = it.readText(Charsets.UTF_8)
+            if (meta != null) {
+                beaconStr = Beacon.addMetaData(beaconStr, "slowSendStartTime", meta)
+            }
+            sb.append("$beaconStr\n")
             retFiles += it
         }
         return sb.toString() to retFiles
