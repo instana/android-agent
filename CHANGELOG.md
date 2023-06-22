@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 6.0.3
+
+_2023-06-22_
+
+- Allow http capture for Google Ads
+
 ## Version 6.0.2
 
 _2023-06-10_
