@@ -7,6 +7,12 @@ _2023-06-22_
 
 - Allow http capture for Google Ads
 
+## Version 5.2.7
+
+_2023-06-22_
+
+- Allow http capture for Google Ads
+
 ## Version 6.0.2
 
 _2023-06-10_
@@ -24,6 +30,13 @@ _2023-05-10_
 
 - Fix unit test for Android Studio Electric Eel built on February 17, 2023 or later
 - Gradle 8 compatibility fix for instana-example
+- Set view name for crash beacon
+
+## Version 5.2.6
+
+_2023-05-10_
+
+- Upgrade android-agent runtime compileSdk version to 31
 - Set view name for crash beacon
 
 ## Version 6.0.0
