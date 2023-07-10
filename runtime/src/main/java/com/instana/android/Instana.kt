@@ -1,6 +1,7 @@
 /*
- * (c) Copyright IBM Corp. 2021
- * (c) Copyright Instana Inc. and contributors 2021
+ * IBM Confidential
+ * PID 5737-N85, 5900-AG5
+ * Copyright IBM Corp. 2021, 2023
  */
 
 package com.instana.android
@@ -228,8 +229,9 @@ object Instana {
     @JvmStatic
     @JvmOverloads
     fun startCapture(@Size(max = 4096) url: String, @Size(max = 256) viewName: String? = view, requestHeaders: Map<String, String>? = emptyMap()): HTTPMarker? {
-        if (instrumentationService == null) Logger.e("Tried to start capture before Instana agent initialized with: `url` $url")
-        return instrumentationService?.markCall(url, viewName, requestHeaders)
+        val redactedUrl = ConstantsAndUtil.redactQueryParams(url)
+        if (instrumentationService == null) Logger.e("Tried to start capture before Instana agent initialized with: `url` $redactedUrl")
+        return instrumentationService?.markCall(redactedUrl, viewName, requestHeaders)
     }
 
     /**

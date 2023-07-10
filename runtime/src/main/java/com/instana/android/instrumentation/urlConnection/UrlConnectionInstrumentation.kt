@@ -1,6 +1,7 @@
 /*
- * (c) Copyright IBM Corp. 2021
- * (c) Copyright Instana Inc. and contributors 2021
+ * IBM Confidential
+ * PID 5737-N85, 5900-AG5
+ * Copyright IBM Corp. 2021, 2023
  */
 
 package com.instana.android.instrumentation.urlConnection
@@ -31,10 +32,9 @@ class UrlConnectionInstrumentation {
             Logger.i("HttpURLConnection: intercepting openConnection")
             val header = connection.getRequestProperty(TRACKING_HEADER_KEY)
             val url = connection.url.toString()
-            val redactedUrl = ConstantsAndUtil.redactQueryParams(url)
 
             if (isAutoEnabled && !checkTag(header) && !isLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
-                val marker = Instana.startCapture(url = redactedUrl)
+                val marker = Instana.startCapture(url = url)
                 if (marker != null) {
                     connection.setRequestProperty(TRACKING_HEADER_KEY, marker.headerValue())
                     val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(connection.getRequestHeadersMap())

@@ -1,6 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.6.10'
-    ext.agent_version = '6.0.3'
+    ext.agent_version = '6.0.4'
     ext.buildtools_version = '7.2.2'
     repositories {
         google()

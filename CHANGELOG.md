@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 6.0.4
+
+_2023-07-08_
+
+- Apply privacy redaction policy to all HTTP beacons 
+
 ## Version 6.0.3
 
 _2023-06-22_

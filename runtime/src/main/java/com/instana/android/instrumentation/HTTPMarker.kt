@@ -1,6 +1,7 @@
 /*
- * (c) Copyright IBM Corp. 2021
- * (c) Copyright Instana Inc. and contributors 2021
+ * IBM Confidential
+ * PID 5737-N85, 5900-AG5
+ * Copyright IBM Corp. 2021, 2023
  */
 
 package com.instana.android.instrumentation
@@ -276,7 +277,7 @@ class HTTPMarker(
             error = errorMessage
         )
 
-        Logger.i("HttpRequest finished with: `url` $url")
+        Logger.i("HttpRequest finished with url: $url")
         manager.queue(beacon)
     }
 

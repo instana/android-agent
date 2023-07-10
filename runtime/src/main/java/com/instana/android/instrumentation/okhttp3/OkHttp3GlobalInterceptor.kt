@@ -1,6 +1,7 @@
 /*
- * (c) Copyright IBM Corp. 2021
- * (c) Copyright Instana Inc. and contributors 2021
+ * IBM Confidential
+ * PID 5737-N85, 5900-AG5
+ * Copyright IBM Corp. 2021, 2023
  */
 
 package com.instana.android.instrumentation.okhttp3
@@ -35,7 +36,7 @@ object OkHttp3GlobalInterceptor : Interceptor {
         val intercepted = chain.request()
         val header = intercepted.header(TRACKING_HEADER_KEY)
         val url = intercepted.url().toString()
-        val redactedUrl = ConstantsAndUtil.redactQueryParams(url)
+        val logUrl = ConstantsAndUtil.redactQueryParams(url)
 
         val request: Request
         var marker: HTTPMarker? = null
@@ -44,36 +45,36 @@ object OkHttp3GlobalInterceptor : Interceptor {
             if (!checkTag(header) && !isLibraryCallBoolean(url)) {
                 val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(intercepted.headers().toMap())
                 marker = Instana.startCapture(
-                    url = redactedUrl,
+                    url = url,
                     requestHeaders = requestHeaders
                 )
                 request = if (marker != null) {
-                    Logger.d("Automatically marked OkHttp3 request with: `url` $redactedUrl")
+                    Logger.d("Automatically marked OkHttp3 request with: `url` $logUrl")
                     httpMarkers[marker.headerValue()] = marker
                     chain.request().newBuilder().header(TRACKING_HEADER_KEY, marker.headerValue()).build()
                 } else {
-                    Logger.e("Failed to automatically mark OkHttp3 request with: `url` $redactedUrl")
+                    Logger.e("Failed to automatically mark OkHttp3 request with: `url` $logUrl")
                     intercepted
                 }
             } else {
-                Logger.d("Skipped already tagged OkHttp3 request with: `url` $redactedUrl")
+                Logger.d("Skipped already tagged OkHttp3 request with: `url` $logUrl")
                 request = intercepted
             }
         } else {
-            Logger.d("Ignored OkHttp3 request with: `url` $redactedUrl")
+            Logger.d("Ignored OkHttp3 request with: `url` $logUrl")
             request = intercepted
         }
 
         return try {
             val response = chain.proceed(request)
-            Logger.d("Finishing OkHttp3 request with: `url` $redactedUrl")
+            Logger.d("Finishing OkHttp3 request with: `url` $logUrl")
             marker?.run {
                 finish(response)
                 httpMarkers.remove(marker.headerValue(), marker)
             }
             response
         } catch (e: Exception) {
-            Logger.d("Finishing OkHttp3 request with: `url` $redactedUrl, `error` ${e.message}")
+            Logger.d("Finishing OkHttp3 request with: `url` $logUrl, `error` ${e.message}")
             marker?.run {
                 finish(request, e)
                 httpMarkers.remove(marker.headerValue(), marker)
@@ -85,11 +86,11 @@ object OkHttp3GlobalInterceptor : Interceptor {
     fun cancel(request: Request) {
         @Suppress("UNNECESSARY_SAFE_CALL") // Crash reports suggest `request.url()` is indeed nullable
         val url = request.url()?.toString() ?: return
-        val redactedUrl = ConstantsAndUtil.redactQueryParams(url)
+        val logUrl = ConstantsAndUtil.redactQueryParams(url)
 
         val cancelledTrackerValue: String? = request.header(TRACKING_HEADER_KEY)
         if (cancelledTrackerValue == null) {
-            Logger.w("No marker found for cancelled OkHttp3 request with: 'url' $redactedUrl")
+            Logger.w("No marker found for cancelled OkHttp3 request with: 'url' $logUrl")
             return
         }
 
@@ -97,7 +98,7 @@ object OkHttp3GlobalInterceptor : Interceptor {
         if (marker == null) {
             val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(request.headers().toMap())
             marker = Instana.startCapture(
-                url = redactedUrl,
+                url = url,
                 requestHeaders = requestHeaders
             )
         }
