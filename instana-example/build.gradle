@@ -1,7 +1,7 @@
 buildscript {
     ext.lib_group_id = "com.instana"
     ext.kotlin_version = '1.7.10'
-    ext.agent_version = '6.0.4'
+    ext.agent_version = '6.0.5'
     repositories {
         google()
         mavenCentral()

@@ -1,6 +1,7 @@
 /*
- * (c) Copyright IBM Corp. 2021
- * (c) Copyright Instana Inc. and contributors 2021
+ * IBM Confidential
+ * PID 5737-N85, 5900-AG5
+ * Copyright IBM Corp. 2021, 2023
  */
 
 package com.instana.android.core
@@ -25,6 +26,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class InstanaWorkManager(
@@ -51,18 +53,19 @@ class InstanaWorkManager(
     internal var isInitialDelayComplete = false
     private val initialExecutorFuture: ScheduledFuture<*>
 
+    internal var lastFlushTimeMillis = AtomicLong(0)
     internal var sendFirstBeacon = true // first beacon is sent all by itself, not in a batch
     internal var slowSendStartTime: Long? = null
         set (value) {
             if (value == null) {
                 if (field != null) {
-                    Logger.d("Slow send ended at ${System.currentTimeMillis()}")
+                    Logger.i("Slow send ended at ${System.currentTimeMillis()}")
                     field = null
                 }
             } else if (field == null) {
                 // if slow send started, do not update so as to keep the earliest time
                 field = value
-                Logger.d("Slow send started at ${value!!}")
+                Logger.i("Slow send started at ${value!!}")
             }
         }
 
@@ -72,7 +75,7 @@ class InstanaWorkManager(
             isInitialDelayComplete = true
             updateQueueItems(initialDelayQueue)
             for (it in initialDelayQueue) { queue(it) }
-            getWorkManager()?.run { flush(getBeaconsDirectory(), this) }
+            getWorkManager()?.run { flush(this) }
         }, config.initialBeaconDelayMs, TimeUnit.MILLISECONDS)
     }
 
@@ -160,11 +163,32 @@ class InstanaWorkManager(
         return canDoSlowSend() && (slowSendStartTime != null || sendFirstBeacon)
     }
 
+    private fun canScheduleFlush(): Boolean {
+        if (lastFlushTimeMillis.get() == 0L) {
+            return true
+        }
+        val maxFlushingTimeAllowed = 10000 // 10 seconds
+
+        val diff = System.currentTimeMillis() - lastFlushTimeMillis.get()
+        if (diff > maxFlushingTimeAllowed) {
+            // Previous flushing takes too long, force a new flush to prevent
+            // too many beacons accumulated locally
+            Logger.w("Previous flushing takes more than $diff milliseconds. Force another flushing now")
+            return true
+        }
+        return false
+    }
+
     /**
      * Send all beacons together once beacon-creation stops for 1s
      */
-    private fun flush(directory: File, manager: WorkManager) {
+    internal fun flush(manager: WorkManager) {
+        if (!canScheduleFlush()) {
+            Logger.d("Flushing going on, can not flush now")
+            return
+        }
         Logger.i("Scheduling beacons for flushing")
+        val directory = getBeaconsDirectory()
         if (directory.isDirectoryEmpty()) return
 
         var intervalMillis = flushIntervalMillis
@@ -178,13 +202,18 @@ class InstanaWorkManager(
     }
 
     private fun flushInternal(directory: File, manager: WorkManager): Operation {
+        lastFlushTimeMillis.set(System.currentTimeMillis())
+
         val tag = directory.absolutePath
+        val allowSlowSend = (config?.slowSendIntervalMillis != null)
         return manager.enqueueUniqueWork(
             tag,
             ExistingWorkPolicy.REPLACE,
             EventWorker.createWorkRequest(
                 constraints = constraints,
                 directory = directory,
+                reportingURL = config?.reportingURL,
+                allowSlowSend,
                 initialDelayMs = flushDelayMs,
                 tag = tag
             )
@@ -205,7 +234,7 @@ class InstanaWorkManager(
                         try {
                             val file = File(getBeaconsDirectory(), beaconId)
                             file.writeText(beacon.toString(), Charsets.UTF_8)
-                            getWorkManager()?.run { flush(getBeaconsDirectory(), this) }
+                            getWorkManager()?.run { flush(this) }
                         } catch (e: IOException) {
                             Logger.e("Failed to persist beacon in file-system. Dropping beacon: $beacon", e)
                         }

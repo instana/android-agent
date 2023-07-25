@@ -1,6 +1,13 @@
 Changelog
 ==========
 
+## Version 6.0.5
+
+_2023-07-24_
+
+- Fix duplicated beacons issue
+- Once in slow sending mode, periodically send 1 beacon. Once out of slow sending mode, flush all beacons immediately.
+
 ## Version 6.0.4
 
 _2023-07-08_

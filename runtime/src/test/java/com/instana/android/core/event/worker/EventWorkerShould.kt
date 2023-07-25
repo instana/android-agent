@@ -1,6 +1,7 @@
 /*
- * (c) Copyright IBM Corp. 2021
- * (c) Copyright Instana Inc. and contributors 2021
+ * IBM Confidential
+ * PID 5737-N85, 5900-AG5
+ * Copyright IBM Corp. 2021, 2023
  */
 
 package com.instana.android.core.event.worker
@@ -36,7 +37,8 @@ class EventWorkerShould : BaseTest() {
             .setRequiresCharging(false)
             .build()
         val directory = app.filesDir
-        val workRequest: WorkRequest = EventWorker.createWorkRequest(workerConstraint, directory, 0L, "tag")
+        val workRequest: WorkRequest = EventWorker.createWorkRequest(workerConstraint, directory,
+            Instana.config?.reportingURL, false, 0L, "tag")
         val workSpec = workRequest.workSpec
 
         assertThat(workSpec.constraints.requiredNetworkType, `is`(equalTo(NetworkType.UNMETERED)))
@@ -47,7 +49,8 @@ class EventWorkerShould : BaseTest() {
     @Test
     fun doWorkEnqueued() {
         val directory = app.filesDir
-        val request = EventWorker.createWorkRequest(Constraints.NONE, directory, 0L, "tag")
+        val request = EventWorker.createWorkRequest(Constraints.NONE, directory,
+            Instana.config?.reportingURL, false,0L, "tag")
 
         val instanaWorkManager = Instana.workManager
         Assert.assertNotNull(instanaWorkManager)

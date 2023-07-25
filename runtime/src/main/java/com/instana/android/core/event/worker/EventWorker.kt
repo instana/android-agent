@@ -1,6 +1,7 @@
 /*
- * (c) Copyright IBM Corp. 2021
- * (c) Copyright Instana Inc. and contributors 2021
+ * IBM Confidential
+ * PID 5737-N85, 5900-AG5
+ * Copyright IBM Corp. 2021, 2023
  */
 
 package com.instana.android.core.event.worker
@@ -8,15 +9,18 @@ package com.instana.android.core.event.worker
 import android.content.Context
 import androidx.work.*
 import com.instana.android.Instana
+import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
+import kotlinx.coroutines.delay
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicLong
 
 open class EventWorker(
     context: Context,
@@ -24,23 +28,35 @@ open class EventWorker(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
+        val manager = Instana.workManager
+        val isWorkWithoutApp = (manager == null)
+        if (isWorkWithoutApp) {
+            Logger.i("Do offline work now")
+        }
+
         val directoryAbsPath: String? = params.inputData.getString(DIRECTORY_ABS_PATH)
         if (directoryAbsPath.isNullOrBlank()) {
             Logger.e("Tried to flush beacons with invalid directory path: $directoryAbsPath")
-            return Result.failure()
+            return makeResult(manager, Result.failure())
         }
 
-        val manager = Instana.workManager!!
-        val limit = if (manager.isInSlowSendMode()) 1 else batchLimit
+        var inSlowModeBeforeFlush = false
+        var limit = batchLimit
+        if (!isWorkWithoutApp){
+            inSlowModeBeforeFlush = manager!!.isInSlowSendMode()
+            if (inSlowModeBeforeFlush) {
+                limit = 1
+            }
+        }
 
         val directory = File(directoryAbsPath)
-        val (data, files) = readAllFiles(directory, limit)
+        val (data, files) = readAllFiles(manager, directory, limit)
         if (data.isBlank()) {
-            return Result.success()
+            return makeResult(manager, Result.success())
         }
 
         val sendRet = send(data)
-        if (manager.sendFirstBeacon) {
+        if (!isWorkWithoutApp && manager!!.sendFirstBeacon) {
             manager.sendFirstBeacon = false
         }
 
@@ -48,32 +64,83 @@ open class EventWorker(
             sendRet -> {
                 files.forEach { it.delete() }
                 Logger.i("Beacon-batch sent with: `size` ${files.size}")
-                if (manager.isInSlowSendMode()) {
-                    manager.slowSendStartTime = null  // not in slow send mode anymore
-                }
-                if (files.size == limit) {
-                    Logger.i("Detected more beacons in queue. Creating a new beacon-batch")
-                    Result.retry()
+                if (isWorkWithoutApp) {
+                    if (files.size == limit)
+                        Result.retry()
+                    else
+                        Result.success()
                 } else {
-                    Result.success()
+                    if (manager!!.isInSlowSendMode()) {
+                        manager.slowSendStartTime = null  // not in slow send mode anymore
+                    }
+                    val result = makeResult(manager, Result.success())
+                    scheduleFlushAgain(manager, inSlowModeBeforeFlush, files.size == limit)
+                    result
                 }
             } else -> {
-                if (manager.canDoSlowSend()) {
-                    manager.slowSendStartTime = System.currentTimeMillis()
-                    Result.failure()
+                if (isWorkWithoutApp) {
+                    if (params.inputData.getBoolean(ALLOW_SLOW_SEND, false)) {
+                        Result.failure()
+                    } else {
+                        Result.retry()
+                    }
                 } else {
-                    Result.retry()
+                    if (manager!!.canDoSlowSend()) {
+                        manager.slowSendStartTime = System.currentTimeMillis()
+                        val result = makeResult(manager, Result.success())
+                        scheduleFlushAgain(manager, inSlowModeBeforeFlush)
+                        result
+                    } else {
+                        makeResult(manager, Result.retry())
+                    }
                 }
             }
         }
     }
 
-    private fun readAllFiles(directory: File, limit: Int): Pair<String, Array<File>> {
+    private fun makeResult(manager: InstanaWorkManager?, result: Result): Result {
+        if (manager != null) {
+            manager.lastFlushTimeMillis.set(0)
+            Logger.d("makeResult() lastFlushTimeMillis set to 0")
+        }
+        return result
+    }
+
+    private fun scheduleFlushAgain(instanaManager: InstanaWorkManager,
+                                   inSlowModeBeforeFlush: Boolean,
+                                   reachedBatchLimit: Boolean = false) {
+        val workManager = instanaManager.getWorkManager()
+        if (workManager == null) {
+            Logger.w("Empty WorkManager, can not reschedule flush, reached batch limit is $reachedBatchLimit, in slow mode before flush is $inSlowModeBeforeFlush")
+            return
+        }
+        workManager.run {
+            // Another flush either send 1 beacon (currently in slow mode)
+            // or flush next batch of beacons (just got out of slow send mode)
+            // or simply send next batch of beacons (reachedBatchLimit is true)
+            val msg = if (instanaManager.isInSlowSendMode()) {
+                "schedule flush to send 1 beacon in slow send mode"
+            } else if (inSlowModeBeforeFlush) {
+                "schedule to flush next batch of beacons after out of slow send mode"
+            } else if (reachedBatchLimit) {
+                "Detected more beacons in queue. Creating a new beacon-batch"
+            } else {
+                ""
+            }
+            if (msg.isNotBlank()) {
+                Logger.i(msg)
+                instanaManager.flush(this)
+            }
+        }
+    }
+
+    private fun readAllFiles(instanaManager: InstanaWorkManager?,
+                             directory: File, limit: Int): Pair<String, Array<File>> {
         val files = directory.listFiles() ?: emptyArray()
         val sb = StringBuffer()
         var retFiles: Array<File> = arrayOf()
 
-        val meta = Instana.workManager!!.slowSendStartTime?.toString()
+        val meta = instanaManager?.slowSendStartTime?.toString()
         files.take(limit).forEach {
             var beaconStr = it.readText(Charsets.UTF_8)
             if (meta != null) {
@@ -89,8 +156,8 @@ open class EventWorker(
      * @return true when beacon was handled (so it can be discarded), false when it wasn't
      */
     private fun send(data: String): Boolean {
-        val reportingURL = Instana.config?.reportingURL
-        if (reportingURL == null) {
+        val reportingURL = params.inputData.getString(REPORTING_URL)
+        if (reportingURL.isNullOrBlank()) {
             Logger.w("Instana hasn't been initialized. Dropping beacon.")
             return true
         }
@@ -126,11 +193,15 @@ open class EventWorker(
         fun createWorkRequest(
             constraints: Constraints,
             directory: File,
+            reportingURL: String?,
+            allowSlowSend: Boolean,
             initialDelayMs: Long,
             tag: String
         ): OneTimeWorkRequest {
             val data = Data.Builder()
                 .putString(DIRECTORY_ABS_PATH, directory.absolutePath)
+                .putString(REPORTING_URL, reportingURL)
+                .putBoolean(ALLOW_SLOW_SEND, allowSlowSend)
                 .build()
             return OneTimeWorkRequest.Builder(EventWorker::class.java)
                 .setInputData(data)
@@ -143,5 +214,7 @@ open class EventWorker(
         private val TEXT_PLAIN = MediaType.parse("text/plain; charset=utf-8")
 
         private const val DIRECTORY_ABS_PATH = "dir_abs_path"
+        private const val REPORTING_URL = "reporting_url"
+        private const val ALLOW_SLOW_SEND = "allow_slow_mode"
     }
 }
