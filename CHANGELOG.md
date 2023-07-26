@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 6.0.6
+
+_2023-07-26_
+
+- Add crash collection enablement status to mobile feature list and send to Instana backend
+
 ## Version 6.0.5
 
 _2023-07-24_

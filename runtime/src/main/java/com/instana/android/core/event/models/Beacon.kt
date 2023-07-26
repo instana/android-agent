@@ -1,6 +1,7 @@
 /*
- * (c) Copyright IBM Corp. 2021
- * (c) Copyright Instana Inc. and contributors 2021
+ * IBM Confidential
+ * PID 5737-N85, 5900-AG5
+ * Copyright IBM Corp. 2021, 2023
  */
 
 package com.instana.android.core.event.models
@@ -8,6 +9,7 @@ package com.instana.android.core.event.models
 import androidx.annotation.IntRange
 import androidx.annotation.Size
 import androidx.annotation.VisibleForTesting
+import com.instana.android.Instana
 import com.instana.android.android.agent.BuildConfig
 import com.instana.android.core.util.Logger
 import java.math.BigInteger
@@ -74,6 +76,14 @@ class Beacon private constructor(
         setType(type)
         setDuration(duration)
         setErrorCount(errorCount)
+
+        /**
+         * Mobile Features - adding active features to beacon, Adding it in init as usesFeature
+         * needs to be send with each beacons.
+         */
+        Instana.config?.takeIf { it.enableCrashReporting }?.let {
+            setMobileFeatures(listOf(MobileFeature.CRASH))
+        }
     }
 
     /**
@@ -212,6 +222,15 @@ class Beacon private constructor(
      */
     fun setUserLanguages(@Size(max = 5) value: List<Locale>) {
         stringMap["ul"] = value.take(5).joinToString(separator = ",") { it.bcp47() }
+    }
+
+    /**
+     * The current eum mobile features in use
+     *
+     * For example: c for crash
+     */
+    fun setMobileFeatures(@Size(max = 15) value: List<MobileFeature>) {
+        stringMap["uf"] = value.take(15).joinToString(separator = ",") { it.internalType }
     }
 
     /**
