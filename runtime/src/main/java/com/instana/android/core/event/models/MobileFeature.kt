@@ -5,6 +5,11 @@
  */
 package com.instana.android.core.event.models
 
+/**
+ * This enum class manages the MobileFeature list known as "usesFeature" with the abbreviation "uf" as used in the backend.
+ * Any new features requiring identification should be included here with their corresponding internalType, following the
+ * agreement with the backend.
+ */
 enum class MobileFeature(val internalType: String) {
     CRASH("c")
 }

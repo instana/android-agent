@@ -9,6 +9,7 @@ package com.instana.android.core.event.models
 import androidx.annotation.IntRange
 import androidx.annotation.Size
 import androidx.annotation.VisibleForTesting
+import com.instana.android.Instana
 import com.instana.android.android.agent.BuildConfig
 import com.instana.android.core.util.Logger
 import java.math.BigInteger
@@ -75,6 +76,14 @@ class Beacon private constructor(
         setType(type)
         setDuration(duration)
         setErrorCount(errorCount)
+
+        /**
+         * Mobile Features - adding active features to beacon, Adding it in init as usesFeature
+         * needs to be send with each beacons.
+         */
+        Instana.config?.takeIf { it.enableCrashReporting }?.let {
+            setMobileFeatures(listOf(MobileFeature.CRASH))
+        }
     }
 
     /**
