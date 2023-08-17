@@ -29,6 +29,7 @@ import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.MaxCapacityMap
 import com.instana.android.core.util.RootCheck
+import com.instana.android.core.util.UniqueIdManager
 import com.instana.android.crash.CrashService
 import com.instana.android.instrumentation.HTTPMarker
 import com.instana.android.instrumentation.InstrumentationService
@@ -277,6 +278,7 @@ object Instana {
             return
         }
 
+        UniqueIdManager.initialize(app,config.usiRefreshTimeIntervalInHrs)
         this.config = config
         initProfiles(app)
         initLifecycle(app)

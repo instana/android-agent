@@ -3,6 +3,10 @@ Changelog
 
 ## Version 6.0.6
 
+_2023-08-17_
+
+- `usiRefreshTimeIntervalInHrs` is included to manage the frequency of refreshing the `usi` used for custom identification.
+
 _2023-07-26_
 
 - Add crash collection enablement status to mobile feature list and send to Instana backend

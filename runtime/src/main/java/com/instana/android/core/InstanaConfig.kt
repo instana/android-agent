@@ -51,6 +51,18 @@ class InstanaConfig
 
     val slowSendIntervalMillis: Long? = null,
 
+
+    /**
+     * This constant defines the time interval, in hours, determining when the user session ID (USI) should be refreshed.
+     * By default, the interval is set to -1L hours, allowing the user session to be continuously tracked until the app is reinstalled.
+     * For each specified `usiRefreshTimeIntervalInHrs`, a new unique ID is generated and stored to ensure the user's distinct identification.
+     *
+     * If the value is less than 0L (`usiRefreshTimeIntervalInHrs < 0L`): Continuous tracking with the same unique ID [Default behavior].
+     * If the value is equal to 0L (`usiRefreshTimeIntervalInHrs == 0L`): Tracking is disabled [No tracking].
+     * If the value is greater than 0L (`usiRefreshTimeIntervalInHrs > 0L`): Tracking is limited within the specified timeframe (refreshing the ID within the provided hours).
+     */
+    val usiRefreshTimeIntervalInHrs:Long = -1L,
+
     /*
      * If Instana is not initialized on the main thread, the current thread will be blocked until
      * Instana finished initialization, this timeout is the maximum time to wait in milliseconds.

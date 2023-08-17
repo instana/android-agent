@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting
 import com.instana.android.Instana
 import com.instana.android.android.agent.BuildConfig
 import com.instana.android.core.util.Logger
+import com.instana.android.core.util.UniqueIdManager
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.*
@@ -76,6 +77,11 @@ class Beacon private constructor(
         setType(type)
         setDuration(duration)
         setErrorCount(errorCount)
+
+        // Setting unique id for user only if usiRefreshTimeIntervalInHrs is non zero
+        Instana.config?.takeIf { it.usiRefreshTimeIntervalInHrs != 0L }?.let {
+            setUserSessionId(UniqueIdManager.getUniqueId())
+        }
 
         /**
          * Mobile Features - adding active features to beacon, Adding it in init as usesFeature
@@ -509,6 +515,19 @@ class Beacon private constructor(
      */
     fun setAllStackTraces(@Size(max = 5242880) value: String) {
         stringMap["ast"] = value.truncate(5242880, "AllStackTraces")
+    }
+
+    /**
+     * set Unique Id for users, this is to identify every users Uniquely when there is no userId
+     * to be provided.
+     *
+     * For Example: If agent is used in a weather app there wont be any user data, but instana has
+     * to identify the user for analytics purpose [crash affected etc.]
+     *
+     * Keeping the length limit to 128 to align website beacons
+     */
+    fun setUserSessionId(@Size(max = 128) value: String) {
+        stringMap["usi"] = value.take(128)
     }
 
     @Suppress("DuplicatedCode") // I rather duplicate a few lines of code and keep type safety
