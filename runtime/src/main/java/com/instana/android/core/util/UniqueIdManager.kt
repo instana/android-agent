@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal object UniqueIdManager {
-    private const val KEY_UNIQUE_ID = "uniqueId"
-    private const val KEY_TIMESTAMP = "timestamp"
+    private const val KEY_UNIQUE_ID = "usi_uniqueId"
+    private const val KEY_TIMESTAMP = "usi_timestamp"
 
     private var uniqueId: String = ""
     private var timestamp: Long = 0
