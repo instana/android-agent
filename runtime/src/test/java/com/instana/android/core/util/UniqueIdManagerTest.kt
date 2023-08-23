@@ -32,8 +32,8 @@ class UniqueIdManagerTest {
     @Mock
     private lateinit var mockSharedPrefsUtil: SharedPrefsUtil
 
-    private val KEY_UNIQUE_ID = "uniqueId"
-    private val KEY_TIMESTAMP = "timestamp"
+    private val KEY_UNIQUE_ID = "usi_uniqueId"
+    private val KEY_TIMESTAMP = "usi_timestamp"
 
     // Setup method to initialize Mockito mocks
     @Before
