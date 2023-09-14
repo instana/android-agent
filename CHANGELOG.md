@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 6.0.7
+
+_2023-09-14_
+
+- Updating property declarations for variables in Configuration constructor for bridging in react-native
+
 ## Version 6.0.6
 
 _2023-08-17_
