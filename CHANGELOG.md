@@ -5,7 +5,7 @@ Changelog
 
 _2023-09-14_
 
-- Updating property declarations for variables in Configuration constructor for bridging in react-native
+- Modifying property declarations for variables within the constructor of Instana Configuration to accommodate updates in Java-based configuration.
 
 ## Version 6.0.6
 
