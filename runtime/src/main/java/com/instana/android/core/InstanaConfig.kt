@@ -47,9 +47,9 @@ class InstanaConfig
      */
     var collectionEnabled: Boolean = true,
 
-    val enableCrashReporting: Boolean = false,
+    var enableCrashReporting: Boolean = false,
 
-    val slowSendIntervalMillis: Long? = null,
+    var slowSendIntervalMillis: Long? = null,
 
 
     /**
@@ -61,7 +61,7 @@ class InstanaConfig
      * If the value is equal to 0L (`usiRefreshTimeIntervalInHrs == 0L`): Tracking is disabled [No tracking].
      * If the value is greater than 0L (`usiRefreshTimeIntervalInHrs > 0L`): Tracking is limited within the specified timeframe (refreshing the ID within the provided hours).
      */
-    val usiRefreshTimeIntervalInHrs:Long = -1L,
+    var usiRefreshTimeIntervalInHrs:Long = -1L,
 
     /*
      * If Instana is not initialized on the main thread, the current thread will be blocked until

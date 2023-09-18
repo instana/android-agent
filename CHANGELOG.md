@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 6.0.7
+
+_2023-09-14_
+
+- Modifying property declarations for variables within the constructor of Instana Configuration to accommodate updates in Java-based configuration.
+
 ## Version 6.0.6
 
 _2023-08-17_
