@@ -1,7 +1,7 @@
 buildscript {
     ext.lib_group_id = "com.instana"
     ext.kotlin_version = '1.7.10'
-    ext.agent_version = '6.0.7'
+    apply from: '../version.gradle'
     repositories {
         google()
         mavenCentral()
@@ -10,7 +10,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.3.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.instana:android-agent-plugin:$agent_version"
+        classpath "com.instana:android-agent-plugin:${agent_version}"
     }
 }
 

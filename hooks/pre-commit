@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Run the Gradle task to update versions in README.md
+./gradlew updateVersionsInReadme
+
+#adding readme to same commit 
+git add README.md
+
+# Continue with the commit
+exit 0

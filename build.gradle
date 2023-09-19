@@ -1,6 +1,5 @@
 buildscript {
     ext.kotlin_version = '1.6.10'
-    ext.agent_version = '6.0.7'
     ext.buildtools_version = '7.2.2'
     repositories {
         google()
@@ -18,6 +17,7 @@ plugins {
 }
 
 apply from: 'publish.gradle'
+apply from: 'version.gradle'
 
 allprojects {
     repositories {
@@ -29,3 +29,51 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+
+tasks.register("copyGitHooks", Copy) {
+    description = "Copies the git hooks from /git-hooks to the .git folder."
+    group = "git hooks"
+    from("$rootDir/hooks/pre-commit")
+    into("$rootDir/.git/hooks/")
+}
+tasks.register("installGitHooks", Exec) {
+    description = "Installs the pre-commit git hooks from /git-hooks."
+    group = "git hooks"
+    workingDir = rootDir
+    commandLine "chmod", "-R", "+x", ".git/hooks/"
+    dependsOn("copyGitHooks")
+    doLast {
+        logger.info("Git hook installed successfully.")
+    }
+}
+
+
+afterEvaluate {
+    tasks.getByPath(":runtime:clean").dependsOn(":installGitHooks")
+}
+
+task updateVersionsInReadme {
+    doLast {
+        def agentVersion = project.property('agent_version')
+        def readmeFile = file('README.md')
+
+        // Read the original README.md file
+        def readmeContent = readmeFile.text
+
+        // Define a regular expression pattern to match the plugin string
+        def classpathPattern = /classpath "com.instana:android-agent-plugin:([^"]+)"/
+
+        // Define a regular expression pattern to match the runtime string
+        def runtimePattern = /implementation 'com.instana:android-agent-runtime:([^']+)'/
+
+        // Find the matching pattern in the content and replace the version number
+        readmeContent = readmeContent.replaceAll(classpathPattern, "classpath \"com.instana:android-agent-plugin:$agentVersion\"")
+        readmeContent = readmeContent.replaceAll(runtimePattern, "implementation 'com.instana:android-agent-runtime:$agentVersion'")
+
+        // Write the updated content back to README.md
+        readmeFile.text = readmeContent
+    }
+}
+
+
