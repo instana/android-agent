@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 6.0.8
+
+_2023-09-19_
+
+- Version update strategy changed with SSOT from `version.gradle` file.
+
 ## Version 6.0.7
 
 _2023-09-14_
