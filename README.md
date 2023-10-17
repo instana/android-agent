@@ -49,12 +49,26 @@ dependencies {
     implementation 'com.instana:android-agent-runtime:6.0.8'
 }
 ```
+While using kotlin-scripts, In (app-level) Gradle file (usually `app/build.gradle.kts`):
+```groovy
+dependencies {
+  implementation("com.instana:android-agent-runtime:6.0.8")
+}
+```
+
 
 ### Step 2. Add Instana Agent Plugin to your app
 In your module (app-level) Gradle file (usually `app/build.gradle`), after applying the `com.android.application` plugin:
 ```groovy
 apply plugin: 'com.android.application'
 apply plugin: 'com.instana.android-agent-plugin'
+```
+While using kotlin-scripts, In (app-level) Gradle file (usually `app/build.gradle.kts`):
+```groovy
+plugins {
+  id("com.android.application")
+  id("com.instana.android-agent-plugin")
+}
 ```
 
 In your module (app-level) Gradle file (usually `app/build.gradle`):
@@ -67,6 +81,14 @@ buildscript {
     dependencies {
         classpath "com.instana:android-agent-plugin:6.0.8"
     }
+}
+```
+While using kotlin-scripts, In (project-level) Gradle file (usually `/build.gradle.kts`):
+```groovy
+buildscript {
+  dependencies {
+    classpath("com.instana:android-agent-plugin:6.0.8")
+  }
 }
 ```
 

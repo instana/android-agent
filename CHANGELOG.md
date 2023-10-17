@@ -7,6 +7,10 @@ _2023-09-19_
 
 - Version update strategy changed with SSOT from `version.gradle` file.
 
+_2023-10-17_
+
+- `README.md` file updated with kotlin-script support details
+
 ## Version 6.0.7
 
 _2023-09-14_
