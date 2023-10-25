@@ -58,22 +58,24 @@ task updateVersionsInReadme {
         def agentVersion = project.property('agent_version')
         def readmeFile = file('README.md')
 
-        // Read the original README.md file
+        def replacements = [
+                /classpath "com.instana:android-agent-plugin:([^"]+)"/: "classpath \"com.instana:android-agent-plugin:$agentVersion\"",
+                /implementation 'com.instana:android-agent-runtime:([^']+)'/: "implementation 'com.instana:android-agent-runtime:$agentVersion'",
+                /classpath\("com.instana:android-agent-plugin:([^"]+)"\)/: "classpath(\"com.instana:android-agent-plugin:$agentVersion\")",
+                /implementation\("com.instana:android-agent-runtime:([^"]+)"\)/: "implementation(\"com.instana:android-agent-runtime:$agentVersion\")"
+        ]
+
         def readmeContent = readmeFile.text
+        replacements.each { pattern, replacement ->
+            readmeContent = readmeContent.replaceAll(pattern, replacement)
+        }
 
-        // Define a regular expression pattern to match the plugin string
-        def classpathPattern = /classpath "com.instana:android-agent-plugin:([^"]+)"/
-
-        // Define a regular expression pattern to match the runtime string
-        def runtimePattern = /implementation 'com.instana:android-agent-runtime:([^']+)'/
-
-        // Find the matching pattern in the content and replace the version number
-        readmeContent = readmeContent.replaceAll(classpathPattern, "classpath \"com.instana:android-agent-plugin:$agentVersion\"")
-        readmeContent = readmeContent.replaceAll(runtimePattern, "implementation 'com.instana:android-agent-runtime:$agentVersion'")
-
-        // Write the updated content back to README.md
         readmeFile.text = readmeContent
     }
 }
+
+
+
+
 
 
