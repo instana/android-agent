@@ -11,6 +11,10 @@ _2023-10-17_
 
 - `README.md` file updated with kotlin-script support details
 
+_2023-11-07_
+
+- Change beacon id from 128 bit UUID to 64 bit hex string
+
 ## Version 6.0.7
 
 _2023-09-14_

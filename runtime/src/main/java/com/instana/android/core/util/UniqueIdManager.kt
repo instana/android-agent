@@ -81,4 +81,17 @@ internal object UniqueIdManager {
      * @return True if the time has elapsed, false otherwise.
      */
     private fun hasTimeElapsed(intervalInHrs: Long) = System.currentTimeMillis() - timestamp > TimeUnit.HOURS.toMillis(intervalInHrs)
+
+    /**
+     * A hex encoded 64 bit random ID.
+     */
+    fun generateUniqueIdImpl(): String {
+        val validIdCharacters = "0123456789abcdef"
+        return buildString {
+            repeat(16) {
+                append(validIdCharacters.random())
+            }
+        }
+    }
+
 }
