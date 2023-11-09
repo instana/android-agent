@@ -6,6 +6,7 @@
 package com.instana.android.core.util
 import android.content.Context
 import android.content.SharedPreferences
+import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import org.junit.Before
 import org.junit.Test
@@ -136,6 +137,16 @@ class UniqueIdManagerTest {
         // Assert the value passed to putString
         val generatedUniqueId = uniqueIdCaptor.value
         assertNotNull(generatedUniqueId) // Ensure the generated value is not null
+    }
+
+    //Test to verify the unique id generated is a valid 64 bit hex
+    @Test
+    fun `test verify unique id generated is a 64 bit hex and not empty`(){
+        val validIdCharacters = "0123456789abcdef"
+        val uniqueId = UniqueIdManager.generateUniqueIdImpl()
+        assert(uniqueId.isNotEmpty())
+        assertEquals(16, uniqueId.length)
+        assert(uniqueId.all { it in validIdCharacters })
     }
 
     // More test cases can be added here...
