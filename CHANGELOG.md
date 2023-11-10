@@ -15,6 +15,10 @@ _2023-11-07_
 
 - Change beacon id from 128 bit UUID to 64 bit hex string
 
+_2023-11-10_
+
+- ASM 9 upgrade to support JAVA_17 with sealed classes
+
 ## Version 6.0.7
 
 _2023-09-14_

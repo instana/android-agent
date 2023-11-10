@@ -18,7 +18,7 @@ class OkHttp3BuilderVisitor(
 ) : ClassVisitor(ASM_API_VERSION, classVisitor) {
 
     companion object {
-        private const val ASM_API_VERSION = Opcodes.ASM7
+        private const val ASM_API_VERSION = Opcodes.ASM9
     }
 
     private val logger = Logging.getLogger(OkHttp3BuilderVisitor::class.java)
