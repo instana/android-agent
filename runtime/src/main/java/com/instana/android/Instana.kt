@@ -83,19 +83,19 @@ object Instana {
      * List of URLs which will not be tracked by Instana, defined by a list of Regex(Kotlin) or Pattern(Java)
      */
     @JvmStatic
-    val ignoreURLs = mutableListOf<Pattern>()
+    val ignoreURLs: MutableList<Pattern> = Collections.synchronizedList(mutableListOf<Pattern>())
 
     /**
      * List of Header Names which will be tracked by Instana for each monitored request/response, defined by a list of Regex(Kotlin) or Pattern(Java)
      */
     @JvmStatic
-    val captureHeaders = mutableListOf<Pattern>()
+    val captureHeaders: MutableList<Pattern> = Collections.synchronizedList(mutableListOf<Pattern>())
 
     /**
      * List of Query parameters that Instana will replace with <redacted> *before* reporting them to Instana's server, defined by a list of Regex(Kotlin) or Pattern(Java)
      */
     @JvmStatic
-    val redactHTTPQuery = mutableListOf<Pattern>()
+    val redactHTTPQuery: MutableList<Pattern> = Collections.synchronizedList(mutableListOf<Pattern>())
 
     /**
      * Map of Key-Value pairs which all new beacons will be associated with
