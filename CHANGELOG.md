@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 6.0.9
+
+_2023-12-05_
+
+- `Instana.captureHeaders`, `Instana.ignoreURLs`, `Instana.redactHTTPQuery` type updated to `Collections.synchronizedList`, to avoid concurrent update exceptions
+
 ## Version 6.0.8
 
 _2023-09-19_

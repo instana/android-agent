@@ -192,14 +192,20 @@ object ConstantsAndUtil {
         get() = Instana.config?.httpCaptureConfig == HTTPCaptureConfig.AUTO
 
     fun isBlacklistedURL(url: String): Boolean {
+        val ignoreURLs = Instana.ignoreURLs
         return Instana.internalURLs.any { it.matches(url) } ||
-                Instana.ignoreURLs.map { it.toRegex() }.any {
-                    it.matches(url) || it.matches(url.removeTrailing("/"))
+                synchronized(ignoreURLs) {
+                    ignoreURLs.map { it.toRegex() }.any {
+                        it.matches(url) || it.matches(url.removeTrailing("/"))
+                    }
                 }
     }
 
     private fun isHeaderToCapture(header: String): Boolean {
-        return Instana.captureHeaders.any { it.toRegex().matches(header) }
+        val headers = Instana.captureHeaders
+        synchronized(headers) {
+            return headers.any { it.toRegex().matches(header) }
+        }
     }
 
     internal fun getCapturedRequestHeaders(headers: Map<String, String>): Map<String, String> {
@@ -219,15 +225,18 @@ object ConstantsAndUtil {
     }
 
     fun redactQueryParams(url: String): String {
-        val regexList =
-            if (Instana.redactHTTPQuery.size > 0) Instana.redactHTTPQuery.map { it.toRegex() }
-            else Instana.config?.defaultRedactedQueryParams ?: emptyList()
+        val redactHTTPQuery = Instana.redactHTTPQuery
+        synchronized(redactHTTPQuery) {
+            val regexList =
+                if (redactHTTPQuery.size > 0) redactHTTPQuery.map { it.toRegex() }
+                else Instana.config?.defaultRedactedQueryParams ?: emptyList()
 
-        return URLUtils.redactURLQueryParams(
-            url = url,
-            replacement = Instana.config?.defaultRedactedQueryParamValue ?: "",
-            regex = regexList
-        )
+            return URLUtils.redactURLQueryParams(
+                url = url,
+                replacement = Instana.config?.defaultRedactedQueryParamValue ?: "",
+                regex = regexList
+            )
+        }
     }
 
     internal fun forceRedundantURLPort(url: String): String {
