@@ -1,5 +1,10 @@
 Changelog
 ==========
+## Version 6.0.11
+
+_2023-12-18_
+
+- Stale beacons clearing logic added
 
 ## Version 6.0.9
 
