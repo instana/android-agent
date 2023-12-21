@@ -266,4 +266,8 @@ object ConstantsAndUtil {
             url
         }
     }
+
+    fun Int.toDaysInMillis(): Long {
+        return maxOf(this, 0) * 24 * 60 * 60 * 1000L
+    }
 }

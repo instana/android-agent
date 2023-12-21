@@ -13,18 +13,16 @@ import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
-import kotlinx.coroutines.delay
 import okhttp3.MediaType
 import okhttp3.Request
 import okhttp3.RequestBody
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicLong
 
 open class EventWorker(
     context: Context,
-    private val params: WorkerParameters
+    private val params: WorkerParameters,
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
@@ -41,8 +39,8 @@ open class EventWorker(
         }
 
         var inSlowModeBeforeFlush = false
-        var limit = batchLimit
-        if (!isWorkWithoutApp){
+        var limit = maxBatchLimit
+        if (!isWorkWithoutApp) {
             inSlowModeBeforeFlush = manager!!.isInSlowSendMode()
             if (inSlowModeBeforeFlush) {
                 limit = 1
@@ -77,7 +75,9 @@ open class EventWorker(
                     scheduleFlushAgain(manager, inSlowModeBeforeFlush, files.size == limit)
                     result
                 }
-            } else -> {
+            }
+
+            else -> {
                 if (isWorkWithoutApp) {
                     if (params.inputData.getBoolean(ALLOW_SLOW_SEND, false)) {
                         Result.failure()
@@ -106,9 +106,11 @@ open class EventWorker(
         return result
     }
 
-    private fun scheduleFlushAgain(instanaManager: InstanaWorkManager,
-                                   inSlowModeBeforeFlush: Boolean,
-                                   reachedBatchLimit: Boolean = false) {
+    private fun scheduleFlushAgain(
+        instanaManager: InstanaWorkManager,
+        inSlowModeBeforeFlush: Boolean,
+        reachedBatchLimit: Boolean = false,
+    ) {
         val workManager = instanaManager.getWorkManager()
         if (workManager == null) {
             Logger.w("Empty WorkManager, can not reschedule flush, reached batch limit is $reachedBatchLimit, in slow mode before flush is $inSlowModeBeforeFlush")
@@ -134,14 +136,16 @@ open class EventWorker(
         }
     }
 
-    private fun readAllFiles(instanaManager: InstanaWorkManager?,
-                             directory: File, limit: Int): Pair<String, Array<File>> {
+    private fun readAllFiles(
+        instanaManager: InstanaWorkManager?,
+        directory: File, limit: Int,
+    ): Pair<String, Array<File>> {
         val files = directory.listFiles() ?: emptyArray()
+        val filteredFileList = staleBeaconsRemover(files)
         val sb = StringBuffer()
         var retFiles: Array<File> = arrayOf()
-
         val meta = instanaManager?.slowSendStartTime?.toString()
-        files.take(limit).forEach {
+        filteredFileList.take(limit).forEach {
             var beaconStr = it.readText(Charsets.UTF_8)
             if (meta != null) {
                 beaconStr = Beacon.addMetaData(beaconStr, "slowSendStartTime", meta)
@@ -188,7 +192,7 @@ open class EventWorker(
 
     companion object {
 
-        private const val batchLimit = 100
+        private const val maxBatchLimit = 100
 
         fun createWorkRequest(
             constraints: Constraints,
@@ -196,7 +200,7 @@ open class EventWorker(
             reportingURL: String?,
             allowSlowSend: Boolean,
             initialDelayMs: Long,
-            tag: String
+            tag: String,
         ): OneTimeWorkRequest {
             val data = Data.Builder()
                 .putString(DIRECTORY_ABS_PATH, directory.absolutePath)
@@ -217,4 +221,26 @@ open class EventWorker(
         private const val REPORTING_URL = "reporting_url"
         private const val ALLOW_SLOW_SEND = "allow_slow_mode"
     }
+
+    private fun staleBeaconsRemover(files: Array<File>): Array<File> {
+        val maxStaleBeaconLimit = 1000 //Should never go below 100
+        val fileSize = files.size
+        return if (fileSize > 3 * maxStaleBeaconLimit) {
+            // If total number exceeds 3 * max limit, delete all files
+            Logger.i("Dropping all beacons as limit exceeds 3 times the allowed limit")
+            files.forEach(File::delete)
+            emptyArray()
+        } else if (fileSize in maxStaleBeaconLimit until 3 * maxStaleBeaconLimit) {
+            // Keep the most recent (maxStaleBeaconLimit-maxBatchLimit) files
+            val recentFiles = files.sortedByDescending(File::lastModified).take(maxStaleBeaconLimit - maxBatchLimit)
+            // Delete the rest of the files other than latest
+            Logger.i("keeping recent beacons and dropping older ones")
+            files.filterNot { it in recentFiles }.forEach(File::delete)
+            recentFiles.toTypedArray()
+        } else {
+            files
+        }
+    }
+
+
 }
