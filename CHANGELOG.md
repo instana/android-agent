@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.0.12
+
+_2024-01-18_
+
+- `AgentVersion` updated to a new format for differentiating hybrid-agent and native agent data 
+
 ## Version 6.0.11
 
 _2023-12-18_
