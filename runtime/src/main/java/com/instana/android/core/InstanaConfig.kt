@@ -78,26 +78,6 @@ class InstanaConfig
      * Do not verify https certificates of the reporting URL
      */
     val debugTrustInsecureReportingURL: Boolean = false,
-
-    /**
-     * Android-native agent version taken from agent directly
-     * No need for assigning custom value
-     */
-    var nativeAgentVersion: String = BuildConfig.AGENT_VERSION_NAME,
-
-    /**
-     * hybridAgentId is the name provided from other hybrid agents which utilises the native-agent internally
-     * @sample `r` -> for react-native `f` -> for flutter
-     * No need for assigning custom value
-     */
-    var hybridAgentId: String = Platform.ANDROID.internalType,
-
-    /**
-     * Hybrid-agent-version provided from other agents which utilises the native-agent internally
-     * No need for assigning custom value
-     */
-    var hybridAgentVersion: String = ""
-
 ) {
     /**
      * Configuration of the Instana Performance Monitoring Service
@@ -121,6 +101,19 @@ class InstanaConfig
     )
     internal val defaultRedactedQueryParamValue = "<redacted>"
 
+    /**
+     * hybridAgentId is the name provided from other hybrid agents which utilises the native-agent internally
+     * @sample `r` -> for react-native `f` -> for flutter
+     * No need for assigning custom value
+     */
+    var hybridAgentId: String? = Platform.ANDROID.internalType
+
+    /**
+     * Hybrid-agent-version provided from other agents which utilises the native-agent internally
+     * No need for assigning custom value
+     */
+    var hybridAgentVersion: String? = ""
+
     fun isValid(): Boolean {
         return when {
             reportingURL.isBlank() -> {
@@ -137,5 +130,18 @@ class InstanaConfig
             }
             else -> true
         }
+    }
+
+}
+
+class HybridAgentOptions(id: String, version: String) {
+    val id: String
+    val version: String
+
+    init {
+        // remove leading and trailing spaces
+        // truncate if too long
+        this.id = id.trim().take(16)
+        this.version = version.trim().take(16)
     }
 }

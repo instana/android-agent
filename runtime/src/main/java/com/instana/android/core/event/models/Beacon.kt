@@ -587,10 +587,11 @@ class Beacon private constructor(
      * custom format `<native-agent-version>:<f>/<r>:<hybrid-agent-version>`
      */
     private fun retrieveVersionName():String{
+        val androidAgentVersion = BuildConfig.AGENT_VERSION_NAME
         return when(Instana.config?.hybridAgentId){
-            Platform.ANDROID.internalType,"",null -> BuildConfig.AGENT_VERSION_NAME
+            Platform.ANDROID.internalType,"",null -> androidAgentVersion
             else -> {
-                "${Instana.config?.nativeAgentVersion}:${Instana.config?.hybridAgentId}:${Instana.config?.hybridAgentVersion}"
+                "${androidAgentVersion}:${Instana.config?.hybridAgentId}:${Instana.config?.hybridAgentVersion}"
             }
         }
     }
