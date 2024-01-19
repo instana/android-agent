@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.Size
 import androidx.annotation.VisibleForTesting
 import com.instana.android.android.agent.BuildConfig
+import com.instana.android.core.HybridAgentOptions
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.InstanaWorkManager
@@ -272,19 +273,30 @@ object Instana {
     @JvmStatic
     @RequiresApi(BuildConfig.MIN_SDK_VERSION)
     fun setup(app: Application, config: InstanaConfig) {
+        setupInternal(app,config)
+    }
+
+    /**
+     * Function to providing provision to initialise items internally from hybrid agents
+     */
+    @JvmStatic
+    fun setupInternal(app:Application, config: InstanaConfig, hybridAgentOptions: HybridAgentOptions? =null){
         Logger.i("Configuring Instana agent")
         if (config.isValid().not()) {
             Logger.e("Invalid configuration provided to Instana agent. Instana agent will not start")
             return
         }
-
         UniqueIdManager.initialize(app,config.usiRefreshTimeIntervalInHrs)
         this.config = config
+        this.config?.hybridAgentId = hybridAgentOptions?.id
+        this.config?.hybridAgentVersion = hybridAgentOptions?.version
         initProfiles(app)
         initLifecycle(app)
         initWorkManager(app, config)
         Logger.i("Instana agent started")
     }
+
+
 
     private fun initLifecycle(app: Application) {
         this.app = app
