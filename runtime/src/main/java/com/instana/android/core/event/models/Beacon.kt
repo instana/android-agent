@@ -590,7 +590,7 @@ class Beacon private constructor(
         return when(Instana.config?.hybridAgentId){
             Platform.ANDROID.internalType,"",null -> BuildConfig.AGENT_VERSION_NAME
             else -> {
-                "${Instana.config?.nativeAgentVersion}:${Instana.config?.hybridAgentId}:${Instana.config?.hybridAgentVersion}"
+                "${Instana.config?.androidAgentVersion}:${Instana.config?.hybridAgentId}:${Instana.config?.hybridAgentVersion}"
             }
         }
     }

@@ -83,7 +83,7 @@ class InstanaConfig
      * Android-native agent version taken from agent directly
      * No need for assigning custom value
      */
-    var nativeAgentVersion: String = BuildConfig.AGENT_VERSION_NAME,
+    var androidAgentVersion: String = BuildConfig.AGENT_VERSION_NAME,
 
     /**
      * hybridAgentId is the name provided from other hybrid agents which utilises the native-agent internally
