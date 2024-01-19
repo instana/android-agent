@@ -37,7 +37,7 @@ class Beacon private constructor(
 
     init {
         // Agent
-        setAgentVersion(BuildConfig.AGENT_VERSION_NAME) //TODO this has a new serialization key. Test when backend is deployed https://instana.slack.com/archives/GQS1KRJ5D/p1582630642005600
+        setAgentVersion(retrieveVersionName()) //TODO this has a new serialization key. Test when backend is deployed https://instana.slack.com/archives/GQS1KRJ5D/p1582630642005600
 
         // App
         appProfile.appVersion?.run { setAppVersion(this) }
@@ -581,6 +581,19 @@ class Beacon private constructor(
         replace("\\", "\\\\")
             .replace("\n", "\\n")
             .replace("\t", "\\t")
+
+    /**
+     * When the native agent is utilised, the agent version will be only assigned else it will be in a
+     * custom format `<native-agent-version>:<f>/<r>:<hybrid-agent-version>`
+     */
+    private fun retrieveVersionName():String{
+        return when(Instana.config?.hybridAgentId){
+            Platform.ANDROID.internalType,"",null -> BuildConfig.AGENT_VERSION_NAME
+            else -> {
+                "${Instana.config?.nativeAgentVersion}:${Instana.config?.hybridAgentId}:${Instana.config?.hybridAgentVersion}"
+            }
+        }
+    }
 
     companion object {
         fun newSessionStart(

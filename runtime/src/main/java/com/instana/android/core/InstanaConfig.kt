@@ -6,6 +6,8 @@
 package com.instana.android.core
 
 import android.webkit.URLUtil
+import com.instana.android.android.agent.BuildConfig
+import com.instana.android.core.event.models.Platform
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 import com.instana.android.instrumentation.HTTPCaptureConfig
@@ -75,7 +77,27 @@ class InstanaConfig
      * For debug purpose only
      * Do not verify https certificates of the reporting URL
      */
-    val debugTrustInsecureReportingURL: Boolean = false
+    val debugTrustInsecureReportingURL: Boolean = false,
+
+    /**
+     * Android-native agent version taken from agent directly
+     * No need for assigning custom value
+     */
+    var nativeAgentVersion: String = BuildConfig.AGENT_VERSION_NAME,
+
+    /**
+     * hybridAgentId is the name provided from other hybrid agents which utilises the native-agent internally
+     * @sample `r` -> for react-native `f` -> for flutter
+     * No need for assigning custom value
+     */
+    var hybridAgentId: String = Platform.ANDROID.internalType,
+
+    /**
+     * Hybrid-agent-version provided from other agents which utilises the native-agent internally
+     * No need for assigning custom value
+     */
+    var hybridAgentVersion: String = ""
+
 ) {
     /**
      * Configuration of the Instana Performance Monitoring Service
