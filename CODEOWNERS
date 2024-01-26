@@ -1,0 +1,15 @@
+# What does "ownership" mean?
+# What does "ownership" mean? This team is the **first contact** when it comes to anything regarding this package. For
+# example, technical, design, behavioral and functional changes and questions.
+
+# What does "ownership" NOT mean?
+# Ownership does NOT mean, that the owner-team is the only team who may change code in this component. But you should
+# consult the owner-team if you plan bigger changes.
+# Ownership does NOT mean, that the owner-team is the only team responsible for the stability and functioning of the
+# component. We are all responsible for a stable and working Instana. But if anything breaks, then the owner-team is
+# the best place to start looking for help.
+# Ownership does NOT mean, that the owner-team has ownership over all the code that this component is using. It might
+# well be, that a component serves different purposes (and teams). But if in doubt, the owner-team at least knows whom
+# (=which other team or person) to ask for advice.
+
+* @instana/eng-eum
