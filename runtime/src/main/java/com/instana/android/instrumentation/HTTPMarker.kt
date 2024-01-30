@@ -12,15 +12,26 @@ import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
-import com.instana.android.core.util.*
+import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
 import com.instana.android.core.util.ConstantsAndUtil.getCarrierName
 import com.instana.android.core.util.ConstantsAndUtil.getCellularConnectionType
 import com.instana.android.core.util.ConstantsAndUtil.getConnectionType
+import com.instana.android.core.util.Logger
+import com.instana.android.core.util.MaxCapacityMap
+import com.instana.android.core.util.StopWatch
+import com.instana.android.core.util.decodedContentLength
+import com.instana.android.core.util.decodedResponseSizeOrNull
+import com.instana.android.core.util.encodedResponseSizeOrNull
+import com.instana.android.core.util.errorMessageOrNull
+import com.instana.android.core.util.getRequestHeadersMap
+import com.instana.android.core.util.getResponseHeadersMap
+import com.instana.android.core.util.responseCodeOrNull
+import com.instana.android.core.util.toMap
 import okhttp3.Request
 import okhttp3.Response
 import java.net.HttpURLConnection
-import java.util.*
+import java.util.UUID
 
 /**
  * Use for manual instrumentation, called over instrumentation service instance

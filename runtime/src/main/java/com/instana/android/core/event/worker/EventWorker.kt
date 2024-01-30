@@ -7,7 +7,11 @@
 package com.instana.android.core.event.worker
 
 import android.content.Context
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkerParameters
 import com.instana.android.Instana
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon

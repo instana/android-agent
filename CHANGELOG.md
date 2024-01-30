@@ -1,6 +1,9 @@
 Changelog
 ==========
 ## Version 6.0.15
+_2024-02-28_
+
+- `autoCaptureScreenNames` was introduced to auto capture the Fragment & Activity names
 
 _2024-03-07_
 

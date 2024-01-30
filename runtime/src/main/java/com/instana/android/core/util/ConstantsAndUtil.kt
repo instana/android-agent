@@ -23,8 +23,6 @@ import com.instana.android.core.event.models.EffectiveConnectionType
 import com.instana.android.core.event.models.Platform
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import okhttp3.OkHttpClient
-import java.math.BigDecimal
-import java.math.RoundingMode
 import java.net.MalformedURLException
 import java.net.URL
 

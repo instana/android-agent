@@ -18,6 +18,7 @@ import com.instana.android.core.util.Debouncer
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.RateLimiter
 import com.instana.android.core.util.isDirectoryEmpty
+import com.instana.android.view.VisibleScreenNameTracker
 import kotlinx.coroutines.*
 import java.io.File
 import java.io.IOException
@@ -86,7 +87,12 @@ class InstanaWorkManager(
             Instana.userProfile.userName?.run { item.setUserName(this) }
             Instana.userProfile.userId?.run { item.setUserId(this) }
             Instana.userProfile.userEmail?.run { item.setUserEmail(this) }
-            if (item.getView() == null) Instana.firstView?.run { item.setView(this) }
+            if (item.getView() == null) {
+                Instana.firstView?.run { item.setView(this) }
+                VisibleScreenNameTracker.initialViewMap.forEach { (key, value) ->
+                    if (item.getViewMeta(key) == null) item.setViewMeta(key, value)
+                }
+            }
             if (item.getRooted() == null) Instana.deviceProfile.rooted?.run { item.setRooted(this) }
             if (item.getGooglePlayServicesMissing() == null) Instana.googlePlayServicesMissing?.run { item.setGooglePlayServicesMissing(this) }
             for (it in Instana.meta.getAll()) {

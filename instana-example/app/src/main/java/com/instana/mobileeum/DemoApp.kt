@@ -27,7 +27,8 @@ class DemoApp : Application() {
                 reportingURL = BuildConfig.INSTANA_REPORTING_URL,
                 key = BuildConfig.INSTANA_KEY,
                 // slowSendIntervalMillis = 60000,
-                debugTrustInsecureReportingURL = true
+                debugTrustInsecureReportingURL = true,
+                autoCaptureScreenNames = true
             ))
             Instana.userId = "1234567890"
             Instana.userEmail = "instana@example.com"
