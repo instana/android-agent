@@ -287,10 +287,10 @@ class HTTPMarker(
                 backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
             }
         }catch (e:NullPointerException){
-            Logger.i("A null pointer exception occurred while using java.net.URLConnection.getHeaderField");
+            Logger.i("${e.message} occurred while using java.net.URLConnection.getHeaderField");
             null
         }catch (e:Exception){
-            Logger.i("Something went wrong while retrieving backendTraceId from connection headers")
+            Logger.i("Occurred ${e.message} while retrieving backendTraceId from connection headers")
             null
         }
     }
@@ -301,7 +301,7 @@ class HTTPMarker(
                 backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
             }
         }catch (e:Exception){
-            Logger.i("Something went wrong while retrieving backendTraceId from response headers")
+            Logger.i("Occurred ${e.message} while retrieving backendTraceId from response headers")
             null
         }
 
