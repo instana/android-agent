@@ -1,5 +1,12 @@
 Changelog
 ==========
+## Version 6.0.13
+
+_2024-02-07_
+
+- Fix for retrieving headers based on `java.net.URLConnection.getHeaderField`
+- Minor gradle file path updates in example app
+
 ## Version 6.0.12
 
 _2024-01-18_
