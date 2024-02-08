@@ -29,7 +29,7 @@ android {
         multiDexEnabled true
 
         def instanaProperties = new Properties()
-        instanaProperties.load(new FileInputStream("$project.projectDir/instana.properties"))
+        instanaProperties.load(new FileInputStream("$project.projectDir/instana.properties.example"))
         buildConfigField 'String', 'INSTANA_KEY', enableInstana ? "${instanaProperties["instana.key"]}" : '""'
         buildConfigField 'String', 'INSTANA_REPORTING_URL', enableInstana ? "${instanaProperties["instana.reportingURL"]}" : '""'
 

@@ -282,15 +282,29 @@ class HTTPMarker(
     }
 
     private fun getBackendTraceId(connection: HttpURLConnection): String? {
-        return connection.getHeaderField(backendTraceIdHeaderKey)?.let { it ->
-            backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
+        return try {
+            connection.getHeaderField(backendTraceIdHeaderKey)?.let { it ->
+                backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
+            }
+        }catch (e:NullPointerException){
+            Logger.i("${e.message} occurred while using java.net.URLConnection.getHeaderField");
+            null
+        }catch (e:Exception){
+            Logger.i("Occurred ${e.message} while retrieving backendTraceId from connection headers")
+            null
         }
     }
 
     private fun getBackendTraceId(response: Response): String? {
-        return response.header(backendTraceIdHeaderKey)?.let { it ->
-            backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
+        return try {
+            response.header(backendTraceIdHeaderKey)?.let { it ->
+                backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
+            }
+        }catch (e:Exception){
+            Logger.i("Occurred ${e.message} while retrieving backendTraceId from response headers")
+            null
         }
+
     }
 
     //region Comparison
