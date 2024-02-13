@@ -20,8 +20,16 @@ repositories {
 dependencies {
     implementation gradleApi()
     implementation localGroovy()
-    implementation "com.android.tools.build:gradle:$buildtools_version"
-    implementation "com.android.tools.build:gradle-api:$buildtools_version"
+    implementation ("com.android.tools.build:gradle:$buildtools_version"){
+        // Exclude the vulnerable Bouncy Castle library
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+    }
+    implementation ("com.android.tools.build:gradle-api:$buildtools_version"){
+        exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+        exclude group: 'org.bouncycastle', module: 'bcpkix-jdk15on'
+    }
+    implementation "org.bouncycastle:bcprov-jdk15on:1.70"
+    implementation "org.bouncycastle:bcpkix-jdk15on:1.70"
 
     implementation "commons-io:commons-io:2.8.0"
     implementation "org.ow2.asm:asm:9.3"
