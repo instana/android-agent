@@ -1,0 +1,36 @@
+project.afterEvaluate { project ->
+    setupAndroidReporting()
+}
+
+def setupAndroidReporting() {
+    tasks.withType(Test) {
+        jacoco.includeNoLocationClasses = true
+        jacoco.excludes = [
+                'jdk.internal.*',
+                'android/animation/**',
+                'android/app/**',
+                'android/content/**',
+                'android/**',
+                'androidx/**',
+                'com/android/internal/**',
+                'com/google/common/**',
+                'kotlinx/**',
+                'net/**',
+                'org/**',
+                'sun/**',
+                'worker/**',
+                'kotlin/**',
+                'okhttp3/**',
+                'com/sun/**',
+                'com/nhaarman/**'
+        ]
+    }
+}
+
+android {
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
+    }
+}
