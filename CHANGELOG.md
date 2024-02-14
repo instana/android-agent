@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.0.14
+
+_2024-02-13_
+
+- update vulnerable transitive dependency from gradle
+
 ## Version 6.0.13
 
 _2024-02-07_

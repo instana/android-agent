@@ -6,7 +6,11 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:$buildtools_version"
+        classpath ("com.android.tools.build:gradle:$buildtools_version"){
+            // Exclude the vulnerable Bouncy Castle library
+            exclude group: 'org.bouncycastle', module: 'bcprov-jdk15on'
+        }
+        classpath "org.bouncycastle:bcprov-jdk15on:1.70"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
         classpath "org.jacoco:org.jacoco.core:0.8.7"
