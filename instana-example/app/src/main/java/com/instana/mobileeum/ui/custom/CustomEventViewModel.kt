@@ -14,6 +14,7 @@ import com.instana.android.Instana
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 class CustomEventViewModel : ViewModel() {
 
@@ -33,6 +34,7 @@ class CustomEventViewModel : ViewModel() {
     ) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
+                var randomDouble = Random.nextDouble(1.3, 3456778.324)
                 val error = errorMessage?.let { Throwable(errorMessage) }
                 val event = CustomEvent(eventName).apply {
                     this.startTime = startTimeEpochMs
@@ -41,6 +43,7 @@ class CustomEventViewModel : ViewModel() {
                     this.meta = meta
                     this.backendTracingID = backendTracingID
                     this.error = error
+                    this.customMetric = randomDouble
                 }
                 Instana.reportEvent(event)
             }

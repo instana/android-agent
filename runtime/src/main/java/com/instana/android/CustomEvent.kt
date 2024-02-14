@@ -54,4 +54,9 @@ class CustomEvent(
      * Error Throwable to provide additional context, if any
      */
     var error: Throwable? = null
+
+    /**
+     * Can be used to provide any custom metrics to backend
+     */
+    var customMetric:Double? = null
 }

@@ -33,7 +33,8 @@ class CustomEventService(
         meta: Map<String, String>,
         viewName: String?,
         backendTracingID: String?,
-        error: Throwable?
+        error: Throwable?,
+        customMetric: Double?
     ) {
         val sessionId = Instana.sessionId
         if (sessionId == null) {
@@ -61,7 +62,8 @@ class CustomEventService(
             name = eventName,
             meta = mergedMeta.getAll(),
             backendTraceId = backendTracingID,
-            error = errorMessage
+            error = errorMessage,
+            customMetric = customMetric
         )
 
         manager.queue(beacon)

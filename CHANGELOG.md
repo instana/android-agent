@@ -8,6 +8,8 @@ _2024-02-13_
 
 _2024-02-14_
 
+- added `customMetric` feature to custom events
+
 - added more unit tests
 
 ## Version 6.0.13
