@@ -10,8 +10,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.work.*
 import com.instana.android.BaseTest
 import com.instana.android.Instana
-import com.instana.android.InstanaShould.Companion.API_KEY
-import com.instana.android.InstanaShould.Companion.SERVER_URL
+import com.instana.android.InstanaTest.Companion.API_KEY
+import com.instana.android.InstanaTest.Companion.SERVER_URL
 import com.instana.android.core.InstanaConfig
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.equalTo

@@ -6,6 +6,10 @@ _2024-02-13_
 
 - update vulnerable transitive dependency from gradle
 
+_2024-02-14_
+
+- added more unit tests
+
 ## Version 6.0.13
 
 _2024-02-07_

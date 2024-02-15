@@ -6,8 +6,8 @@
 package com.instana.android.instrumentation
 
 import com.instana.android.BaseTest
-import com.instana.android.InstanaShould.Companion.API_KEY
-import com.instana.android.InstanaShould.Companion.FAKE_SERVER_URL
+import com.instana.android.InstanaTest.Companion.API_KEY
+import com.instana.android.InstanaTest.Companion.FAKE_SERVER_URL
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.nhaarman.mockitokotlin2.mock
