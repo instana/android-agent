@@ -252,6 +252,7 @@ object Instana {
         val reportedDuration = event.duration ?: 0
         val reportedStartTime = event.startTime ?: (System.currentTimeMillis() - reportedDuration)
         val reportedMeta = event.meta ?: emptyMap()
+        val reportedCustomMetric = event.customMetric
         customEvents?.submit(
             eventName = event.eventName,
             startTime = reportedStartTime,
@@ -259,7 +260,8 @@ object Instana {
             meta = reportedMeta,
             backendTracingID = reportedBackendTracingID,
             error = event.error,
-            viewName = reportedViewName
+            viewName = reportedViewName,
+            customMetric = reportedCustomMetric
         )
     }
 

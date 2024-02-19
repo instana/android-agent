@@ -66,7 +66,8 @@ class LowMemoryMonitor(
             ),
             viewName = Instana.view,
             backendTracingID = null,
-            error = null
+            error = null,
+            customMetric = null
         )
     }
 

@@ -32,6 +32,7 @@ class Beacon private constructor(
 
     private val intMap: MutableMap<String, Int> = mutableMapOf()
     private val longMap: MutableMap<String, Long> = mutableMapOf()
+    private val doubleMap: MutableMap<String, Double> = mutableMapOf()
     private val stringMap: MutableMap<String, String> = mutableMapOf()
     private val booleanMap: MutableMap<String, Boolean> = mutableMapOf()
 
@@ -181,6 +182,13 @@ class Beacon private constructor(
      */
     fun setCustomEventName(@Size(max = 256) value: String) {
         stringMap["cen"] = value.truncate(256, "Custom Event Name")
+    }
+
+    /**
+     * Any custom metric that can be passed with custom events Example: 123.345
+     */
+    fun setCustomMetricData(value: Double) {
+        doubleMap["cm"] = value
     }
 
     /**
@@ -557,6 +565,12 @@ class Beacon private constructor(
                 .append(it.value.escape())
                 .append("\n")
         }
+        for (it in doubleMap){
+            sb.append(it.key)
+                .append("\t")
+                .append(it.value)
+                .append("\n")
+        }
         return sb.toString()
     }
 
@@ -680,7 +694,8 @@ class Beacon private constructor(
             duration: Long,
             backendTraceId: String?,
             error: String?,
-            name: String
+            name: String,
+            customMetric: Double?
         ): Beacon {
             val errorCount = if (error != null) 1L else 0L
             return Beacon(BeaconType.CUSTOM, duration, appKey, sessionId, errorCount, appProfile, deviceProfile, connectionProfile, userProfile)
@@ -691,6 +706,7 @@ class Beacon private constructor(
                     setTimestamp(startTime)
                     backendTraceId?.run { setBackendTraceId(backendTraceId) }
                     error?.run { setErrorMessage(this) }
+                    customMetric?.run { setCustomMetricData(this) }
                 }
         }
 

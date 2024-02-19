@@ -100,7 +100,8 @@ class FrameSkipMonitor(
             ),
             viewName = Instana.view,
             backendTracingID = null,
-            error = null
+            error = null,
+            customMetric = null
         )
     }
 
