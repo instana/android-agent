@@ -7,14 +7,17 @@
 package com.instana.android.core.event.worker
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.work.*
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.WorkInfo
+import androidx.work.WorkRequest
 import com.instana.android.BaseTest
 import com.instana.android.Instana
 import com.instana.android.InstanaTest.Companion.API_KEY
 import com.instana.android.InstanaTest.Companion.SERVER_URL
 import com.instana.android.core.InstanaConfig
-import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert
 import org.junit.Rule

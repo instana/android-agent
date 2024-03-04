@@ -8,6 +8,7 @@ package com.instana.android
 
 import android.app.Application
 import com.instana.android.core.InstanaConfig
+import com.instana.android.session.SessionService
 import org.junit.Assert
 import org.junit.Test
 
@@ -62,6 +63,86 @@ class InstanaTest : BaseTest() {
         Assert.assertNotNull(Instana.instrumentationService)
         Assert.assertNotNull(Instana.customEvents)
         Assert.assertNotNull(Instana.crashReporting)
+        resetConfig()
+    }
+
+    @Test
+    fun `test report event will have details in the beacon`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setup(app, config)
+        val customEvent  = CustomEvent("TEST_EVENT").apply {
+            customMetric = 212.223
+            duration = 203
+            meta = mapOf("tst" to "test")
+            backendTracingID = "12345678"
+            startTime = System.currentTimeMillis()
+            error = Throwable("test")
+            viewName = "view name"
+        }
+        Instana.reportEvent(customEvent)
+        assert(Instana.workManager?.initialDelayQueue.toString().contains("TEST_EVENT"))
+        resetConfig()
+    }
+
+    @Test
+    fun `test instrumentation service not available then return null from start capture`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setup(app, config)
+        Instana.instrumentationService = null
+        val httpMaker = Instana.startCapture("https://www.test.com")
+        assert(httpMaker == null)
+        resetConfig()
+    }
+
+    @Test
+    fun `test instrumentation service available then should not return null from start capture`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setup(app, config)
+        val httpMaker = Instana.startCapture("https://www.test.com")
+        assert(httpMaker != null)
+        resetConfig()
+    }
+
+    @Test
+    fun `test set collection enabled should update instana object`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setup(app, config)
+        Instana.setCollectionEnabled(true)
+        assert(Instana.config?.collectionEnabled==true)
+        assert(Instana.isCollectionEnabled()==true)
+        resetConfig()
+    }
+
+    @Test
+    fun `test user details is kept in object`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setup(app, config)
+        Instana.userName = "User"
+        Instana.userEmail = "email"
+        Instana.userId = "Id"
+        SessionService(app,Instana.workManager!!,config)
+        assert(Instana.workManager?.initialDelayQueue.toString().contains("ui\t${Instana.userId}"))
+        assert(Instana.workManager?.initialDelayQueue.toString().contains("un\t${Instana.userName}"))
+        assert(Instana.workManager?.initialDelayQueue.toString().contains("ue\t${Instana.userEmail}"))
+        resetConfig()
+    }
+
+
+    @Test
+    fun `test set googlePlayServicesMissing value should update device profile`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setup(app, config)
+        Instana.googlePlayServicesMissing = true
+        assert(Instana.deviceProfile.googlePlayServicesMissing==true)
+        resetConfig()
+    }
+    private fun resetConfig(){
         Instana.config = null
         Instana.workManager = null
         Instana.instrumentationService = null

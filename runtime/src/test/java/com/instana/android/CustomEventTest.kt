@@ -29,6 +29,7 @@ class CustomEventTest {
         assertNull(customEvent.meta)
         assertNull(customEvent.backendTracingID)
         assertNull(customEvent.error)
+        assertNull(customEvent.customMetric)
     }
 
     @Test
@@ -60,7 +61,6 @@ class CustomEventTest {
     fun testSetBackendTracingID() {
         val customEvent = CustomEvent("TestEvent")
         customEvent.backendTracingID = "123456"
-
         assertEquals("123456", customEvent.backendTracingID)
     }
 
@@ -68,7 +68,6 @@ class CustomEventTest {
     fun testSetError() {
         val customEvent = CustomEvent("TestEvent")
         customEvent.error = throwableMock
-
         assertEquals(throwableMock, customEvent.error)
     }
 }

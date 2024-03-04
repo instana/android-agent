@@ -83,4 +83,13 @@ class InstanaConfigTest {
         assertEquals(Platform.ANDROID.internalType, config.hybridAgentId)
         assertEquals("", config.hybridAgentVersion)
     }
+
+    @Test
+    fun `test HybridAgentOptions params`(){
+        val lengthMoreThan16:String = "12345678901234567890";
+        val hybridAgentOptions = HybridAgentOptions(lengthMoreThan16,lengthMoreThan16)
+        assert(hybridAgentOptions.id.length<lengthMoreThan16.length)
+        assert(hybridAgentOptions.version.length < lengthMoreThan16.length)
+    }
+
 }

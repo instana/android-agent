@@ -1,0 +1,140 @@
+/*
+ * IBM Confidential
+ * PID 5737-N85, 5900-AG5
+ * Copyright IBM Corp. 2024, 2024
+ */
+
+package com.instana.android.core.util
+
+import android.util.Log
+import com.instana.android.BaseTest
+import com.instana.android.Logger
+import com.nhaarman.mockitokotlin2.atLeastOnce
+import com.nhaarman.mockitokotlin2.never
+import com.nhaarman.mockitokotlin2.verify
+import org.junit.Before
+import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
+
+class LoggerTest:BaseTest() {
+
+    @Mock
+    lateinit var logger:Logger
+
+    @Mock
+    lateinit var disabledLogger:Logger
+
+    @Before
+    fun `test setup`(){
+        MockitoAnnotations.initMocks(this)
+        com.instana.android.core.util.Logger.clientLogger = logger
+        com.instana.android.core.util.Logger.enabled = true
+        com.instana.android.core.util.Logger.logLevel = 1
+    }
+
+    @Test
+    fun `test logging calls for v-VERBOSE if enabled`(){
+        com.instana.android.core.util.Logger.v("something")
+        verify(logger, atLeastOnce()).log(Log.VERBOSE, "Instana", "something", null)
+    }
+
+    @Test
+    fun `test logging calls for v-VERBOSE if disabled`(){
+        com.instana.android.core.util.Logger.clientLogger = disabledLogger
+        com.instana.android.core.util.Logger.enabled = false
+        com.instana.android.core.util.Logger.v("something")
+        verify(disabledLogger, never()).log(Log.VERBOSE, "Instana", "something", null)
+    }
+
+    @Test
+    fun `test logging calls for d-DEBUG if enabled`(){
+        com.instana.android.core.util.Logger.d("something")
+        verify(logger, atLeastOnce()).log(Log.DEBUG, "Instana", "something", null)
+    }
+
+    @Test
+    fun `test logging calls for d-DEBUG if disabled`(){
+        com.instana.android.core.util.Logger.clientLogger = disabledLogger
+        com.instana.android.core.util.Logger.enabled = false
+        com.instana.android.core.util.Logger.d("something")
+        verify(disabledLogger, never()).log(Log.DEBUG, "Instana", "something", null)
+    }
+
+    @Test
+    fun `test logging calls for i-Info if disabled`(){
+        com.instana.android.core.util.Logger.clientLogger = disabledLogger
+        com.instana.android.core.util.Logger.enabled = false
+        com.instana.android.core.util.Logger.i("something")
+        verify(disabledLogger, never()).log(Log.INFO, "Instana", "something", null)
+    }
+
+    @Test
+    fun `test logging calls for i-Info if enabled`(){
+        com.instana.android.core.util.Logger.i("something")
+        verify(logger, atLeastOnce()).log(Log.INFO, "Instana", "something", null)
+    }
+
+
+    @Test
+    fun `test logging calls for i-WARN if enabled`(){
+        com.instana.android.core.util.Logger.w("something")
+        verify(logger, atLeastOnce()).log(Log.WARN, "Instana", "something", null)
+    }
+
+    @Test
+    fun `test logging calls for i-WARN if disabled`(){
+        com.instana.android.core.util.Logger.clientLogger = disabledLogger
+        com.instana.android.core.util.Logger.enabled = false
+        com.instana.android.core.util.Logger.w("something")
+        verify(disabledLogger, never()).log(Log.WARN, "Instana", "something", null)
+    }
+
+    @Test
+    fun `test logging calls for i-WARN-Throwable if enabled`(){
+        val throwable = Throwable("test-throw")
+        com.instana.android.core.util.Logger.w("something",throwable)
+        verify(logger, atLeastOnce()).log(Log.WARN, "Instana", "something",throwable)
+    }
+
+    @Test
+    fun `test logging calls for i-WARN-Throwable if disabled`(){
+        val throwable = Throwable("test-throw")
+        com.instana.android.core.util.Logger.clientLogger = disabledLogger
+        com.instana.android.core.util.Logger.enabled = false
+        com.instana.android.core.util.Logger.w("something",throwable)
+        verify(disabledLogger, never()).log(Log.WARN, "Instana", "something",throwable)
+    }
+
+    @Test
+    fun `test logging calls for e-ERROR-Throwable if enabled`(){
+        val throwable = Throwable("test-throw")
+        com.instana.android.core.util.Logger.e("something",throwable)
+        verify(logger, atLeastOnce()).log(Log.ERROR, "Instana", "something",throwable)
+    }
+
+    @Test
+    fun `test logging calls for e-ERROR-Throwable if disabled`(){
+        val throwable = Throwable("test-throw")
+        com.instana.android.core.util.Logger.clientLogger = disabledLogger
+        com.instana.android.core.util.Logger.enabled = false
+        com.instana.android.core.util.Logger.e("something",throwable)
+        verify(disabledLogger, never()).log(Log.ERROR, "Instana", "something",throwable)
+    }
+
+    @Test
+    fun `test logging calls for e-ERROR if enabled`(){
+        com.instana.android.core.util.Logger.e("something")
+        verify(logger, atLeastOnce()).log(Log.ERROR, "Instana", "something",null)
+    }
+
+    @Test
+    fun `test logging calls for e-ERROR if disabled`(){
+        com.instana.android.core.util.Logger.clientLogger = disabledLogger
+        com.instana.android.core.util.Logger.enabled = false
+        com.instana.android.core.util.Logger.e("something")
+        verify(disabledLogger, never()).log(Log.ERROR, "Instana", "something",null)
+    }
+
+
+}

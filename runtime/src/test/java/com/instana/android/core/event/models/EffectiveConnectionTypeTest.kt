@@ -6,8 +6,9 @@
 
 package com.instana.android.core.event.models
 
-import org.junit.Test
 import org.junit.Assert.assertEquals
+import org.junit.Test
+
 class EffectiveConnectionTypeTest {
 
     @Test
