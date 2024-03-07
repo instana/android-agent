@@ -12,9 +12,21 @@ import com.instana.android.InstanaTest
 import com.instana.android.core.InstanaConfig
 import com.instana.android.session.SessionService
 import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
+import java.io.FileInputStream
+import java.util.Properties
 
 class BeaconTest: BaseTest() {
+    lateinit var agentVersion:String
+    @Before
+    fun `test setup`(){
+        val gradleProperties =  Properties()
+        val gradlePropertiesFile =  FileInputStream("../version.gradle")
+        gradleProperties.load(gradlePropertiesFile)
+        agentVersion = gradleProperties.getProperty("ext.agent_version")
+        gradlePropertiesFile.close()
+    }
 
     @Test
     fun `test beacons class with new session start auto add beacon type`(){
@@ -368,6 +380,6 @@ class BeaconTest: BaseTest() {
             name = "Raymond Griffith",
             customMetric = null
         )
-        Assert.assertTrue(customEvent.toString().contains("agv\t6.0.14:agent_id:1.0.1"))
+        Assert.assertTrue(customEvent.toString().contains("agv\t${agentVersion.replace("'","")}:agent_id:1.0.1"))
     }
 }
