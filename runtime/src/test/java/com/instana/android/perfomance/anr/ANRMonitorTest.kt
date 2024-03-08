@@ -10,10 +10,12 @@ import com.instana.android.BaseTest
 import com.instana.android.Instana
 import com.instana.android.InstanaTest
 import com.instana.android.core.InstanaConfig
+import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.performance.anr.ANRMonitor
 import com.instana.android.performance.anr.AnrException
+import com.nhaarman.mockitokotlin2.whenever
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -40,13 +42,37 @@ class ANRMonitorTest:BaseTest() {
 
     @Test
     fun `test stackTraceAsString is called on anrThread`(){
-        mockInstanaLifeCycle.activityName = "MAIN_ACTIVITY"
         val anrMonitorReal = ANRMonitor(PerformanceMonitorConfig(),mockInstanaLifeCycle)
+        wrkManager.isInitialDelayComplete = false
+        whenever(mockInstanaLifeCycle.activityName).thenReturn("MAIN")
+        anrMonitorReal.onAppNotResponding(anrThread,200)
+        Thread.sleep(1000)
+        assert(Instana.workManager?.initialDelayQueue.toString().contains("m_activityName\tMAIN"))
+        assert(Instana.workManager?.initialDelayQueue.toString().contains("m_stackTrace"))
+        assert(Instana.workManager?.initialDelayQueue.toString().contains("cen\tANR"))
+    }
+    @Test
+    fun `test stackTraceAsString is called on anrThread if activity name not provided then empty`(){
+        val instanaLifeCycle = InstanaLifeCycle(app)
+        instanaLifeCycle.activityName = null
+        val anrMonitorReal = ANRMonitor(PerformanceMonitorConfig(),instanaLifeCycle)
         wrkManager.isInitialDelayComplete = false
         anrMonitorReal.onAppNotResponding(anrThread,200)
         Thread.sleep(1000)
-        assert(Instana.workManager?.initialDelayQueue.toString().contains("m_activityName\tactivity"))
+        assert(Instana.workManager?.initialDelayQueue.toString().contains("m_activityName\t"))
         assert(Instana.workManager?.initialDelayQueue.toString().contains("m_stackTrace"))
         assert(Instana.workManager?.initialDelayQueue.toString().contains("cen\tANR"))
+    }
+
+    @Test
+    fun `test should not submit if custom event is null`(){
+        val instanaLifeCycle = InstanaLifeCycle(app)
+        instanaLifeCycle.activityName = null
+        val anrMonitorReal = ANRMonitor(PerformanceMonitorConfig(),instanaLifeCycle)
+        wrkManager.isInitialDelayComplete = false
+        Instana.customEvents = null
+        anrMonitorReal.onAppNotResponding(anrThread,200)
+        Thread.sleep(1000)
+        assert(!Instana.workManager?.initialDelayQueue.toString().contains("m_activityName\t"))
     }
 }

@@ -6,11 +6,20 @@
 
 package com.instana.android.core.util
 
+import com.instana.android.BaseTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class RateLimiterTest {
+class RateLimiterTest :BaseTest(){
+    
+    @Test
+    fun `test run with lastTenMinuteTimestamp as 0`(){
+        val rateLimiter = RateLimiter(maxPerTenMinutes = 5, maxPerTenSeconds = 2)
+        setPrivateField(rateLimiter,"lastTenMinuteTimestamp",0)
+        val result = rateLimiter.isRateExceeded(5)
+        assertTrue(result)
+    }
 
     @Test
     fun `test isRateExceeded withinLimits`() {
@@ -57,7 +66,7 @@ class RateLimiterTest {
         val result1 = rateLimiter.isRateExceeded(3)
 
         // Wait for a little more than 10 seconds
-        Thread.sleep(11000)
+        Thread.sleep(10001)
 
         // Check again after the reset
         val result2 = rateLimiter.isRateExceeded(1)
@@ -76,7 +85,7 @@ class RateLimiterTest {
         val result1 = rateLimiter.isRateExceeded(3)
 
         // Wait for a little more than 10 seconds
-        Thread.sleep(11000)
+        Thread.sleep(10001)
 
         // Check again after the reset
         val result2 = rateLimiter.isRateExceeded(1)
