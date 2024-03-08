@@ -32,4 +32,16 @@ class InstrumentationServiceShould : BaseTest() {
         val instrumentation = instrumentationService.markCall("Url", null, null)
         assertNotNull(instrumentation)
     }
+
+    @Test
+    fun `test set Type of instrumentation`(){
+        instrumentationService.setType(HTTPCaptureConfig.AUTO)
+        assert(configuration.httpCaptureConfig==HTTPCaptureConfig.AUTO)
+    }
+
+    @Test
+    fun `test add tags will has tags`(){
+        instrumentationService.addTag("TEST_TAG")
+        assert(instrumentationService.hasTag("TEST_TAG"))
+    }
 }

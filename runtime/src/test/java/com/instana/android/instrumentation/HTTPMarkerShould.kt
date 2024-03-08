@@ -9,11 +9,15 @@ import com.instana.android.BaseTest
 import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
-import com.nhaarman.mockitokotlin2.*
-import org.junit.Assert.assertNotNull
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException

@@ -1,6 +1,6 @@
 package com.instana.android.core.util
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class URLUtilsTest {

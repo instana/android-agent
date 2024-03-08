@@ -8,10 +8,16 @@ package com.instana.android.core.event
 import com.instana.android.BaseTest
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
-import com.instana.android.core.event.models.*
-import org.junit.Assert.*
+import com.instana.android.core.event.models.AppProfile
+import com.instana.android.core.event.models.Beacon
+import com.instana.android.core.event.models.ConnectionProfile
+import com.instana.android.core.event.models.DeviceProfile
+import com.instana.android.core.event.models.Platform
+import com.instana.android.core.event.models.UserProfile
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.util.*
+import java.util.Locale
 
 
 class InstanaWorkManagerShould : BaseTest() {

@@ -6,9 +6,9 @@
 
 package com.instana.android.core.util
 
-import org.junit.Test
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Test
 
 class StopWatchTest {
 
@@ -74,5 +74,14 @@ class StopWatchTest {
 
         // Then
         assertEquals(0, stopWatch.totalTimeMillis) // Total time should be zero if not stopped
+    }
+
+    @Test
+    fun `test stop calling when 0 start time`(){
+        val stopWatch = StopWatch()
+        stopWatch.startTime = 0L
+        stopWatch.stop()
+        stopWatch.stop()
+        assert(stopWatch.startTime==0L)
     }
 }

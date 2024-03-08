@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.0.15
+
+_2024-03-07_
+
+- added more coverage with unit test
+
 ## Version 6.0.14
 
 _2024-02-13_
