@@ -1,6 +1,6 @@
 Changelog
 ==========
-## Version 6.0.14
+## Version 6.0.15
 
 _2024-03-07_
 
