@@ -542,10 +542,10 @@ class Beacon private constructor(
      * Set view related meta data with this map, used in auto view capture mechanism
      */
     fun setViewMeta(@Size(max = 64) key: String, @Size(max = 1024) value: String) {
-        stringMap["em_${key.truncate(64, "View Meta Key")}"] = value.truncate(1024, "View Meta Value")
+        stringMap["im_${key.truncate(64, "View Meta Key")}"] = value.truncate(1024, "View Meta Value")
     }
 
-    fun getViewMeta(key: String): String? = stringMap["em_$key"]
+    fun getViewMeta(key: String): String? = stringMap["im_$key"]
 
     @Suppress("DuplicatedCode") // I rather duplicate a few lines of code and keep type safety
     override fun toString(): String {
