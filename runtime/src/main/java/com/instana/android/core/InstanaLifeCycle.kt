@@ -10,14 +10,19 @@ import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
+import com.instana.android.Instana
+import com.instana.android.activity.FragmentActivityRegister
+import com.instana.android.activity.InstanaActivityLifecycleCallbacks
+import com.instana.android.fragments.FragmentLifecycleCallbacks
 
 /**
  * Util class to get current activity data and memory alerts
  */
 class InstanaLifeCycle(
-    application: Application
-) : Application.ActivityLifecycleCallbacks, ComponentCallbacks2 {
+    application: Application,
+) : DefaultActivityLifecycleCallbacks, ComponentCallbacks2 {
 
     private var callback: AppStateCallback? = null
     private var backgrounded: Boolean = false
@@ -30,6 +35,10 @@ class InstanaLifeCycle(
     init {
         application.registerActivityLifecycleCallbacks(this)
         application.registerComponentCallbacks(this)
+        if(Instana.config?.autoCaptureScreenNames == true){
+            application.registerActivityLifecycleCallbacks(InstanaActivityLifecycleCallbacks())
+            registerFragmentCallbacks(application)
+        }
     }
 
     override fun onLowMemory() {
@@ -84,6 +93,19 @@ class InstanaLifeCycle(
 
     fun registerCallback(appStateCallback: AppStateCallback) {
         this.callback = appStateCallback
+    }
+
+    private fun registerFragmentCallbacks(application: Application){
+        val fragmentLifecycleCallbacks = FragmentLifecycleCallbacks()
+        val fragmentActivityRegister = FragmentActivityRegister()
+         application.registerActivityLifecycleCallbacks(
+             if (Build.VERSION.SDK_INT < 29) {
+                 fragmentActivityRegister.createPre29(fragmentLifecycleCallbacks)
+             }
+             else{
+                 fragmentActivityRegister.create(fragmentLifecycleCallbacks)
+             }
+         )
     }
 
     interface AppStateCallback {

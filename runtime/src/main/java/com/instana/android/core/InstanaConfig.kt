@@ -6,7 +6,6 @@
 package com.instana.android.core
 
 import android.webkit.URLUtil
-import com.instana.android.android.agent.BuildConfig
 import com.instana.android.core.event.models.Platform
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
@@ -78,6 +77,12 @@ class InstanaConfig
      * Do not verify https certificates of the reporting URL
      */
     val debugTrustInsecureReportingURL: Boolean = false,
+
+    /**
+     * Toggle automatic capture of screen names for Activities and Fragments.
+     * Note: Composable UIs currently do not have support for auto-capturing screen names.
+     */
+    val autoCaptureScreenNames : Boolean = false,
 ) {
     /**
      * Configuration of the Instana Performance Monitoring Service

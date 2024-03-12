@@ -15,7 +15,7 @@ import com.instana.android.core.util.Logger
 import com.instana.android.core.util.UniqueIdManager
 import java.math.BigInteger
 import java.security.MessageDigest
-import java.util.*
+import java.util.Locale
 
 @Suppress("MemberVisibilityCanBePrivate")
 class Beacon private constructor(
@@ -538,6 +538,15 @@ class Beacon private constructor(
         stringMap["usi"] = value.take(128)
     }
 
+    /**
+     * Set view related meta data with this map, used in auto view capture mechanism
+     */
+    fun setViewMeta(@Size(max = 64) key: String, @Size(max = 1024) value: String) {
+        stringMap["im_${key.truncate(64, "View Meta Key")}"] = value.truncate(1024, "View Meta Value")
+    }
+
+    fun getViewMeta(key: String): String? = stringMap["im_$key"]
+
     @Suppress("DuplicatedCode") // I rather duplicate a few lines of code and keep type safety
     override fun toString(): String {
         val sb = StringBuilder()
@@ -672,11 +681,13 @@ class Beacon private constructor(
             userProfile: UserProfile,
             sessionId: String,
             view: String,
-            meta: Map<String, String>
+            meta: Map<String, String>,
+            viewMeta:Map<String,String>
         ): Beacon {
             return Beacon(BeaconType.VIEW_CHANGE, 0, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     setView(view)
+                    for (it in viewMeta) { setViewMeta(it.key, it.value) }
                     for (it in meta) { setMeta(it.key, it.value) }
                 }
         }

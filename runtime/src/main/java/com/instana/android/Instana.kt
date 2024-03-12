@@ -68,6 +68,7 @@ object Instana {
     internal var instrumentationService: InstrumentationService? = null
     internal var customEvents: CustomEventService? = null
     internal var crashReporting: CrashService? = null
+    internal var viewMeta = MaxCapacityMap<String,String>(128)
 
     internal val internalURLs = listOf(
         """^.*instana\.io[\\/].*${'$'}""".toRegex()

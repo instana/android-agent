@@ -48,7 +48,7 @@ class SessionService(
             userProfile = Instana.userProfile,
             sessionId = sessionId,
             view = Instana.view,
-            meta = Instana.meta.getAll()
+            meta = Instana.meta.getAll(),
         )
 
         Instana.sessionId = sessionId

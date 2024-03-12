@@ -18,8 +18,7 @@ import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.ThreadUtil
 import java.io.PrintWriter
 import java.io.StringWriter
-import java.lang.Thread.currentThread
-import java.util.*
+import java.util.Queue
 import java.util.concurrent.LinkedBlockingDeque
 
 /**

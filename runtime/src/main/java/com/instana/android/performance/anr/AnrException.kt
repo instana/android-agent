@@ -8,7 +8,7 @@ package com.instana.android.performance.anr
 import com.instana.android.core.util.Logger
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
-import java.util.*
+import java.util.Locale
 
 /**
  * A [Exception] to represent an ANR. This [Exception]'s

@@ -5,7 +5,7 @@
 
 package com.instana.android.core.event.models
 
-import java.util.*
+import java.util.Locale
 
 data class DeviceProfile(
     var platform: Platform? = null,

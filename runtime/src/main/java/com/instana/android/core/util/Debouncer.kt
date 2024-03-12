@@ -5,7 +5,8 @@
 
 package com.instana.android.core.util
 
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 
 internal class Debouncer {
     private var timer: Timer? = null

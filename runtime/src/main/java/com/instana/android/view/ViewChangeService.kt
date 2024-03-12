@@ -46,7 +46,8 @@ class ViewChangeService(
             userProfile = Instana.userProfile,
             sessionId = sessionId,
             view = viewName,
-            meta = Instana.meta.getAll()
+            meta = Instana.meta.getAll(),
+            viewMeta = Instana.viewMeta.getAll()
         )
 
         Logger.i("View changed with: `name` $viewName")
