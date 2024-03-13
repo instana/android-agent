@@ -1,4 +1,6 @@
 {
-  "settingsInheritedFrom": "whitesource-config/whitesource-config@master",
-  "excludes": "/gradle/, /instana-example/, /runtime/src/test/, /runtime/src/androidTest/"
+	"settingsInheritedFrom": "whitesource-config/whitesource-config@master",
+  	"scanSettings": {
+		"configMode": "LOCAL"
+	}
 }
