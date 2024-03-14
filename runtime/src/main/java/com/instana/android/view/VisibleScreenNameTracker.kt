@@ -95,15 +95,15 @@ object VisibleScreenNameTracker {
  * This can be utilised for consuming SemanticAttributes from otel-android in future
  */
 enum class ScreenAttributes(val value: String) {
-    ACTIVITY_CLASS_NAME("\$instana.a.v.m.tag2"),
-    ACTIVITY_LOCAL_PATH_NAME("\$instana.a.v.m.tag3"),
-    ACTIVITY_SCREEN_NAME("\$instana.a.v.m.tag1"),
-    FRAGMENT_CLASS_NAME("\$instana.a.v.m.tag5"),
-    FRAGMENT_LOCAL_PATH_NAME("\$instana.a.v.m.tag6"),
-    FRAGMENT_SCREEN_NAME("\$instana.a.v.m.tag4"),
-    FRAGMENT_ACTIVE_SCREENS_LIST("\$instana.a.v.m.tag7"),
-    ACTIVITY_CREATED_TIME("\$instana.a.v.m.tag8"),
-    FRAGMENT_RESUME_TIME("\$instana.a.v.m.tag9"),
+    ACTIVITY_CLASS_NAME("act.class.name"),
+    ACTIVITY_LOCAL_PATH_NAME("act.local.path.name"),
+    ACTIVITY_SCREEN_NAME("act.screen.name"),
+    ACTIVITY_CREATED_TIME("act.created.time"),
+    FRAGMENT_CLASS_NAME("frag.class.name"),
+    FRAGMENT_LOCAL_PATH_NAME("frag.local.path.name"),
+    FRAGMENT_SCREEN_NAME("frag.screen.name"),
+    FRAGMENT_ACTIVE_SCREENS_LIST("frag.active.screen.list"),
+    FRAGMENT_RESUME_TIME("frag.resume.time"),
 }
 
 /**
