@@ -82,11 +82,27 @@ class LowMemoryMonitorTest:BaseTest() {
     }
 
     @Test
+    fun `onTrimMemory should not send low memory event name LowMemory when customEvents is null`() {
+        Instana.customEvents = null
+        lowMemoryMonitor.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
+        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("cen\tLowMemory") }.size
+        Assert.assertTrue(size == 0)
+    }
+
+    @Test
+    fun `onTrimMemory should not send low memory event name LowMemory when the level is TRIM_MEMORY_UI_HIDDEN`() {
+        lowMemoryMonitor.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN)
+        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("cen\tLowMemory") }.size
+        Assert.assertTrue(size == 0)
+    }
+
+    @Test
     fun `test onTrimMemory onLowMemory call should do nothing to existing implementation`(){
         lowMemoryMonitor.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
         val size = wrkManager.initialDelayQueue.filter { it.toString().contains("cen\tLowMemory") }.size
         lowMemoryMonitor.onLowMemory()
         Assert.assertTrue(size > 0)
     }
+
 
 }

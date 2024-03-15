@@ -6,6 +6,7 @@
 
 package com.instana.android.core.util
 
+import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
@@ -41,5 +42,16 @@ class HttpURLConnectionExtensionsTest {
         assert(result == null)
     }
 
-    // Add more tests for responseCodeOrNull(), errorMessageOrNull(), etc.
+    @Test
+    fun `test errorMessageOrNull success`(){
+        `when`(httpURLConnection.responseCode).thenReturn(200)
+        Assert.assertNull(httpURLConnection.errorMessageOrNull())
+    }
+
+    @Test
+    fun `test errorMessageOrNull failure`(){
+        `when`(httpURLConnection.responseCode).thenReturn(400)
+        Assert.assertNull(httpURLConnection.errorMessageOrNull())
+    }
+
 }

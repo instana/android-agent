@@ -12,9 +12,9 @@ import java.util.concurrent.atomic.AtomicReference
 
 object VisibleScreenNameTracker {
 
-    var activityFragmentViewData: AtomicReference<FragmentActivityViewDataModel?> = AtomicReference(null)
+    internal var activityFragmentViewData: AtomicReference<FragmentActivityViewDataModel?> = AtomicReference(null)
 
-    var initialViewMap: Map<String, String> = emptyMap()
+    internal var initialViewMap: Map<String, String> = emptyMap()
 
     private var isFromOrientationChange: Boolean = false
     private var oldActiveFragmentList: String? = null
@@ -22,7 +22,7 @@ object VisibleScreenNameTracker {
     /**
      * Currently keeping screen details in meta; can be moved to another beacon attribute in the future
      */
-    fun updateActivityFragmentViewData(newValue: FragmentActivityViewDataModel?) {
+    internal fun updateActivityFragmentViewData(newValue: FragmentActivityViewDataModel?) {
         val oldActivityClassName = activityFragmentViewData.get()?.activityClassName
         //Logic to identify the orientation changes
         if (activityFragmentViewData.get()?.activeFragmentList != null && !isFromOrientationChange) {

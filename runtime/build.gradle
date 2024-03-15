@@ -63,7 +63,11 @@ dependencies {
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
     testImplementation 'org.mockito:mockito-inline:4.9.0'
     testImplementation 'org.robolectric:robolectric:4.9'
+    testImplementation 'org.mockito:mockito-core:3.9.0'
+    testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
     testImplementation project(path: ':runtime')
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }

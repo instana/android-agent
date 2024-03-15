@@ -13,11 +13,13 @@ import com.instana.android.InstanaTest.Companion.API_KEY
 import com.instana.android.InstanaTest.Companion.SERVER_URL
 import com.instana.android.core.InstanaConfig
 import com.nhaarman.mockitokotlin2.any
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
+import java.util.Queue
 
 class CrashServiceTest:BaseTest() {
     private lateinit var crashService: CrashService
@@ -41,5 +43,15 @@ class CrashServiceTest:BaseTest() {
         crashService.submitCrash(realThread, realThrowable)
 
         verify(mockWorkManager).queueAndFlushBlocking(any())
+    }
+    
+    @Test
+    fun `test breadCrumb max holder`(){
+        val valueOfbreadCrumbs = getPrivateFieldValue(crashService,"breadCrumbs") as Queue<String>
+        Assert.assertEquals(valueOfbreadCrumbs.size,0)
+        for (i in 0..23){
+            crashService.leave("test")
+        }
+        Assert.assertEquals(valueOfbreadCrumbs.size,20)
     }
 }

@@ -14,6 +14,12 @@ class URLUtilsTest {
     )
 
     @Test
+    fun redactURLQueryParams_queryNotMatchingRegex() {
+        assertEquals("https://example.com?param1=1&param2=2",
+            URLUtils.redactURLQueryParams("https://example.com?param1=1&param2=2", replacement, listOf("nonexistent".toRegex())))
+    }
+
+    @Test
     fun redactURLQueryParams_invalidURL() {
         assertEquals("not a url",
             URLUtils.redactURLQueryParams("not a url", replacement, regex))

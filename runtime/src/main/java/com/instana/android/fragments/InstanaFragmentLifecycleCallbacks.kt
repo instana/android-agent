@@ -24,6 +24,8 @@ class FragmentLifecycleCallbacks : FragmentManager.FragmentLifecycleCallbacks() 
             newNavController = f.findNavController()
         }catch (e:IllegalStateException){
             Logger.i("Fragment not having navController")
+        }catch (e:NullPointerException){
+            Logger.i("Fragment init without navController")
         }
         val simpleFragmentClassName = f.javaClass.simpleName
         Logger.i("Fragment Resumed: $simpleFragmentClassName")

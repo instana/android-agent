@@ -14,11 +14,12 @@ import com.instana.android.session.SessionService
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mock
 import java.io.FileInputStream
 import java.util.Properties
 
 class BeaconTest: BaseTest() {
-    lateinit var agentVersion:String
+    private lateinit var agentVersion:String
     @Before
     fun `test setup`(){
         val gradleProperties =  Properties()
@@ -332,7 +333,7 @@ class BeaconTest: BaseTest() {
 
     @Test
     fun `test beacons class with add meta data is been added`(){
-        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = false)
         Instana.sessionId = null
         SessionService(app,mockWorkManager,config)
         val customEvent = Beacon.newCustomEvent(
@@ -357,7 +358,7 @@ class BeaconTest: BaseTest() {
     }
 
     @Test
-    fun `test `(){
+    fun `test version name of agent is taken with hybrid apps`(){
         val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
         Instana.sessionId = null
         Instana.setup(app,config)
@@ -382,4 +383,226 @@ class BeaconTest: BaseTest() {
         )
         Assert.assertTrue(customEvent.toString().contains("agv\t${agentVersion.replace("'","")}:agent_id:1.0.1"))
     }
+    
+    @Test
+    fun `test usiRefreshTimeIntervalInHrs if not 0 then report usi`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        config.usiRefreshTimeIntervalInHrs = 2
+        Instana.sessionId = null
+        Instana.setup(app,config)
+        SessionService(app,mockWorkManager,config)
+        Instana.config?.hybridAgentId = "agent_id"
+        Instana.config?.hybridAgentVersion = "1.0.1"
+        val customEvent = Beacon.newCustomEvent(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null",
+            meta = mapOf(),
+            startTime = 9413,
+            duration = 7629,
+            backendTraceId = "null",
+            error = null,
+            name = "Raymond Griffith",
+            customMetric = null
+        )
+        Assert.assertTrue(customEvent.toString().contains("usi"))
+    }
+
+    @Test
+    fun `test usiRefreshTimeIntervalInHrs if is 0L then report usi`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        config.usiRefreshTimeIntervalInHrs = 0
+        Instana.sessionId = null
+        Instana.setup(app,config)
+        SessionService(app,mockWorkManager,config)
+        val customEvent = Beacon.newCustomEvent(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null",
+            meta = mapOf(),
+            startTime = 9413,
+            duration = 7629,
+            backendTraceId = "null",
+            error = null,
+            name = "Raymond Griffith",
+            customMetric = null
+        )
+        Assert.assertFalse(customEvent.toString().contains("usi"))
+    }
+
+    @Test
+    fun `test get view meta data`(){
+        val viewBeacon = Beacon.newViewChange(
+            appKey = "electram",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = DeviceProfile(
+                platform =Platform.ANDROID,
+                osName = null,
+                osVersion = null,
+                deviceManufacturer = null,
+                deviceModel = null,
+                deviceHardware = null,
+                rooted = null,
+                locale = null,
+                viewportWidth = null,
+                viewportHeight = null,
+                googlePlayServicesMissing = null
+            ),
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType =ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_2G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = "causae",
+            view = "errem",
+            meta = mapOf(),
+            viewMeta = mapOf("testKey" to "value")
+        )
+        Assert.assertEquals(viewBeacon.getViewMeta("testKey"),"value")
+    }
+
+    @Test
+    fun `test http request beacon condition with error as null will have error count 0`(){
+        val httpBeacon = Beacon.newHttpRequest(
+            appKey = "tristique",
+            appProfile = AppProfile(),
+            deviceProfile = DeviceProfile(),
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType =ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = "elaboraret",
+            view = null,
+            meta = mapOf(),
+            duration = 7890,
+            method = null,
+            url = "https://duckduckgo.com/?q=discere",
+            headers = mapOf(),
+            backendTraceId = null,
+            responseCode = null,
+            requestSizeBytes = null,
+            encodedResponseSizeBytes = null,
+            decodedResponseSizeBytes = null,
+            error = null
+        )
+        assert(httpBeacon.toString().contains("ec\t0"))
+    }
+
+    @Test
+    fun `test http request beacon condition with error as non null will have error count 1`(){
+        val httpBeacon = Beacon.newHttpRequest(
+            appKey = "tristique",
+            appProfile = AppProfile(),
+            deviceProfile = DeviceProfile(),
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType =ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = "elaboraret",
+            view = null,
+            meta = mapOf(),
+            duration = 7890,
+            method = null,
+            url = "https://duckduckgo.com/?q=discere",
+            headers = mapOf("test" to "tests"),
+            backendTraceId = null,
+            responseCode = null,
+            requestSizeBytes = null,
+            encodedResponseSizeBytes = null,
+            decodedResponseSizeBytes = null,
+            error = "something"
+        )
+        assert(httpBeacon.toString().contains("ec\t1"))
+    }
+
+    @Test
+    fun `test http request beacon condition with response code from 400 to 599 wil have error count count 1`(){
+        val httpBeacon = Beacon.newHttpRequest(
+            appKey = "tristique",
+            appProfile = AppProfile(),
+            deviceProfile = DeviceProfile(),
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType =ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = "elaboraret",
+            view = "null",
+            meta = mapOf(),
+            duration = 7890,
+            method = null,
+            url = "https://duckduckgo.com/?q=discere",
+            headers = mapOf(),
+            backendTraceId = null,
+            responseCode = 401,
+            requestSizeBytes = null,
+            encodedResponseSizeBytes = null,
+            decodedResponseSizeBytes = null,
+            error = null
+        )
+        assert(httpBeacon.toString().contains("ec\t1"))
+    }
+    
+    @Test
+    fun `test retrieveVersionName with default agent android`(){
+        val beacon = mock(Beacon::class.java)
+        val response = invokePrivateMethod(beacon,"retrieveVersionName") as String
+        Assert.assertEquals(response ,agentVersion.replace("'",""))
+    }
+
+    @Test
+    fun `test retrieveVersionName with hybridAgentId as empty string versions`(){
+        val beacon = mock(Beacon::class.java)
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
+        Instana.sessionId = null
+        Instana.setup(app,config)
+        Instana.config?.hybridAgentId = ""
+        val response = invokePrivateMethod(beacon,"retrieveVersionName") as String
+        Assert.assertEquals(response ,agentVersion.replace("'",""))
+    }
+
+    @Test
+    fun `test retrieveVersionName with hybridAgentId as null versions`(){
+        val beacon = mock(Beacon::class.java)
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
+        Instana.sessionId = null
+        Instana.setup(app,config)
+        Instana.config?.hybridAgentId = null
+        val response = invokePrivateMethod(beacon,"retrieveVersionName") as String
+        Assert.assertEquals(response ,agentVersion.replace("'",""))
+    }
+
+    @Test
+    fun `test initWorkManager should return without collection`(){
+        val beacon = mock(Beacon::class.java)
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, collectionEnabled = false)
+        Instana.sessionId = null
+        Instana.setup(app,config)
+        Instana.setCollectionEnabled(false)
+        val response = invokePrivateMethod(beacon,"retrieveVersionName") as String
+        Assert.assertEquals(response ,agentVersion.replace("'",""))
+    }
+
+    @Test
+    fun `test retrieveVersionName with hybridAgentId as Android versions`(){
+        val beacon = mock(Beacon::class.java)
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
+        Instana.sessionId = null
+        Instana.setup(app,config)
+        Instana.config?.hybridAgentId = Platform.ANDROID.internalType
+        val response = invokePrivateMethod(beacon,"retrieveVersionName") as String
+        Assert.assertEquals(response ,agentVersion.replace("'",""))
+    }
+
+    @Test
+    fun `test retrieveVersionName with hybridAgentId with version`(){
+        val beacon = mock(Beacon::class.java)
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
+        Instana.sessionId = null
+        Instana.setup(app,config)
+        Instana.config?.hybridAgentId = "f"
+        Instana.config?.hybridAgentVersion = "2.4.3"
+        val response = invokePrivateMethod(beacon,"retrieveVersionName") as String
+        Assert.assertEquals(response ,"${agentVersion.replace("'","")}:f:2.4.3")
+    }
+
+
 }
