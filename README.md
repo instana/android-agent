@@ -2,7 +2,7 @@
 
 **[Changelog](CHANGELOG.md)** |
 **[Contributing](CONTRIBUTING.md)** |
-**[Support](https://instana.zendesk.com/)**
+**[Support](https://ibm.biz/Instana-support)**
 
 ---
 
@@ -19,7 +19,7 @@ Note:
 
 ## Getting started
 
-Please head over to the [official Instana Mobile App Monitoring documentation](https://docs.instana.io/products/mobile_app_monitoring/) to get all the details about the usage of Instana Android Agent.
+Please head over to the [official Instana Mobile App Monitoring documentation](https://ibm.biz/android-monitoring-api) to get all the details about the usage of Instana Android Agent.
 
 For a quick start with a minimum configuration, the following steps shall suffice:
 
