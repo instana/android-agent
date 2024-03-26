@@ -6,7 +6,7 @@
 
 package com.instana.android.fragments
 
-enum class FragmentHierarchyType {
+internal enum class FragmentHierarchyType {
     PARALLEL,
     INNER_CHILD,
     SINGLE

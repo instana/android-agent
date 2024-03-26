@@ -149,7 +149,7 @@ class InstanaWorkManagerTest : BaseTest() {
         val queue: Queue<Beacon> = LinkedList()
         queue.offer(beacon)
         VisibleScreenNameTracker.initialViewMap = mapOf(
-            ScreenAttributes.ACTIVITY_CREATED_TIME.value to System.nanoTime().toString(),
+            ScreenAttributes.ACTIVITY_RESUME_TIME.value to System.nanoTime().toString(),
             ScreenAttributes.ACTIVITY_CLASS_NAME.value to "Test1",
             ScreenAttributes.ACTIVITY_LOCAL_PATH_NAME.value to "Test2",
             ScreenAttributes.ACTIVITY_SCREEN_NAME.value to "Test3"
@@ -191,7 +191,7 @@ class InstanaWorkManagerTest : BaseTest() {
         queue.offer(beacon)
         beacon.setViewMeta(ScreenAttributes.ACTIVITY_SCREEN_NAME.value,"Test3")
         VisibleScreenNameTracker.initialViewMap = mapOf(
-            ScreenAttributes.ACTIVITY_CREATED_TIME.value to System.nanoTime().toString(),
+            ScreenAttributes.ACTIVITY_RESUME_TIME.value to System.nanoTime().toString(),
             ScreenAttributes.ACTIVITY_CLASS_NAME.value to "Test1",
             ScreenAttributes.ACTIVITY_LOCAL_PATH_NAME.value to "Test2",
             ScreenAttributes.ACTIVITY_SCREEN_NAME.value to "Test3"

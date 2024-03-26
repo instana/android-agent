@@ -10,11 +10,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import kotlin.math.min
 
-fun Fragment.getLocalPathName(): String {
+internal fun Fragment.getLocalPathName(): String {
     return this.javaClass.`package`?.name.toString()+"."+this.javaClass.simpleName
 }
 
-fun Fragment.findContentDescription(): String? {
+internal fun Fragment.findContentDescription(): String? {
     if (this.tag!=null){
         return this.tag
     }

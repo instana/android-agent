@@ -17,7 +17,7 @@ import com.instana.android.core.DefaultActivityLifecycleCallbacks
  * Registers the FragmentLifecycleCallbacks when an activity is created. There are just 2 factory
  * methods here, one for API level before 29, and one for the rest.
  */
-class FragmentActivityRegister {
+internal class FragmentActivityRegister {
 
     fun create(
         fragmentCallbacks: FragmentManager.FragmentLifecycleCallbacks,
