@@ -12,7 +12,7 @@ import com.instana.android.core.util.Logger
 import com.instana.android.view.VisibleScreenNameTracker
 import com.instana.android.view.models.FragmentActivityViewDataModel
 
-class InstanaActivityLifecycleCallbacks:DefaultActivityLifecycleCallbacks {
+internal class InstanaActivityLifecycleCallbacks:DefaultActivityLifecycleCallbacks {
 
     override fun onActivityResumed(activity: Activity) {
         super.onActivityResumed(activity)

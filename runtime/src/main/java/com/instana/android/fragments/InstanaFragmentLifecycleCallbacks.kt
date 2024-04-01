@@ -15,7 +15,7 @@ import com.instana.android.core.util.Logger
 import com.instana.android.view.VisibleScreenNameTracker
 
 
-class FragmentLifecycleCallbacks : FragmentManager.FragmentLifecycleCallbacks() {
+internal class FragmentLifecycleCallbacks : FragmentManager.FragmentLifecycleCallbacks() {
 
     private val fragmentStack = arrayListOf<Fragment>()
     override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {

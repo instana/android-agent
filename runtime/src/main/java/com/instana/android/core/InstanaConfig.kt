@@ -82,7 +82,7 @@ class InstanaConfig
      * Toggle automatic capture of screen names for Activities and Fragments.
      * Note: Composable UIs currently do not have support for auto-capturing screen names.
      */
-    val autoCaptureScreenNames : Boolean = false,
+    var autoCaptureScreenNames : Boolean = false,
 ) {
     /**
      * Configuration of the Instana Performance Monitoring Service

@@ -97,7 +97,7 @@ class VisibleScreenNameTrackerTest :BaseTest(){
             fragmentHierarchyType = null
         )
         VisibleScreenNameTracker.updateActivityFragmentViewData(fragmentActivityViewDataModel)
-        Assert.assertEquals(Instana.viewMeta.get(ScreenAttributes.ACTIVITY_CLASS_NAME.value),fragmentActivityViewDataModel.activityClassName)
+        Assert.assertEquals(Instana.viewMeta.get(ScreenAttributes.ACTIVITY_CLASS_NAME.value).toString(),fragmentActivityViewDataModel.activityClassName.toString())
         VisibleScreenNameTracker.activityFragmentViewData.set(FragmentActivityViewDataModel())
     }
 
@@ -176,7 +176,7 @@ class VisibleScreenNameTrackerTest :BaseTest(){
     fun `test updateActivityFragmentViewData with object null`(){
         Instana.viewMeta.clear()
         VisibleScreenNameTracker.updateActivityFragmentViewData(null)
-        Assert.assertEquals(Instana.viewMeta.getAll().size, 0)
+        Assert.assertEquals(Instana.viewMeta.getAll().size, 4)
     }
     
     @Test
@@ -197,6 +197,22 @@ class VisibleScreenNameTrackerTest :BaseTest(){
         VisibleScreenNameTracker.updateActivityFragmentViewData(null)
         Assert.assertEquals(Instana.viewMeta.getAll().size, 4)
     }
+
+    @Test
+    fun `test removeFragmentSection should remove the fragment details from the viewMeta`(){
+        Instana.viewMeta.clear()
+        Instana.viewMeta.apply {
+            put(ScreenAttributes.FRAGMENT_RESUME_TIME.value, System.nanoTime().toString())
+            put(ScreenAttributes.FRAGMENT_CLASS_NAME.value, "fragmentClassName")
+            put(ScreenAttributes.FRAGMENT_LOCAL_PATH_NAME.value, "fragmentLocalPathName")
+            put(ScreenAttributes.FRAGMENT_SCREEN_NAME.value, "customFragmentScreenName")
+        }
+        val visibleScreenNameTracker = VisibleScreenNameTracker
+        invokePrivateMethod(visibleScreenNameTracker,"removeFragmentSection")
+        Assert.assertEquals(Instana.viewMeta.getAll().size,0)
+    }
+
+
 
 
 

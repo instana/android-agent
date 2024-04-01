@@ -10,7 +10,7 @@ import com.instana.android.Instana
 import com.instana.android.view.models.FragmentActivityViewDataModel
 import java.util.concurrent.atomic.AtomicReference
 
-object VisibleScreenNameTracker {
+internal object VisibleScreenNameTracker {
 
     internal var activityFragmentViewData: AtomicReference<FragmentActivityViewDataModel?> = AtomicReference(null)
 
@@ -19,9 +19,6 @@ object VisibleScreenNameTracker {
     private var isFromOrientationChange: Boolean = false
     private var oldActiveFragmentList: String? = null
 
-    /**
-     * Currently keeping screen details in meta; can be moved to another beacon attribute in the future
-     */
     internal fun updateActivityFragmentViewData(newValue: FragmentActivityViewDataModel?) {
         val oldActivityClassName = activityFragmentViewData.get()?.activityClassName
         //Logic to identify the orientation changes
@@ -34,6 +31,7 @@ object VisibleScreenNameTracker {
         if (oldActivityClassName == null) {
             updateInitialViewMap(newValue)
         }else{
+            //Loaded a new activity
             if (oldActivityClassName != newValue?.activityClassName) {
                 updateMetaForActivity(newValue)
                 isFromOrientationChange = false
@@ -48,28 +46,32 @@ object VisibleScreenNameTracker {
                 updateMetaForFragment(newValue)
             }
         }
-
     }
 
     private fun updateInitialViewMap(newValue: FragmentActivityViewDataModel?) {
         initialViewMap = mapOf(
-            ScreenAttributes.ACTIVITY_CREATED_TIME.value to System.nanoTime().toString(),
+            ScreenAttributes.ACTIVITY_RESUME_TIME.value to System.nanoTime().toString(),
             ScreenAttributes.ACTIVITY_CLASS_NAME.value to "${newValue?.activityClassName}",
             ScreenAttributes.ACTIVITY_LOCAL_PATH_NAME.value to "${newValue?.activityLocalPathName}",
             ScreenAttributes.ACTIVITY_SCREEN_NAME.value to "${newValue?.customActivityScreenName}"
         )
+        applyMetaForActivity(newValue)
         setViewName(newValue?.customActivityScreenName)
     }
 
     private fun updateMetaForActivity(newValue: FragmentActivityViewDataModel?) {
+        applyMetaForActivity(newValue)
+        removeFragmentSection()
+        setViewName(newValue?.customActivityScreenName)
+    }
+
+    private fun applyMetaForActivity(newValue: FragmentActivityViewDataModel?){
         Instana.viewMeta.apply {
-            put(ScreenAttributes.ACTIVITY_CREATED_TIME.value, System.nanoTime().toString())
+            put(ScreenAttributes.ACTIVITY_RESUME_TIME.value, System.nanoTime().toString())
             put(ScreenAttributes.ACTIVITY_CLASS_NAME.value, "${newValue?.activityClassName}")
             put(ScreenAttributes.ACTIVITY_LOCAL_PATH_NAME.value, "${newValue?.activityLocalPathName}")
             put(ScreenAttributes.ACTIVITY_SCREEN_NAME.value, "${newValue?.customActivityScreenName}")
         }
-        removeFragmentSection()
-        setViewName(newValue?.customActivityScreenName)
     }
 
     private fun updateMetaForFragment(newValue: FragmentActivityViewDataModel?) {
@@ -89,29 +91,32 @@ object VisibleScreenNameTracker {
     private fun setViewName(viewName: String?) {
         Instana.view = viewName
     }
+
+    /**
+     * Avoiding adding of the existing fragment details while moving to a new activity
+     */
+    private fun removeFragmentSection() {
+        Instana.viewMeta.apply {
+            remove(ScreenAttributes.FRAGMENT_SCREEN_NAME.value)
+            remove(ScreenAttributes.FRAGMENT_CLASS_NAME.value)
+            remove(ScreenAttributes.FRAGMENT_ACTIVE_SCREENS_LIST.value)
+            remove(ScreenAttributes.FRAGMENT_LOCAL_PATH_NAME.value)
+            remove(ScreenAttributes.FRAGMENT_RESUME_TIME.value)
+        }
+    }
 }
 
 /**
  * This can be utilised for consuming SemanticAttributes from otel-android in future
  */
-enum class ScreenAttributes(val value: String) {
+internal enum class ScreenAttributes(val value: String) {
     ACTIVITY_CLASS_NAME("act.class.name"),
     ACTIVITY_LOCAL_PATH_NAME("act.local.path.name"),
     ACTIVITY_SCREEN_NAME("act.screen.name"),
-    ACTIVITY_CREATED_TIME("act.created.time"),
+    ACTIVITY_RESUME_TIME("act.resume.time"),
     FRAGMENT_CLASS_NAME("frag.class.name"),
     FRAGMENT_LOCAL_PATH_NAME("frag.local.path.name"),
     FRAGMENT_SCREEN_NAME("frag.screen.name"),
     FRAGMENT_ACTIVE_SCREENS_LIST("frag.active.screen.list"),
     FRAGMENT_RESUME_TIME("frag.resume.time"),
-}
-
-/**
- * Avoiding adding of the fragment details while moving to a new activity without fragments
- */
-fun removeFragmentSection() {
-    Instana.viewMeta.remove(ScreenAttributes.FRAGMENT_SCREEN_NAME.value)
-    Instana.viewMeta.remove(ScreenAttributes.FRAGMENT_CLASS_NAME.value)
-    Instana.viewMeta.remove(ScreenAttributes.FRAGMENT_ACTIVE_SCREENS_LIST.value)
-    Instana.viewMeta.remove(ScreenAttributes.FRAGMENT_LOCAL_PATH_NAME.value)
 }

@@ -14,7 +14,7 @@ import kotlin.math.min
 /**
  * Finding the content description from the root layout if provided
  */
-fun Activity.findContentDescription(): String? {
+internal fun Activity.findContentDescription(): String? {
     val rootView = findViewById<View>(android.R.id.content)
     if (rootView?.contentDescription != null) {
         return rootView.contentDescription.toString()
