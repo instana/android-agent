@@ -33,13 +33,18 @@ internal class FragmentLifecycleCallbacks : FragmentManager.FragmentLifecycleCal
             return
         }
         val (fragmentHierarchyType,fragmentNames) = findFragmentsInParallel(currentFragment = f)
-
-        val label = newNavController?.currentDestination?.label?.toString()
+        var label: String? = null
+        /** This helps to identify the inner views of the fragments in a single nav controller*/
+        if (newNavController != null) {
+            label = newNavController.currentDestination?.label?.let {
+                if (it != simpleFragmentClassName) "$it : $simpleFragmentClassName" else simpleFragmentClassName
+            } ?: simpleFragmentClassName
+        }
         VisibleScreenNameTracker.updateActivityFragmentViewData(
             VisibleScreenNameTracker.activityFragmentViewData.get()?.copy(
                 fragmentLocalPathName = f.getLocalPathName(),
                 fragmentClassName = simpleFragmentClassName,
-                customFragmentScreenName = label?:f.findContentDescription() ?: simpleFragmentClassName,
+                customFragmentScreenName = label ?: f.findContentDescription() ?: simpleFragmentClassName,
                 activeFragmentList = fragmentNames,
                 fragmentHierarchyType = fragmentHierarchyType.toString()
             )
