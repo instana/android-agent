@@ -40,11 +40,7 @@ class CrashService(
     init {
         if (defaultThreadHandler != null) {
             handler = ExceptionHandler(this, defaultThreadHandler)
-        }
-        if (config.enableCrashReporting) {
             handler?.enable()
-        } else {
-            handler?.disable()
         }
     }
 
@@ -56,6 +52,11 @@ class CrashService(
     }
 
     fun submitCrash(thread: Thread?, throwable: Throwable?) {
+        //Condition helps when crash reporting disables at runtime, after init
+        if(config.enableCrashReporting.not()){
+            handler?.disable()
+            return
+        }
         // val breadCrumbsCopy = breadCrumbs.toList()
         val stackTrace = Log.getStackTraceString(throwable)
 

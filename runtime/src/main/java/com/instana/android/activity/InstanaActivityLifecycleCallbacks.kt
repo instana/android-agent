@@ -7,6 +7,7 @@
 package com.instana.android.activity
 
 import android.app.Activity
+import com.instana.android.Instana
 import com.instana.android.core.DefaultActivityLifecycleCallbacks
 import com.instana.android.core.util.Logger
 import com.instana.android.view.VisibleScreenNameTracker
@@ -16,6 +17,7 @@ internal class InstanaActivityLifecycleCallbacks:DefaultActivityLifecycleCallbac
 
     override fun onActivityResumed(activity: Activity) {
         super.onActivityResumed(activity)
+        if(Instana.config?.autoCaptureScreenNames==false) return
         Logger.i("Activity Resumed: ${activity.localClassName}")
         updateScreenTracker(activity)
     }
