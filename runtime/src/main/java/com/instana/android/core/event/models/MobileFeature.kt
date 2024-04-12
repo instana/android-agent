@@ -11,5 +11,6 @@ package com.instana.android.core.event.models
  * agreement with the backend.
  */
 enum class MobileFeature(val internalType: String) {
-    CRASH("c")
+    CRASH("c"),
+    AUTO_CAPTURE_SCREEN_NAME("sn")
 }

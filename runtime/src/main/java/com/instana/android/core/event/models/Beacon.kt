@@ -88,8 +88,11 @@ class Beacon private constructor(
          * Mobile Features - adding active features to beacon, Adding it in init as usesFeature
          * needs to be send with each beacons.
          */
-        Instana.config?.takeIf { it.enableCrashReporting }?.let {
-            setMobileFeatures(listOf(MobileFeature.CRASH))
+        Instana.config?.run {
+            val features = mutableListOf<MobileFeature>()
+            if (enableCrashReporting) features += MobileFeature.CRASH
+            if (autoCaptureScreenNames) features += MobileFeature.AUTO_CAPTURE_SCREEN_NAME
+            if (features.isNotEmpty()) setMobileFeatures(features)
         }
     }
 
