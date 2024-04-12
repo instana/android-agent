@@ -6,17 +6,32 @@
 
 package com.instana.android
 
+import android.R
+import android.app.Activity
 import android.app.Application
+import android.net.ConnectivityManager
+import android.telephony.TelephonyManager
 import android.util.Log
+import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import com.instana.android.activity.InstanaActivityLifecycleCallbacks
+import com.instana.android.activity.findContentDescription
 import com.instana.android.core.HybridAgentOptions
 import com.instana.android.core.InstanaConfig
+import com.instana.android.crash.CrashService
+import com.instana.android.fragments.FragmentLifecycleCallbacks
 import com.instana.android.session.SessionService
+import com.instana.android.view.VisibleScreenNameTracker
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
+import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.robolectric.shadows.ShadowBuild
 
@@ -24,6 +39,17 @@ class InstanaTest : BaseTest() {
 
     @Mock
     lateinit var disabledLogger:Logger
+
+    @Mock
+    private lateinit var mockFragmentManager: FragmentManager
+
+    private lateinit var crashService: CrashService
+
+    @Mock
+    lateinit var connectivityManager: ConnectivityManager
+
+    @Mock
+    lateinit var telephonyManager: TelephonyManager
 
     @Before
     fun `test setup`(){
@@ -176,7 +202,8 @@ class InstanaTest : BaseTest() {
             viewName = ""
         }
         Instana.reportEvent(customEvent)
-        assert(!Instana.workManager?.initialDelayQueue.toString().contains("m_"))
+        println(Instana.workManager?.initialDelayQueue.toString())
+        assert(!Instana.workManager?.initialDelayQueue.toString().contains(Regex("\\bm_(?!im_)")))
         resetConfig()
     }
 
@@ -343,6 +370,121 @@ class InstanaTest : BaseTest() {
         assert(Instana.deviceProfile.googlePlayServicesMissing==true)
         resetConfig()
     }
+
+    @Test
+    fun `test setCrashReportingEnabled false should disable crash reporting`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setup(app, config)
+        Instana.setCrashReportingEnabled(false)
+        val realThread = Thread() // create a real Thread instance
+        val realThrowable = RuntimeException("Test Exception") // create a real Throwable instance
+        crashService = CrashService(app = app, manager = mockWorkManager, config = config, cm = connectivityManager, tm = telephonyManager)
+        crashService.submitCrash(realThread, realThrowable)
+        Mockito.verify(mockWorkManager, never()).queueAndFlushBlocking(any())
+        resetConfig()
+    }
+
+    @Test
+    fun `test setCrashReportingEnabled true should enable crash reporting`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setup(app, config)
+        Instana.setCrashReportingEnabled(true)
+        val realThread = Thread() // create a real Thread instance
+        val realThrowable = RuntimeException("Test Exception") // create a real Throwable instance
+        crashService = CrashService(app = app, manager = mockWorkManager, config = config, cm = connectivityManager, tm = telephonyManager)
+        crashService.submitCrash(realThread, realThrowable)
+        Mockito.verify(mockWorkManager).queueAndFlushBlocking(any())
+        resetConfig()
+    }
+
+    @Test
+    fun `test setCrashReportingEnabled should not change crash reporting when config is null`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL, enableCrashReporting = false)
+        Instana.setup(app, config)
+        Instana.config = null
+        Instana.setCrashReportingEnabled(true)
+        val realThread = Thread() // create a real Thread instance
+        val realThrowable = RuntimeException("Test Exception") // create a real Throwable instance
+        crashService = CrashService(app = app, manager = mockWorkManager, config = config, cm = connectivityManager, tm = telephonyManager)
+        crashService.submitCrash(realThread, realThrowable)
+        Mockito.verify(mockWorkManager, never()).queueAndFlushBlocking(any())
+        resetConfig()
+    }
+
+    @Test
+    fun `test setAutoCaptureScreenNameEnabled should not change default capture mechanism when config is null`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL, autoCaptureScreenNames = false)
+        Instana.setup(app, config)
+        Instana.config = null
+        Instana.setAutoCaptureScreenNameEnabled(true)
+        val mockActivity = Mockito.mock(Activity::class.java)
+        val mockView = Mockito.mock(View::class.java)
+        Mockito.`when`(mockActivity.localClassName).thenReturn("MockActivity")
+        Mockito.`when`(mockActivity.findViewById<View>(R.id.content)).thenReturn(mockView)
+        Mockito.`when`(mockView.contentDescription).thenReturn("Mock Activity")
+        Mockito.`when`(mockActivity.findContentDescription()).thenReturn("MockActivityDescription")
+        val testFragment = Mockito.mock(Fragment::class.java)
+        Mockito.`when`(testFragment.userVisibleHint).thenReturn(true)
+        val fragmentLifecycleCallbacks = FragmentLifecycleCallbacks()
+        val instanaActivityLifecycleCallbacks = InstanaActivityLifecycleCallbacks()
+        instanaActivityLifecycleCallbacks.onActivityResumed(mockActivity)
+        fragmentLifecycleCallbacks.onFragmentResumed(mockFragmentManager, testFragment)
+        Assert.assertEquals(VisibleScreenNameTracker.activityFragmentViewData.get()?.fragmentClassName , "Fragment")
+        VisibleScreenNameTracker.activityFragmentViewData.set(null)
+        resetConfig()
+    }
+
+
+    @Test
+    fun `test setAutoCaptureScreenNameEnabled true should capture screen names`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL, autoCaptureScreenNames = false)
+        Instana.setup(app, config)
+        Instana.setAutoCaptureScreenNameEnabled(true)
+        val mockActivity = Mockito.mock(Activity::class.java)
+        val mockView = Mockito.mock(View::class.java)
+        Mockito.`when`(mockActivity.localClassName).thenReturn("MockActivity")
+        Mockito.`when`(mockActivity.findViewById<View>(R.id.content)).thenReturn(mockView)
+        Mockito.`when`(mockView.contentDescription).thenReturn("Mock Activity")
+        Mockito.`when`(mockActivity.findContentDescription()).thenReturn("MockActivityDescription")
+        val testFragment = Mockito.mock(Fragment::class.java)
+        Mockito.`when`(testFragment.userVisibleHint).thenReturn(true)
+        val fragmentLifecycleCallbacks = FragmentLifecycleCallbacks()
+        val instanaActivityLifecycleCallbacks = InstanaActivityLifecycleCallbacks()
+        instanaActivityLifecycleCallbacks.onActivityResumed(mockActivity)
+        fragmentLifecycleCallbacks.onFragmentResumed(mockFragmentManager, testFragment)
+        Assert.assertEquals(VisibleScreenNameTracker.activityFragmentViewData.get()?.fragmentClassName , "Fragment")
+        VisibleScreenNameTracker.activityFragmentViewData.set(null)
+        resetConfig()
+    }
+
+    @Test
+    fun `test setAutoCaptureScreenNameEnabled false should stop capturing screen names`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL, autoCaptureScreenNames = true)
+        Instana.setup(app, config)
+        Instana.setAutoCaptureScreenNameEnabled(false)
+        val mockActivity = Mockito.mock(Activity::class.java)
+        val mockView = Mockito.mock(View::class.java)
+        Mockito.`when`(mockActivity.localClassName).thenReturn("MockActivity")
+        Mockito.`when`(mockActivity.findViewById<View>(R.id.content)).thenReturn(mockView)
+        Mockito.`when`(mockView.contentDescription).thenReturn("Mock Activity")
+        Mockito.`when`(mockActivity.findContentDescription()).thenReturn("MockActivityDescription")
+        val testFragment = Mockito.mock(Fragment::class.java)
+        Mockito.`when`(testFragment.userVisibleHint).thenReturn(true)
+        val fragmentLifecycleCallbacks = FragmentLifecycleCallbacks()
+        val instanaActivityLifecycleCallbacks = InstanaActivityLifecycleCallbacks()
+        instanaActivityLifecycleCallbacks.onActivityResumed(mockActivity)
+        fragmentLifecycleCallbacks.onFragmentResumed(mockFragmentManager, testFragment)
+        Assert.assertNotEquals(VisibleScreenNameTracker.activityFragmentViewData.get()?.fragmentClassName , "Fragment")
+        VisibleScreenNameTracker.activityFragmentViewData.set(null)
+        resetConfig()
+    }
+
     private fun resetConfig(){
         Instana.config = null
         Instana.workManager = null

@@ -32,7 +32,7 @@ class CrashServiceTest:BaseTest() {
     @Before
     fun `setup crash Service`(){
         MockitoAnnotations.openMocks(this)
-        crashService = CrashService(app = app, manager = mockWorkManager, config = InstanaConfig(API_KEY,SERVER_URL), cm = connectivityManager, tm = telephonyManager)
+        crashService = CrashService(app = app, manager = mockWorkManager, config = InstanaConfig(API_KEY,SERVER_URL, enableCrashReporting = true), cm = connectivityManager, tm = telephonyManager)
     }
 
     @Test

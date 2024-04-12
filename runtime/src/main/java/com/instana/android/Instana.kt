@@ -201,9 +201,20 @@ object Instana {
         }
     }
 
+    /**
+     * Enable or disable crash reporting at runtime
+     */
     @JvmStatic
     fun setCrashReportingEnabled(enabled: Boolean){
         this.config?.enableCrashReporting = enabled
+    }
+
+    /**
+     * Enable or disable auto view name capture at runtime
+     */
+    @JvmStatic
+    fun setAutoCaptureScreenNameEnabled(enabled: Boolean){
+        this.config?.autoCaptureScreenNames = enabled
     }
 
     /**
