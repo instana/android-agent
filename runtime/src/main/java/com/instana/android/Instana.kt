@@ -68,7 +68,7 @@ object Instana {
     internal var instrumentationService: InstrumentationService? = null
     internal var customEvents: CustomEventService? = null
     internal var crashReporting: CrashService? = null
-    internal var viewMeta = MaxCapacityMap<String,String>(128)
+    internal var viewMeta = MaxCapacityMap<String, String>(128)
 
     internal val internalURLs = listOf(
         """^.*instana\.io[\\/].*${'$'}""".toRegex()
@@ -191,12 +191,30 @@ object Instana {
     @JvmStatic
     fun setCollectionEnabled(enabled: Boolean) {
         this.config?.collectionEnabled = enabled
-
+        if (enabled.not()) {
+            this.workManager?.getWorkManager()?.cancelAllWork()
+        }
         val theApp = this.app
         val theConfig = this.config
         if (theApp != null && theConfig != null) {
-            initWorkManager(theApp, theConfig)
+            initWorkManager(theApp, theConfig, true)
         }
+    }
+
+    /**
+     * Enable or disable crash reporting at runtime
+     */
+    @JvmStatic
+    fun setCrashReportingEnabled(enabled: Boolean){
+        this.config?.enableCrashReporting = enabled
+    }
+
+    /**
+     * Enable or disable auto view name capture at runtime
+     */
+    @JvmStatic
+    fun setAutoCaptureScreenNameEnabled(enabled: Boolean){
+        this.config?.autoCaptureScreenNames = enabled
     }
 
     /**
@@ -334,11 +352,11 @@ object Instana {
         }
     }
 
-    private fun initWorkManager(app: Application, config: InstanaConfig) {
-        if (this.workManager != null) {
+    private fun initWorkManager(app: Application, config: InstanaConfig, isRuntimeUpdate: Boolean = false) {
+        if (this.workManager != null && isRuntimeUpdate.not()) {
             return
         }
-        if (config.collectionEnabled.not()) {
+        if (config.collectionEnabled.not() && isRuntimeUpdate.not()) {
             return
         }
 

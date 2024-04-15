@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.instana.android.Instana
 import com.instana.android.core.util.Logger
 import com.instana.android.view.VisibleScreenNameTracker
 
@@ -19,6 +20,7 @@ internal class FragmentLifecycleCallbacks : FragmentManager.FragmentLifecycleCal
 
     private val fragmentStack = arrayListOf<Fragment>()
     override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+        if(Instana.config?.autoCaptureScreenNames==false) return
         var newNavController:NavController? = null
         try {
             newNavController = f.findNavController()

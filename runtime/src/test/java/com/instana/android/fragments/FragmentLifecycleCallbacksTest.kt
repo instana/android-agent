@@ -12,8 +12,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.NavHostFragment
 import com.instana.android.BaseTest
+import com.instana.android.Instana
+import com.instana.android.InstanaTest
 import com.instana.android.activity.InstanaActivityLifecycleCallbacks
 import com.instana.android.activity.findContentDescription
+import com.instana.android.core.InstanaConfig
+import com.instana.android.core.InstanaWorkManager
+import com.instana.android.session.SessionService
 import com.instana.android.view.VisibleScreenNameTracker
 import org.junit.Assert
 import org.junit.Before
@@ -32,9 +37,18 @@ class FragmentLifecycleCallbacksTest : BaseTest() {
     @Mock
     private lateinit var mockFragmentManager: FragmentManager
 
+    lateinit var config: InstanaConfig
+
+    lateinit var wrkManager:InstanaWorkManager
+
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, autoCaptureScreenNames = true)
+        wrkManager = InstanaWorkManager(config, app)
+        Instana.config = config
+        MockitoAnnotations.openMocks(this)
+        Instana.sessionId = null
+        SessionService(app, mockWorkManager, config)
     }
 
     @Test
@@ -50,7 +64,7 @@ class FragmentLifecycleCallbacksTest : BaseTest() {
         val instanaActivityLifecycleCallbacks = InstanaActivityLifecycleCallbacks()
         instanaActivityLifecycleCallbacks.onActivityResumed(mockActivity)
         fragmentLifecycleCallbacks.onFragmentResumed(mockFragmentManager, testFragment)
-        assert(VisibleScreenNameTracker.activityFragmentViewData.get()?.customFragmentScreenName == "TestFragment1")
+        Assert.assertEquals(VisibleScreenNameTracker.activityFragmentViewData.get()?.customFragmentScreenName , "TestFragment1")
         assert(VisibleScreenNameTracker.activityFragmentViewData.get()?.fragmentLocalPathName == "com.instana.android.fragments.TestFragment1")
         assert(VisibleScreenNameTracker.activityFragmentViewData.get()?.fragmentHierarchyType == "SINGLE")
         assert(VisibleScreenNameTracker.activityFragmentViewData.get()?.fragmentClassName == "TestFragment1")
@@ -123,7 +137,7 @@ class FragmentLifecycleCallbacksTest : BaseTest() {
         val instanaActivityLifecycleCallbacks = InstanaActivityLifecycleCallbacks()
         instanaActivityLifecycleCallbacks.onActivityResumed(mockActivity)
         fragmentLifecycleCallbacks.onFragmentResumed(mockFragmentManager, testFragment)
-        assert(VisibleScreenNameTracker.activityFragmentViewData.get()?.fragmentClassName == "Fragment")
+        Assert.assertEquals(VisibleScreenNameTracker.activityFragmentViewData.get()?.fragmentClassName , "Fragment")
         VisibleScreenNameTracker.activityFragmentViewData.set(null)
     }
 
