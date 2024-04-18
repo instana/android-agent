@@ -484,6 +484,21 @@ class InstanaTest : BaseTest() {
         VisibleScreenNameTracker.activityFragmentViewData.set(null)
         resetConfig()
     }
+    
+    @Test
+    fun `test instana internal viewMeta is accessible to user`(){
+        Instana.viewMeta.put("sds","ds")
+        Assert.assertEquals(Instana.viewMeta.get("sds"),"ds")
+        Instana.viewMeta.clear()
+    }
+
+    @Test
+    fun `test instana internal viewMeta can be cleared after an update`(){
+        Instana.viewMeta.put("sds","ds")
+        Instana.viewMeta.clear()
+        Assert.assertEquals(Instana.viewMeta.get("sds"),null)
+        Instana.viewMeta.clear()
+    }
 
     private fun resetConfig(){
         Instana.config = null

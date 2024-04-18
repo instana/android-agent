@@ -68,7 +68,7 @@ object Instana {
     internal var instrumentationService: InstrumentationService? = null
     internal var customEvents: CustomEventService? = null
     internal var crashReporting: CrashService? = null
-    internal var viewMeta = MaxCapacityMap<String, String>(128)
+
 
     internal val internalURLs = listOf(
         """^.*instana\.io[\\/].*${'$'}""".toRegex()
@@ -108,6 +108,10 @@ object Instana {
      */
     @JvmStatic
     val meta = MaxCapacityMap<String, String>(64)
+
+    /** Instana-Internal: Map of Key-Value pairs of meta details associated with views (Exposed for usage in cross-platform agent's bridge)*/
+    @JvmStatic
+    var viewMeta = MaxCapacityMap<String, String>(128)
 
     /**
      * User ID which all new beacons will be associated with
