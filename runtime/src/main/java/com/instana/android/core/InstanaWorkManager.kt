@@ -260,29 +260,27 @@ class InstanaWorkManager(
             return
         }
 
-        runBlocking {
-            withContext(Dispatchers.IO) {
-                try {
-                    val file = File(getBeaconsDirectory(), beaconId)
-                    file.writeText(beacon.toString(), Charsets.UTF_8)
-                } catch (e: IOException) {
-                    Logger.e("Failed to persist beacon in file-system. Dropping beacon: $beacon", e)
+        CoroutineScope(Dispatchers.IO).launch  {
+            try {
+                val file = File(getBeaconsDirectory(), beaconId)
+                file.writeText(beacon.toString(), Charsets.UTF_8)
+            } catch (e: IOException) {
+                Logger.e("Failed to persist beacon in file-system. Dropping beacon: $beacon", e)
+            }
+            try {
+                if (!initialExecutorFuture.isDone) {
+                    initialExecutorFuture.get()
                 }
-                try {
-                    if (!initialExecutorFuture.isDone) {
-                        initialExecutorFuture.get()
-                    }
-                } catch (e: IOException) {
-                    Logger.e("Failed to flush initial beacons", e)
+            } catch (e: IOException) {
+                Logger.e("Failed to flush initial beacons", e)
+            }
+            try {
+                getWorkManager()?.run {
+                    Logger.i("Enqueue beacon flushing task")
+                    flushInternal(getBeaconsDirectory(), this).result.get(1500, TimeUnit.MILLISECONDS)
                 }
-                try {
-                    getWorkManager()?.run {
-                        Logger.i("Enqueue beacon flushing task")
-                        flushInternal(getBeaconsDirectory(), this).result.get(1500, TimeUnit.MILLISECONDS)
-                    }
-                } catch (e: IOException) {
-                    Logger.e("Failed to enqueue flushing task", e)
-                }
+            } catch (e: IOException) {
+                Logger.e("Failed to enqueue flushing task", e)
             }
         }
     }
