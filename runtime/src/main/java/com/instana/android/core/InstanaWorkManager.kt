@@ -263,6 +263,9 @@ class InstanaWorkManager(
         runBlocking {
             withContext(Dispatchers.IO) {
                 try {
+                    /** Adding crash beacon to the directory */
+                    val file = File(getBeaconsDirectory(), beaconId)
+                    file.writeText(beacon.toString(), Charsets.UTF_8)
                     /**
                      * Verifies whether the executor has finished the task or is currently running.
                      * If it is not cancellable, it returns false. If it is cancellable, it cancels
@@ -279,9 +282,6 @@ class InstanaWorkManager(
                             }
                         }
                     }
-                    /** Adding crash beacon to the directory */
-                    val file = File(getBeaconsDirectory(), beaconId)
-                    file.writeText(beacon.toString(), Charsets.UTF_8)
                 } catch (e: IOException) {
                     Logger.e("Failed to persist beacon in file-system. Dropping beacon: $beacon", e)
                 }

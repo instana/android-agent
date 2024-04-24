@@ -4,7 +4,7 @@ Changelog
 
 _2024-04-23_
 
-- Removed runBlocking while reporting crash
+- Enhanced runBlocking for crash reporting by instantly writing data to disk, bypassing initial delay.
 
 ## Version 6.0.16
 
