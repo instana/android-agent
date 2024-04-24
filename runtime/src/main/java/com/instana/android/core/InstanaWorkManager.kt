@@ -271,7 +271,7 @@ class InstanaWorkManager(
                      * backend for a crash beacon. Even if the `initialBeaconDelayMs` has not been reached,
                      * the beacon should either be reported or saved to disk.
                      */
-                    if(initialExecutorFuture.cancel(false)){
+                    if (initialExecutorFuture.cancel(false)) {
                         initialDelayQueue.forEach { initialQueueBeacon->
                             initialQueueBeacon.getBeaconId()?.let { initialQueueBeaconId ->
                                 val file = File(getBeaconsDirectory(), initialQueueBeaconId)
