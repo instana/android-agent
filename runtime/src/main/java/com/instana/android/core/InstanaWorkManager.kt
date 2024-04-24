@@ -263,26 +263,39 @@ class InstanaWorkManager(
         runBlocking {
             withContext(Dispatchers.IO) {
                 try {
+                    /** Adding crash beacon to the directory */
                     val file = File(getBeaconsDirectory(), beaconId)
                     file.writeText(beacon.toString(), Charsets.UTF_8)
+                    /**
+                     * Verifies whether the executor has finished the task or is currently running.
+                     * If it is not cancellable, it returns false. If it is cancellable, it cancels
+                     * the task and returns true. This ensures that the beacon is either saved to the
+                     * directory (to be reported upon the next app startup) or has been reported to the
+                     * backend for a crash beacon. Even if the `initialBeaconDelayMs` has not been reached,
+                     * the beacon should either be reported or saved to disk.
+                     */
+                    if (initialExecutorFuture.cancel(false)) {
+                        initialDelayQueue.forEach { initialQueueBeacon->
+                            initialQueueBeacon.getBeaconId()?.let { initialQueueBeaconId ->
+                                val file = File(getBeaconsDirectory(), initialQueueBeaconId)
+                                file.writeText(initialQueueBeacon.toString(), Charsets.UTF_8)
+                            }
+                        }
+                    }
                 } catch (e: IOException) {
                     Logger.e("Failed to persist beacon in file-system. Dropping beacon: $beacon", e)
                 }
-                try {
-                    if (!initialExecutorFuture.isDone) {
-                        initialExecutorFuture.get()
-                    }
-                } catch (e: IOException) {
-                    Logger.e("Failed to flush initial beacons", e)
+            }
+        }
+        // Launch a coroutine to handle beacon flushing asynchronously (without block)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                getWorkManager()?.run {
+                    Logger.i("Enqueue beacon flushing task")
+                    flushInternal(getBeaconsDirectory(), this).result.get(1500, TimeUnit.MILLISECONDS)
                 }
-                try {
-                    getWorkManager()?.run {
-                        Logger.i("Enqueue beacon flushing task")
-                        flushInternal(getBeaconsDirectory(), this).result.get(1500, TimeUnit.MILLISECONDS)
-                    }
-                } catch (e: IOException) {
-                    Logger.e("Failed to enqueue flushing task", e)
-                }
+            } catch (e: IOException) {
+                Logger.e("Failed to enqueue flushing task", e)
             }
         }
     }

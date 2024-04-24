@@ -1,11 +1,19 @@
 Changelog
 ==========
+## Version 6.0.17
+
+_2024-04-23_
+
+- Enhanced runBlocking for crash reporting by instantly writing data to disk, bypassing initial delay.
+
 ## Version 6.0.16
+
 _2024-04-18_
 
 - `viewMeta` Exposed for bridging with cross-platform agents
 
 ## Version 6.0.15
+
 _2024-02-28_
 
 - `autoCaptureScreenNames` was introduced to auto capture the Fragment & Activity names
