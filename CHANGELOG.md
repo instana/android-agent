@@ -10,6 +10,10 @@ _2024-05-22_
 
 - `validateAllKeys` extension function introduced to filter valid keys from internal meta, usage: internal to agent
 
+_2024-05-15_
+
+- Introduced extension function `addInstanaObserver` that could capture composable screen names from `NavHostController`
+
 _2024-05-22
 
 - sonar gradle version updated

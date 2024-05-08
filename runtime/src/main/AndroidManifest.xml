@@ -1,5 +1,14 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Safely added overrides to accommodate MIN SDK 16 -->
+    <uses-sdk android:minSdkVersion="16"
+        tools:overrideLibrary="androidx.compose.ui,
+        androidx.compose.ui.text,
+        androidx.compose.runtime.saveable,
+        androidx.compose.ui.graphics,
+        androidx.compose.ui.unit,
+        androidx.compose.ui.geometry,androidx.compose.ui.util"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
