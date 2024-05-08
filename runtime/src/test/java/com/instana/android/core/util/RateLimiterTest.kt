@@ -14,9 +14,9 @@ import org.junit.Test
 class RateLimiterTest :BaseTest(){
     
     @Test
-    fun `test run with lastTenMinuteTimestamp as 0`(){
-        val rateLimiter = RateLimiter(maxPerTenMinutes = 5, maxPerTenSeconds = 2)
-        setPrivateField(rateLimiter,"lastTenMinuteTimestamp",0)
+    fun `test run with lastFiveMinuteTimestamp as 0`(){
+        val rateLimiter = RateLimiter(maxPerFiveMinutes = 5, maxPerTenSeconds = 2)
+        setPrivateField(rateLimiter,"lastFiveMinuteTimestamp",0)
         val result = rateLimiter.isRateExceeded(5)
         assertTrue(result)
     }
@@ -24,7 +24,7 @@ class RateLimiterTest :BaseTest(){
     @Test
     fun `test isRateExceeded withinLimits`() {
         // Given
-        val rateLimiter = RateLimiter(maxPerTenMinutes = 5, maxPerTenSeconds = 2)
+        val rateLimiter = RateLimiter(maxPerFiveMinutes = 5, maxPerTenSeconds = 2)
 
         // When
         val result = rateLimiter.isRateExceeded(1)
@@ -34,9 +34,9 @@ class RateLimiterTest :BaseTest(){
     }
 
     @Test
-    fun `test isRateExceeded exceedsPerTenMinutes`() {
+    fun `test isRateExceeded exceedsPerFiveMinutes`() {
         // Given
-        val rateLimiter = RateLimiter(maxPerTenMinutes = 2, maxPerTenSeconds = 5)
+        val rateLimiter = RateLimiter(maxPerFiveMinutes = 2, maxPerTenSeconds = 5)
 
         // When
         val result = rateLimiter.isRateExceeded(3)
@@ -48,7 +48,7 @@ class RateLimiterTest :BaseTest(){
     @Test
     fun `test isRateExceeded exceedsPerTenSeconds`() {
         // Given
-        val rateLimiter = RateLimiter(maxPerTenMinutes = 5, maxPerTenSeconds = 2)
+        val rateLimiter = RateLimiter(maxPerFiveMinutes = 5, maxPerTenSeconds = 2)
 
         // When
         val result = rateLimiter.isRateExceeded(3)
@@ -60,16 +60,17 @@ class RateLimiterTest :BaseTest(){
     @Test
     fun `test isRateExceeded resetCounts`() {
         // Given
-        val rateLimiter = RateLimiter(maxPerTenMinutes = 4, maxPerTenSeconds = 5)
+        val rateLimiter = RateLimiter(maxPerFiveMinutes = 4, maxPerTenSeconds = 5)
 
         // When
         val result1 = rateLimiter.isRateExceeded(3)
 
-        // Wait for a little more than 10 seconds
-        Thread.sleep(10001)
+        // Mock wait for a little more than 10 seconds
+        setPrivateField(rateLimiter,"lastTenSecondsTimestamp",System.currentTimeMillis()- 11 * 1000)
+        setPrivateField(rateLimiter,"lastFiveMinuteTimestamp",System.currentTimeMillis()- 6 * 60 * 1000)
 
         // Check again after the reset
-        val result2 = rateLimiter.isRateExceeded(1)
+        val result2 = rateLimiter.isRateExceeded(2)
 
         // Then
         assertFalse(result1)
@@ -79,13 +80,15 @@ class RateLimiterTest :BaseTest(){
     @Test
     fun `test isRateExceeded resetCountsOnlyTenSeconds`() {
         // Given
-        val rateLimiter = RateLimiter(maxPerTenMinutes = 5, maxPerTenSeconds = 2)
+        val rateLimiter = RateLimiter(maxPerFiveMinutes = 5, maxPerTenSeconds = 2)
 
         // When
         val result1 = rateLimiter.isRateExceeded(3)
 
-        // Wait for a little more than 10 seconds
-        Thread.sleep(10001)
+        // Mock wait for a little more than 10 seconds
+        setPrivateField(rateLimiter,"lastTenSecondsTimestamp",System.currentTimeMillis()- 11 * 1000)
+        setPrivateField(rateLimiter,"lastFiveMinuteTimestamp",System.currentTimeMillis()- 6 * 60 * 1000)
+
 
         // Check again after the reset
         val result2 = rateLimiter.isRateExceeded(1)
