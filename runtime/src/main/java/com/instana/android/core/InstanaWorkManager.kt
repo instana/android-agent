@@ -40,7 +40,7 @@ class InstanaWorkManager(
     /**
      * Rate-limits the creation of beacons, to protect the servers from accidental over-usage
      */
-    private val rateLimiter = RateLimiter(128, 32)
+    private val rateLimiter = RateLimiter(500, 20)
 
     /**
      * Protects WorkManager from receiving too many scheduled tasks, which can generate Sqlite errors
