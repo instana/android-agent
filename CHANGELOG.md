@@ -4,7 +4,11 @@ Changelog
 
 _2024-05-08_
 
-- `RateLimiter` Updated, new limits are 20 beacons/10s & 500 beacons/5min. 
+- `RateLimiter` Updated, new limits are 20 beacons/10s & 500 beacons/5min.
+
+_2024-05-22_
+
+- `validateAllKeys` extension function introduced to filter valid keys from internal meta, usage: internal to agent
 
 _2024-05-22
 
