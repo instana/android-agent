@@ -6,6 +6,10 @@ _2024-05-08_
 
 - `RateLimiter` Updated, new limits are 20 beacons/10s & 500 beacons/5min. 
 
+_2024-05-22
+
+- sonar gradle version updated
+
 ## Version 6.0.17
 
 _2024-04-23_
