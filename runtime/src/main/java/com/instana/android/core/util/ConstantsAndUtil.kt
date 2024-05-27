@@ -22,6 +22,7 @@ import com.instana.android.core.event.models.ConnectionType
 import com.instana.android.core.event.models.EffectiveConnectionType
 import com.instana.android.core.event.models.Platform
 import com.instana.android.instrumentation.HTTPCaptureConfig
+import com.instana.android.view.ScreenAttributes
 import okhttp3.OkHttpClient
 import java.net.MalformedURLException
 import java.net.URL
@@ -264,6 +265,22 @@ object ConstantsAndUtil {
             Logger.w("URL seems malformed: $url")
             Logger.w(e.toString())
             url
+        }
+    }
+
+    internal fun Map<String, String>.validateAllKeys(): Map<String, String> {
+        val listOfValidKeysAndroid = ScreenAttributes.values().map { it.value }.toSet()
+        val listOfValidKeysFlutter = setOf(
+            "settings.route.name",
+            "widget.name",
+            "child.widget.name",
+            "child.widget.title",
+            "go.router.path"
+        )
+        return if (this.keys.all {key -> key in listOfValidKeysAndroid || key in listOfValidKeysFlutter  }) {
+            this
+        } else {
+            emptyMap()
         }
     }
 

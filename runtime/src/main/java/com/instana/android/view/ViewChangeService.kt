@@ -15,6 +15,7 @@ import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
 import com.instana.android.core.util.ConstantsAndUtil
+import com.instana.android.core.util.ConstantsAndUtil.validateAllKeys
 import com.instana.android.core.util.Logger
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -47,7 +48,7 @@ class ViewChangeService(
             sessionId = sessionId,
             view = viewName,
             meta = Instana.meta.getAll(),
-            viewMeta = Instana.viewMeta.getAll()
+            viewMeta = Instana.viewMeta.getAll().validateAllKeys()
         )
 
         Logger.i("View changed with: `name` $viewName")
