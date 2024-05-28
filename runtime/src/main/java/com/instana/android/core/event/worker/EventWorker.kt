@@ -189,7 +189,7 @@ open class EventWorker(
             }
             response.isSuccessful
         } catch (e: IOException) {
-            Logger.e("Failed to flush beacons to Instana", e)
+            Logger.e("Failed to flush beacons to Instana, errorMessage: ${e.message} ",e)
             false
         }
     }
