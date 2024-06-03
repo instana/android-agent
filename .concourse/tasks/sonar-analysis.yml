@@ -1,0 +1,46 @@
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: maven
+    tag: 3-openjdk-11
+
+params:
+  GITHUB_TOKEN: ((ibm-github-e-api-token))
+
+inputs:
+  - name: source
+  - name: automation-ci
+ 
+
+run:
+  path: bash
+  args:
+    - -cx
+    - |
+      set -e
+      export SONARQUBE_TOKEN=((sonarqube-instana-io-token))
+      export BRANCH_NAME=((branch))
+      ls
+
+      cd source
+      git checkout $BRANCH_NAME
+
+      echo "yes" | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+      (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> /root/.bashrc
+      eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+
+      brew install gh
+
+      gh auth login --with-token <<< ((ibm-github-e-api-token)) --hostname github.ibm.com
+      export PR_KEY=`gh pr view --json baseRefName,number --jq .number`
+      export PR_BASE=`gh pr view --json baseRefName,number --jq .baseRefName`
+      git fetch https://$GITHUB_TOKEN@github.ibm.com/instana/android-agent.git master:master
+      cd ..
+
+      echo "Performing sonarqube scan"
+      export SOURCE_NAME=source
+
+      chmod -R 777 automation-ci/android-agent/ci/automation/ci/sonar-scan.sh
+      automation-ci/android-agent/ci/automation/ci/sonar-scan.sh

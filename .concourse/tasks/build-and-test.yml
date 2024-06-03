@@ -1,0 +1,44 @@
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: openjdk
+    tag: 11-jre-slim
+    
+inputs:
+  - name: android-test-app
+  - name: source
+  - name: automation-ci
+
+run:
+  path: bash
+  args:
+    - -c
+    - |
+      echo "TEST PIPELINE VERSION - 1.0.3"
+      mv automation-ci/android-agent/ci/automation/ci source
+      source source/ci/install_dependencies.sh
+      
+      echo "#####-Building and publishing runtime module to local maven central..."
+      mv android-test-app/android-agent-test-automation/TestApplication source
+      cd source
+      
+      ./gradlew :runtime:publishToMavenLocal
+      
+      echo "#####-Building and publishing plugin module to local maven central..."
+      
+      ./gradlew :plugin:publishToMavenLocal
+      
+      echo "#####-Building the Android APK..."
+      
+      cd TestApplication
+      
+      ./gradlew assembleDebug
+      
+      echo "#####-moving to root folder"
+      
+      cd ../../
+      
+      zip test.zip source/TestApplication/app/build/outputs/apk/debug/app-debug.apk
+      
+      source source/ci/add_apk_to_ibm_cos.sh "$((automation-ibm-cloud-api-key))"
