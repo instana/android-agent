@@ -43,13 +43,13 @@ resources:
       password: x-oauth-basic
       branch: master
 
-  - name: android-test-app	
-    type: git	
-    icon: github	
-    source:	
-      uri: https://github.ibm.com/instana/awesome-eum.git	
-      username: ((ibm-github-e-api-token))	
-      password: x-oauth-basic	
+  - name: android-test-app
+    type: git
+    icon: github
+    source:
+      uri: https://github.ibm.com/instana/awesome-eum.git
+      username: ((ibm-github-e-api-token))
+      password: x-oauth-basic
       branch: main
 
   - name: gh-status
@@ -110,7 +110,7 @@ jobs:
         on_abort:
           put: gh-status
           inputs: [ source ]
-          params: { state: error, context: sonar-analysis }          
+          params: { state: error, context: sonar-analysis }
 
 resource_types:
   - name: cogito
