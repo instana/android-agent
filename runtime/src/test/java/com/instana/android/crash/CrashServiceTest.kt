@@ -44,6 +44,16 @@ class CrashServiceTest:BaseTest() {
 
         verify(mockWorkManager).queueAndFlushBlocking(any())
     }
+
+    @Test
+    fun `test for crash submit with null value for throwable`(){
+        val realThread = Thread() // create a real Thread instance
+        val realThrowable = null // create a null Throwable instance
+
+        crashService.submitCrash(realThread, realThrowable)
+
+        verify(mockWorkManager).queueAndFlushBlocking(any())
+    }
     
     @Test
     fun `test breadCrumb max holder`(){

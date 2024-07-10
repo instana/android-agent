@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.0.19
+
+_2024-07-10_
+
+- `errorType` added to crash beacons
+
 ## Version 6.0.18
 
 _2024-05-08_

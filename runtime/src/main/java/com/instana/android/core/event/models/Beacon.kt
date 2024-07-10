@@ -734,6 +734,7 @@ class Beacon private constructor(
             view: String?,
             meta: Map<String, String>,
             error: String?,
+            errorType: String?,
             stackTrace: String?,
             allStackTraces: String?
         ): Beacon {
@@ -743,6 +744,7 @@ class Beacon private constructor(
                     view?.run { setView(this) }
                     for (it in meta) { setMeta(it.key, it.value) }
                     error?.run { setErrorMessage(this) }
+                    errorType?.run { setErrorType(this) }
                     stackTrace?.run { setStackTrace(this) }
                     allStackTraces?.run { setAllStackTraces(this) }
                 }

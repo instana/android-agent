@@ -10,7 +10,6 @@ import android.app.Application
 import androidx.work.WorkManager
 import com.instana.android.BaseTest
 import com.instana.android.Instana
-import com.instana.android.InstanaTest
 import com.instana.android.InstanaTest.Companion.API_KEY
 import com.instana.android.InstanaTest.Companion.SERVER_URL
 import com.instana.android.core.event.models.AppProfile
@@ -125,7 +124,7 @@ class InstanaWorkManagerTest : BaseTest() {
 
     @Test
     fun `test updateQueueItems with values called at init condition 2 when view in beacon has null view with visible screen tracker`() {
-        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
+        val config = InstanaConfig(API_KEY, SERVER_URL)
         val workManager = InstanaWorkManager(config,app)
         Instana.userProfile.userName = null
         Instana.userProfile.userEmail = null
@@ -165,7 +164,7 @@ class InstanaWorkManagerTest : BaseTest() {
 
     @Test
     fun `test updateQueueItems with values called at init condition 3 when view in beacon has firstView with visible screen tracker`() {
-        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
+        val config = InstanaConfig(API_KEY, SERVER_URL)
         val workManager = InstanaWorkManager(config,app)
         Instana.userProfile.userName = null
         Instana.userProfile.userEmail = null
@@ -268,6 +267,7 @@ class InstanaWorkManagerTest : BaseTest() {
             meta = mapOf(),
             error = null,
             stackTrace = null,
+            errorType = "Exception",
             allStackTraces = null
         )
         crashbeacon.setBeaconId("")

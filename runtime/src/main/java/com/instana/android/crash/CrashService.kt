@@ -30,7 +30,7 @@ class CrashService(
     private val config: InstanaConfig,
     private val cm: ConnectivityManager,
     private val tm: TelephonyManager,
-    defaultThreadHandler: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler()
+    defaultThreadHandler: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler(),
 ) {
 
     private val appKey = config.key
@@ -53,7 +53,7 @@ class CrashService(
 
     fun submitCrash(thread: Thread?, throwable: Throwable?) {
         //Condition helps when crash reporting disables at runtime, after init
-        if(config.enableCrashReporting.not()){
+        if (config.enableCrashReporting.not()) {
             handler?.disable()
             return
         }
@@ -61,6 +61,8 @@ class CrashService(
         val stackTrace = Log.getStackTraceString(throwable)
 
         val allStackTraces = dumpAllThreads(thread, throwable)
+
+        val errorType:String? = throwable?.javaClass?.name
 
         // val (versionCode: String, version: String) = ConstantsAndUtil.getAppVersionNameAndVersionCode(app)
 
@@ -88,6 +90,7 @@ class CrashService(
             view = Instana.view,
             meta = mergedMeta.getAll(),
             error = errorMessage,
+            errorType = errorType,
             stackTrace = stackTrace,
             allStackTraces = allStackTraces,
         )

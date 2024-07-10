@@ -605,4 +605,65 @@ class BeaconTest: BaseTest() {
     }
 
 
+    @Test
+    fun `test submitNewCrashBeacon with error type`(){
+        val crashbeacon =Beacon.newCrash(
+            appKey = "hinc",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = DeviceProfile(
+                platform =Platform.ANDROID,
+                osName = null,
+                osVersion = null,
+                deviceManufacturer = null,
+                deviceModel = null,
+                deviceHardware = null,
+                rooted = null,
+                locale = null,
+                viewportWidth = null,
+                viewportHeight = null,
+                googlePlayServicesMissing = null
+            ),
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType =ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = "vix",
+            view = null,
+            meta = mapOf(),
+            error = null,
+            stackTrace = null,
+            errorType = "Exception",
+            allStackTraces = null
+        )
+        Assert.assertTrue(crashbeacon.toString().contains("Exception"))
+    }
+
+    @Test
+    fun `test submitNewCrashBeacon with error type null`(){
+        val crashbeacon =Beacon.newCrash(
+            appKey = "hinc",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = DeviceProfile(
+                platform =Platform.ANDROID,
+                osName = null,
+                osVersion = null,
+                deviceManufacturer = null,
+                deviceModel = null,
+                deviceHardware = null,
+                rooted = null,
+                locale = null,
+                viewportWidth = null,
+                viewportHeight = null,
+                googlePlayServicesMissing = null
+            ),
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType =ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = "vix",
+            view = null,
+            meta = mapOf(),
+            error = null,
+            stackTrace = null,
+            errorType = null,
+            allStackTraces = null
+        )
+        Assert.assertFalse(crashbeacon.toString().contains("Exception"))
+    }
 }
