@@ -47,7 +47,7 @@ resources:
     type: git
     icon: github
     source:
-      uri: https://github.ibm.com/instana/awesome-eum.git
+      uri: https://github.ibm.com/instana/eum-testware.git
       username: ((ibm-github-e-api-token))
       password: x-oauth-basic
       branch: main
