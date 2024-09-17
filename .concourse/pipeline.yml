@@ -91,26 +91,27 @@ jobs:
           put: gh-status
           inputs: [ source ]
           params: { state: error, context: build-and-test }
-      - task: sonar-analysis
-        file: source/.concourse/tasks/sonar-analysis.yml
-        vars:
-          branch: ((branch))
-        on_success:
-          put: gh-status
-          inputs: [ source ]
-          params: { state: success, context: sonar-analysis }
-        on_failure:
-          put: gh-status
-          inputs: [ source ]
-          params: { state: failure, context: sonar-analysis }
-        on_error:
-          put: gh-status
-          inputs: [ source ]
-          params: { state: error, context: sonar-analysis }
-        on_abort:
-          put: gh-status
-          inputs: [ source ]
-          params: { state: error, context: sonar-analysis }
+      # Temporarily disabling sonar-analysis task due to SonarQube CIO instance migration
+      # - task: sonar-analysis
+      #   file: source/.concourse/tasks/sonar-analysis.yml
+      #   vars:
+      #     branch: ((branch))
+      #   on_success:
+      #     put: gh-status
+      #     inputs: [ source ]
+      #     params: { state: success, context: sonar-analysis }
+      #   on_failure:
+      #     put: gh-status
+      #     inputs: [ source ]
+      #     params: { state: failure, context: sonar-analysis }
+      #   on_error:
+      #     put: gh-status
+      #     inputs: [ source ]
+      #     params: { state: error, context: sonar-analysis }
+      #   on_abort:
+      #     put: gh-status
+      #     inputs: [ source ]
+      #     params: { state: error, context: sonar-analysis }
 
 resource_types:
   - name: cogito
