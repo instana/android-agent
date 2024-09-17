@@ -91,6 +91,7 @@ jobs:
           put: gh-status
           inputs: [ source ]
           params: { state: error, context: build-and-test }
+      # Temporarily disabling sonar-analysis task due to SonarQube CIO instance migration
       # - task: sonar-analysis
       #   file: source/.concourse/tasks/sonar-analysis.yml
       #   vars:
