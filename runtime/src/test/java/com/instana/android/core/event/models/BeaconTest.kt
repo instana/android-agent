@@ -666,4 +666,117 @@ class BeaconTest: BaseTest() {
         )
         Assert.assertFalse(crashbeacon.toString().contains("Exception"))
     }
+
+    @Test
+    fun `test getBeacon should return exact type`(){
+        val crashbeacon =Beacon.newCrash(
+            appKey = "hinc",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType =ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = "vix",
+            view = null,
+            meta = mapOf(),
+            error = null,
+            stackTrace = null,
+            errorType = null,
+            allStackTraces = null
+        )
+        Assert.assertTrue(crashbeacon.getType().contains("crash"))
+    }
+
+    @Test
+    fun `test getBeacon should return exact errorMessage`(){
+        val crashbeacon =Beacon.newCrash(
+            appKey = "hinc",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType =ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = "vix",
+            view = "VIEW",
+            meta = mapOf(),
+            error = "this is a error",
+            stackTrace = null,
+            errorType = null,
+            allStackTraces = null
+        )
+        Assert.assertTrue(crashbeacon.getErrorMessage()=="this is a error")
+    }
+
+    @Test
+    fun `test getBeacon should return exact custom event name and error message`(){
+        val sampleBeacon = Beacon.newCustomEvent(
+            appKey = "constituto",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType =ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = "utroque",
+            view = "VIEW",
+            meta = mapOf(),
+            startTime = 5090,
+            duration = 9758,
+            backendTraceId = null,
+            error = "this is a error",
+            name = "Antoine Golden",
+            customMetric = 33.66
+        )
+        Assert.assertTrue(sampleBeacon.getErrorMessage()=="this is a error")
+        Assert.assertTrue(sampleBeacon.getCustomEventName()=="Antoine Golden")
+    }
+
+    @Test
+    fun `test getBeacon should return exact http status, and url`(){
+        val sampleBeacon = Beacon.newHttpRequest(
+            appKey = "facilisis",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType =ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = "mediocritatem",
+            view = null,
+            meta = mapOf(),
+            duration = 7594,
+            method = "GET",
+            url = "https://duckduckgo.com/?q=possim",
+            headers = mapOf(),
+            backendTraceId = null,
+            responseCode = 200,
+            requestSizeBytes = null,
+            encodedResponseSizeBytes = null,
+            decodedResponseSizeBytes = null,
+            error = null
+
+        )
+        Assert.assertEquals(sampleBeacon.getHttpCallUrl(),"https://duckduckgo.com/?q=possim")
+        Assert.assertEquals(sampleBeacon.getHttpCallStatus(),"200")
+    }
+
+    @Test
+    fun `test getBeacon should return exact http status as empty when its null`(){
+        val sampleBeacon = Beacon.newHttpRequest(
+            appKey = "facilisis",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType =ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = "mediocritatem",
+            view = null,
+            meta = mapOf(),
+            duration = 7594,
+            method = "GET",
+            url = "https://duckduckgo.com/?q=possim",
+            headers = mapOf(),
+            backendTraceId = null,
+            responseCode = null,
+            requestSizeBytes = null,
+            encodedResponseSizeBytes = null,
+            decodedResponseSizeBytes = null,
+            error = null
+
+        )
+        Assert.assertEquals(sampleBeacon.getHttpCallStatus(),"")
+    }
 }

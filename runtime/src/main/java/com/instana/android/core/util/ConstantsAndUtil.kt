@@ -288,4 +288,10 @@ object ConstantsAndUtil {
         return maxOf(this, 0) * 24 * 60 * 60 * 1000L
     }
 
+    internal fun mapToJsonString(map: Map<String, String>): String {
+        return map.entries.joinToString(prefix = "{", postfix = "}", separator = ", ") {
+            "\"${it.key}\": \"${it.value}\""
+        }
+    }
+
 }

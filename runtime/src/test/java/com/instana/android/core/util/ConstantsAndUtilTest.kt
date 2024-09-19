@@ -17,6 +17,7 @@ import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.event.models.Platform
 import com.instana.android.core.util.ConstantsAndUtil.getAppVersionNameAndVersionCode
+import com.instana.android.core.util.ConstantsAndUtil.mapToJsonString
 import com.instana.android.core.util.ConstantsAndUtil.toDaysInMillis
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import com.instana.android.instrumentation.HTTPMarkerShould
@@ -168,6 +169,47 @@ class ConstantsAndUtilTest:BaseTest() {
         Instana.redactHTTPQuery.add("password".toPattern())
         val redacted = ConstantsAndUtil.redactQueryParams("https://www.google.com?password=1234")
         Assert.assertEquals(redacted,"https://www.google.com?password=")
+    }
+
+    @Test
+    fun `test empty map`() {
+        val result = mapToJsonString(emptyMap())
+        Assert.assertEquals("{}", result)
+    }
+
+    @Test
+    fun `test single entry map`() {
+        val result = mapToJsonString(mapOf("key1" to "value1"))
+        Assert.assertEquals("{\"key1\": \"value1\"}", result)
+    }
+
+    @Test
+    fun `test multiple entries map`() {
+        val result = mapToJsonString(
+            mapOf(
+                "key1" to "value1",
+                "key2" to "value2",
+                "key3" to "value3"
+            )
+        )
+        Assert.assertEquals(
+            "{\"key1\": \"value1\", \"key2\": \"value2\", \"key3\": \"value3\"}",
+            result
+        )
+    }
+
+    @Test
+    fun `test map with special characters`() {
+        val result = mapToJsonString(
+            mapOf(
+                "key with space" to "value with space",
+                "keyWith\"Quotes\"" to "valueWith\\Backslash"
+            )
+        )
+        Assert.assertEquals(
+            "{\"key with space\": \"value with space\", \"keyWith\"Quotes\"\": \"valueWith\\Backslash\"}",
+            result
+        )
     }
 
 }

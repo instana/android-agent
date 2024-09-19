@@ -11,6 +11,7 @@ import androidx.annotation.Size
 import androidx.annotation.VisibleForTesting
 import com.instana.android.Instana
 import com.instana.android.android.agent.BuildConfig
+import com.instana.android.core.util.InternalEventNames
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.UniqueIdManager
 import java.math.BigInteger
@@ -171,6 +172,10 @@ class Beacon private constructor(
         stringMap["t"] = value.internalType
     }
 
+    internal fun getType():String{
+        return stringMap["t"]?:""
+    }
+
     /**
      * The kind of view/page/screen the user is on, e.g. login, checkout…
      */
@@ -185,6 +190,10 @@ class Beacon private constructor(
      */
     fun setCustomEventName(@Size(max = 256) value: String) {
         stringMap["cen"] = value.truncate(256, "Custom Event Name")
+    }
+
+    internal fun getCustomEventName():String{
+        return stringMap["cen"]?:""
     }
 
     /**
@@ -412,6 +421,10 @@ class Beacon private constructor(
         stringMap["hu"] = value.truncate(4096, "HTTP call URL")
     }
 
+    internal fun getHttpCallUrl():String{
+        return stringMap["hu"]?:""
+    }
+
     /**
      * The request's http method.
      *
@@ -431,6 +444,10 @@ class Beacon private constructor(
         intMap["hs"] = value
     }
 
+    internal fun getHttpCallStatus():String{
+        return (intMap["hs"]?:"").toString()
+    }
+
     /**
      * HTTP headers in key/value pairs, in lower case.
      *
@@ -445,6 +462,15 @@ class Beacon private constructor(
      */
     fun setHttpCallHeaders(@Size(max = 98) key: String, @Size(max = 1024) value: String) {
         stringMap["h_${key.truncate(98, "Header Key")}"] = value.truncate(1024, "Header Value")
+    }
+
+    /**
+     * Used to get the header values in map format internally
+     */
+    internal fun getHttpCallHeaders(): Map<String, String> {
+        return stringMap
+            .filterKeys { it.startsWith("h_") }    // Filter keys that start with "h_"
+            .mapKeys { (key, _) -> key.removePrefix("h_") }
     }
 
     /**
@@ -498,6 +524,10 @@ class Beacon private constructor(
         }
     }
 
+    internal fun getErrorMessage():String{
+        return stringMap["em"]?:""
+    }
+
     /**
      * error ID must be defined when there is an error message
      */
@@ -544,11 +574,17 @@ class Beacon private constructor(
     /**
      * Set view related meta data with this map, used in auto view capture mechanism
      */
-    fun setViewMeta(@Size(max = 64) key: String, @Size(max = 1024) value: String) {
+    fun setInternalMeta(@Size(max = 64) key: String, @Size(max = 1024) value: String) {
         stringMap["im_${key.truncate(64, "View Meta Key")}"] = value.truncate(1024, "View Meta Value")
     }
 
     fun getViewMeta(key: String): String? = stringMap["im_$key"]
+
+    internal fun getInternalMetaForView():Map<String,String>{
+         return stringMap
+            .filterKeys { it.startsWith("im_act") || it.startsWith("im_frag") }    // Filter keys that start with "h_"
+            .mapKeys { (key, _) -> key.removePrefix("im_") }
+    }
 
     @Suppress("DuplicatedCode") // I rather duplicate a few lines of code and keep type safety
     override fun toString(): String {
@@ -690,7 +726,7 @@ class Beacon private constructor(
             return Beacon(BeaconType.VIEW_CHANGE, 0, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     setView(view)
-                    for (it in viewMeta) { setViewMeta(it.key, it.value) }
+                    for (it in viewMeta) { setInternalMeta(it.key, it.value) }
                     for (it in meta) { setMeta(it.key, it.value) }
                 }
         }
@@ -721,6 +757,9 @@ class Beacon private constructor(
                     backendTraceId?.run { setBackendTraceId(backendTraceId) }
                     error?.run { setErrorMessage(this) }
                     customMetric?.run { setCustomMetricData(this) }
+                    if(InternalEventNames.getEventNameForTitle(name).isNotEmpty()){
+                        setInternalMeta("event.type",InternalEventNames.getEventNameForTitle(name))
+                    }
                 }
         }
 

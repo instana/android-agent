@@ -8,6 +8,7 @@ package com.instana.android.performance.anr
 import com.instana.android.Instana
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
+import com.instana.android.core.util.InternalEventNames
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.stackTraceAsString
 import com.instana.android.performance.PerformanceMonitor
@@ -34,7 +35,7 @@ class ANRMonitor(
         val activityName = lifeCycle.activityName ?: EMPTY_STR
         Logger.d("FrameDip detected with: `activityName` $activityName")
         Instana.customEvents?.submit(
-            eventName = "ANR",
+            eventName = InternalEventNames.ANR.titleName,
             startTime = System.currentTimeMillis(),
             duration = duration,
             meta = mapOf(

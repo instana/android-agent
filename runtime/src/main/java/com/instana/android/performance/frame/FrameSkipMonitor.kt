@@ -10,6 +10,7 @@ import android.view.Choreographer
 import com.instana.android.Instana
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
+import com.instana.android.core.util.InternalEventNames
 import com.instana.android.core.util.Logger
 import com.instana.android.performance.PerformanceMonitor
 import com.instana.android.performance.PerformanceMonitorConfig
@@ -91,7 +92,7 @@ class FrameSkipMonitor(
         val activityName = lifeCycle.activityName ?: EMPTY_STR
         Logger.d("FrameDip detected with: `activityName` $activityName, `avgFrameRate` $averageFrameRate")
         Instana.customEvents?.submit(
-            eventName = "FrameDip",
+            eventName = InternalEventNames.FRAME_DROP.titleName,
             startTime = startTime,
             duration = duration,
             meta = mapOf(

@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.0.21
+
+_2024-07-31_
+
+- Introduced a handler function for beacons that were dropped because of `RateLimiter`.
+
 ## Version 6.0.19
 
 _2024-07-10_

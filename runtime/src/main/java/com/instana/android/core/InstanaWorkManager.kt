@@ -18,6 +18,7 @@ import com.instana.android.core.util.Debouncer
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.RateLimiter
 import com.instana.android.core.util.isDirectoryEmpty
+import com.instana.android.dropbeaconhandler.DropBeaconHandler
 import com.instana.android.view.VisibleScreenNameTracker
 import kotlinx.coroutines.*
 import java.io.File
@@ -32,7 +33,7 @@ import java.util.concurrent.atomic.AtomicLong
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class InstanaWorkManager(
     config: InstanaConfig,
-    private val context: Context
+    private val context: Context,
 ) {
     private val beaconsDirectoryName = "instanaBeacons"
     private val flushDelayMs = 1000L
@@ -90,7 +91,7 @@ class InstanaWorkManager(
             if (item.getView() == null) {
                 Instana.firstView?.run { item.setView(this) }
                 VisibleScreenNameTracker.initialViewMap.forEach { (key, value) ->
-                    if (item.getViewMeta(key) == null) item.setViewMeta(key, value)
+                    if (item.getViewMeta(key) == null) item.setInternalMeta(key, value)
                 }
             }
             if (item.getRooted() == null) Instana.deviceProfile.rooted?.run { item.setRooted(this) }
@@ -233,8 +234,17 @@ class InstanaWorkManager(
         when {
             isInitialDelayComplete.not() -> initialDelayQueue.add(beacon)
             beaconId.isNullOrBlank() -> Logger.e("Tried to queue beacon with no beaconId: $beacon")
-            rateLimiter.isRateExceeded(1) -> Logger.e("Max beacon-generation rate exceeded. Dropping beacon: $beacon")
+            rateLimiter.isRateExceeded(1) -> {
+                if(config?.dropBeaconReporting == true) {
+                    DropBeaconHandler.addBeaconToDropHandler(beacon = beacon)
+                }
+                Logger.e("Max beacon-generation rate exceeded. Dropping beacon: $beacon")
+            }
+
             else -> {
+                if(config?.dropBeaconReporting == true) {
+                    DropBeaconHandler.flushDropperCustomEvent()
+                }
                 GlobalScope.launch {
                     withContext(Dispatchers.IO) {
                         try {
@@ -275,7 +285,7 @@ class InstanaWorkManager(
                      * the beacon should either be reported or saved to disk.
                      */
                     if (initialExecutorFuture.cancel(false)) {
-                        initialDelayQueue.forEach { initialQueueBeacon->
+                        initialDelayQueue.forEach { initialQueueBeacon ->
                             initialQueueBeacon.getBeaconId()?.let { initialQueueBeaconId ->
                                 val file = File(getBeaconsDirectory(), initialQueueBeaconId)
                                 file.writeText(initialQueueBeacon.toString(), Charsets.UTF_8)

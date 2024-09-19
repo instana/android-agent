@@ -76,13 +76,20 @@ class InstanaConfig
      * For debug purpose only
      * Do not verify https certificates of the reporting URL
      */
-    val debugTrustInsecureReportingURL: Boolean = false,
+    var debugTrustInsecureReportingURL: Boolean = false,
 
     /**
      * Toggle automatic capture of screen names for Activities and Fragments.
      * Note: Composable UIs currently do not have support for auto-capturing screen names.
      */
     var autoCaptureScreenNames : Boolean = false,
+    /**
+     * Toggle the reporting of dropped beacon samples.
+     * Note: Disabling this will prevent the CUSTOM EVENT named
+     * "INSTANA_DROPPED_BEACON_SAMPLE" from being sent, which includes metadata
+     * about the sampled dropped beacons.
+     */
+    var dropBeaconReporting : Boolean = false,
 ) {
     /**
      * Configuration of the Instana Performance Monitoring Service

@@ -12,6 +12,7 @@ import android.content.res.Configuration
 import com.instana.android.Instana
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.util.ConstantsAndUtil
+import com.instana.android.core.util.InternalEventNames
 import com.instana.android.core.util.Logger
 import com.instana.android.performance.PerformanceMonitor
 import kotlin.properties.Delegates
@@ -55,7 +56,7 @@ class LowMemoryMonitor(
         val availableInMb = availableMem / MB
         val usedInMb = usedMem / MB
         Instana.customEvents?.submit(
-            eventName = "LowMemory",
+            eventName = InternalEventNames.LOW_MEMORY.titleName,
             startTime = System.currentTimeMillis(),
             duration = 0L,
             meta = mapOf(
