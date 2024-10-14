@@ -285,7 +285,8 @@ class HTTPMarker(
             encodedResponseSizeBytes = encodedResponseSizeBytes,
             decodedResponseSizeBytes = decodedResponseSizeBytes,
             backendTraceId = backendTraceId,
-            error = errorMessage
+            error = errorMessage,
+            requestStartTime = stopWatch.startTime
         )
 
         Logger.i("HttpRequest finished with url: $url")

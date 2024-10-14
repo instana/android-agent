@@ -486,7 +486,8 @@ class BeaconTest: BaseTest() {
             requestSizeBytes = null,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
-            error = null
+            error = null,
+            requestStartTime = System.currentTimeMillis()
         )
         assert(httpBeacon.toString().contains("ec\t0"))
     }
@@ -511,7 +512,8 @@ class BeaconTest: BaseTest() {
             requestSizeBytes = null,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
-            error = "something"
+            error = "something",
+            requestStartTime = System.currentTimeMillis()
         )
         assert(httpBeacon.toString().contains("ec\t1"))
     }
@@ -536,7 +538,8 @@ class BeaconTest: BaseTest() {
             requestSizeBytes = null,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
-            error = null
+            error = null,
+            requestStartTime = System.currentTimeMillis()
         )
         assert(httpBeacon.toString().contains("ec\t1"))
     }
@@ -747,8 +750,8 @@ class BeaconTest: BaseTest() {
             requestSizeBytes = null,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
-            error = null
-
+            error = null,
+            requestStartTime = System.currentTimeMillis()
         )
         Assert.assertEquals(sampleBeacon.getHttpCallUrl(),"https://duckduckgo.com/?q=possim")
         Assert.assertEquals(sampleBeacon.getHttpCallStatus(),"200")
@@ -774,7 +777,8 @@ class BeaconTest: BaseTest() {
             requestSizeBytes = null,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
-            error = null
+            error = null,
+            requestStartTime = System.currentTimeMillis()
 
         )
         Assert.assertEquals(sampleBeacon.getHttpCallStatus(),"")

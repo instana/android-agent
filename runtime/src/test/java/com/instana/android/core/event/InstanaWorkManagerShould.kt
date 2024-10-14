@@ -61,7 +61,8 @@ class InstanaWorkManagerShould : BaseTest() {
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
             backendTraceId = null,
-            error = null
+            error = null,
+            requestStartTime = System.currentTimeMillis()
         )
 
     companion object {

@@ -233,7 +233,8 @@ class DropBeaconHandlerTest:BaseTest() {
             requestSizeBytes = null,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
-            error = null
+            error = null,
+            requestStartTime = System.currentTimeMillis()
         )
     }
 

@@ -694,12 +694,14 @@ class Beacon private constructor(
             requestSizeBytes: Long?, //TODO ignored?
             encodedResponseSizeBytes: Long?,
             decodedResponseSizeBytes: Long?,
-            error: String?
+            error: String?,
+            requestStartTime: Long?
         ): Beacon {
             val errorCount = if (error != null || responseCode in 400..599) 1L else 0L
             return Beacon(BeaconType.HTTP_REQUEST, duration, appKey, sessionId, errorCount, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     view?.run { setView(this) }
+                    requestStartTime?.run { if (requestStartTime!=0L) { setTimestamp(requestStartTime) } }
                     for (it in meta) { setMeta(it.key, it.value) }
                     method?.run { setHttpCallMethod(this) }
                     setHttpCallUrl(url)

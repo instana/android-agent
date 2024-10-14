@@ -102,7 +102,8 @@ class HttpDropBeaconTest:BaseTest() {
             requestSizeBytes = null,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
-            error = null
+            error = null,
+            requestStartTime = System.currentTimeMillis()
         )
 
         val httpDropBeacon = sampleBeaconTest.extractHttpBeaconValues()
@@ -137,7 +138,8 @@ class HttpDropBeaconTest:BaseTest() {
             requestSizeBytes = null,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
-            error = null
+            error = null,
+            requestStartTime = System.currentTimeMillis()
         )
 
         val httpDropBeacon = sampleBeaconTest.extractHttpBeaconValues()

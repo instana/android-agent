@@ -6,6 +6,10 @@ _2024-07-31_
 
 - Introduced a handler function for beacons that were dropped because of `RateLimiter`.
 
+_2024-10-14_
+
+- Resolved issue with inaccurate start time in HTTP requests
+
 ## Version 6.0.19
 
 _2024-07-10_
