@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.0.22
+
+_2024-10-21_
+
+- Fix for handling null values in HTTP request headers.
+
 ## Version 6.0.21
 
 _2024-07-31_
