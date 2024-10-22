@@ -211,18 +211,32 @@ object ConstantsAndUtil {
 
     internal fun getCapturedRequestHeaders(headers: Map<String, String>): Map<String, String> {
         @Suppress("UNCHECKED_CAST")
-        return headers.keys
-            .filter { headerName -> isHeaderToCapture(headerName) }
-            .associateWith { headerName -> headers[headerName] }
-            .filterValues { value -> value != null } as Map<String, String>
+        return try {
+            headers.keys
+                .filter { headerName -> isHeaderToCapture(headerName) }
+                .associateWith { headerName -> headers[headerName] }
+                .filterValues { value -> value != null } as Map<String, String>
+        }catch (e:Exception){
+            //Instana agent crashes shouldn't affect app performance.
+            Logger.i("Exception at getCapturedResponseHeaders: ${e.localizedMessage}")
+            emptyMap()
+        }
+
     }
 
     internal fun getCapturedResponseHeaders(headers: Map<String, String>): Map<String, String> {
         @Suppress("UNCHECKED_CAST")
-        return headers.keys
-            .filter { headerName -> isHeaderToCapture(headerName) }
-            .associateWith { headerName -> headers[headerName] }
-            .filterValues { value -> value != null } as Map<String, String>
+        return try {
+            headers.keys
+                .filter { headerName -> isHeaderToCapture(headerName) }
+                .associateWith { headerName -> headers[headerName] }
+                .filterValues { value -> value != null } as Map<String, String>
+        }catch (e:Exception){
+            //Instana agent crashes shouldn't affect app performance.
+            Logger.i("Exception at getCapturedResponseHeaders: ${e.localizedMessage}")
+            emptyMap()
+        }
+
     }
 
     fun redactQueryParams(url: String): String {
