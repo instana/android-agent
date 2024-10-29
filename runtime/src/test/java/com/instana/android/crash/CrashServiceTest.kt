@@ -12,7 +12,9 @@ import com.instana.android.BaseTest
 import com.instana.android.InstanaTest.Companion.API_KEY
 import com.instana.android.InstanaTest.Companion.SERVER_URL
 import com.instana.android.core.InstanaConfig
+import com.instana.android.performance.anr.AnrException
 import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.times
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -43,6 +45,16 @@ class CrashServiceTest:BaseTest() {
         crashService.submitCrash(realThread, realThrowable)
 
         verify(mockWorkManager).queueAndFlushBlocking(any())
+    }
+
+    @Test
+    fun `test if the crash generated from ANRException then return should work`(){
+        val realThread = Thread() // create a real Thread instance
+        val realThrowable = AnrException(realThread) // create a real Throwable instance
+
+        crashService.submitCrash(realThread, realThrowable)
+
+        verify(mockWorkManager, times(0)).queueAndFlushBlocking(any())
     }
 
     @Test

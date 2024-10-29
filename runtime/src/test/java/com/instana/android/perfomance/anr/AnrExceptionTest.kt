@@ -6,6 +6,7 @@
 
 package com.instana.android.perfomance.anr
 
+import com.instana.android.Instana
 import com.instana.android.performance.anr.AnrException
 import com.nhaarman.mockitokotlin2.whenever
 import org.junit.Test
@@ -27,7 +28,7 @@ class AnrExceptionTest {
         whenever(mockThread.stackTrace).thenReturn(mockStackTrace)
 
         // Create an instance of AnrException
-        val anrException = AnrException(mockThread)
+        val anrException = AnrException(mockThread,Instana.crashReporting)
 
         // Create a ByteArrayOutputStream to capture log output
         val outputStream = ByteArrayOutputStream()

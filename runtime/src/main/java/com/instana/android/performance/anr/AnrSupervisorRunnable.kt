@@ -22,7 +22,7 @@ internal constructor(
 ) : Runnable {
 
     /**
-     * The [Handler] to access the UI threads message queue
+     * The [Handler] to access the UI thread's message queue
      */
     private val handler = Handler(Looper.getMainLooper())
 
@@ -45,10 +45,11 @@ internal constructor(
 
     private var startTime: Long? = null
     private var duration: Long? = null
+    private var valueAlreadySendOnce = true
 
     override fun run() {
         this.isStopped = false
-        // Loop until stop() was called or thread is interrupted
+        // Loop until stop() is called or thread is interrupted
         while (!Thread.interrupted()) {
             try {
                 // Create new callback
@@ -62,15 +63,34 @@ internal constructor(
                     // Check if called
                     if (!callback.isCalled) {
                         startTime = System.currentTimeMillis()
-                        // Wait until the thread responds again
-                        callback.wait()
+
+                        // Define a timeout period for how long to wait for the thread to respond again
+                        val waitTimeMs = performanceMonitorConfig.anrThresholdMs
+                        val waitEndTime = System.currentTimeMillis() + waitTimeMs
+
+                        // Wait for the callback to be called or timeout
+                        while (!callback.isCalled && System.currentTimeMillis() < waitEndTime) {
+                            synchronized(callback) {
+                                callback.wait(waitTimeMs)
+                            }
+                        }
+
+                        // If the callback is still not called after waiting, report ANR
+                        if (!callback.isCalled && !valueAlreadySendOnce) {
+                            valueAlreadySendOnce = true
+                            duration = System.currentTimeMillis() - startTime!!
+                            Logger.i("UI Thread blocked for $duration ms")
+                            val e = AnrException(this.handler.looper.thread)
+                            anrCallback.onAppNotResponding(e, duration!!)
+                            startTime = null
+                        }
                     } else {
+                        valueAlreadySendOnce = false
                         if (startTime != null) {
                             duration = System.currentTimeMillis() - startTime!!
                             Logger.i("UI Thread blocked for $duration")
                             val e = AnrException(this.handler.looper.thread)
                             anrCallback.onAppNotResponding(e, duration!!)
-//                            e.logProcessMap()
                             startTime = null
                         }
                     }
@@ -110,7 +130,7 @@ internal constructor(
     }
 
     /**
-     * Stops the check
+     * Resumes the check
      */
     @Synchronized
     fun unStop() {

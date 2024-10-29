@@ -11,6 +11,7 @@ import androidx.annotation.Size
 import androidx.annotation.VisibleForTesting
 import com.instana.android.Instana
 import com.instana.android.android.agent.BuildConfig
+import com.instana.android.core.util.ConstantsAndUtil.EVENT_TYPE
 import com.instana.android.core.util.InternalEventNames
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.UniqueIdManager
@@ -760,7 +761,7 @@ class Beacon private constructor(
                     error?.run { setErrorMessage(this) }
                     customMetric?.run { setCustomMetricData(this) }
                     if(InternalEventNames.getEventNameForTitle(name).isNotEmpty()){
-                        setInternalMeta("event.type",InternalEventNames.getEventNameForTitle(name))
+                        setInternalMeta(EVENT_TYPE,InternalEventNames.getEventNameForTitle(name))
                     }
                 }
         }
@@ -788,6 +789,9 @@ class Beacon private constructor(
                     errorType?.run { setErrorType(this) }
                     stackTrace?.run { setStackTrace(this) }
                     allStackTraces?.run { setAllStackTraces(this) }
+                    if (errorType == InternalEventNames.ANR.titleName){
+                        setInternalMeta(EVENT_TYPE,InternalEventNames.ANR.eventName)
+                    }
                 }
         }
 

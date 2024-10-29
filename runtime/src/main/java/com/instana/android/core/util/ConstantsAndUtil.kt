@@ -35,6 +35,8 @@ object ConstantsAndUtil {
 
     const val TRACKING_HEADER_KEY = "X-INSTANA-ANDROID"
 
+    const val EVENT_TYPE = "event.type"
+
     val runtime: Runtime by lazy {
         Runtime.getRuntime()
     }

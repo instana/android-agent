@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.0.23
+
+_2024-10-29_
+
+- ANR monitoring provision introduced.
+
 ## Version 6.0.22
 
 _2024-10-21_

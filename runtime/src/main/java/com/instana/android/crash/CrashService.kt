@@ -15,7 +15,9 @@ import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
 import com.instana.android.core.util.ConstantsAndUtil
+import com.instana.android.core.util.InternalEventNames
 import com.instana.android.core.util.ThreadUtil
+import com.instana.android.performance.anr.AnrException
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.util.Queue
@@ -57,17 +59,17 @@ class CrashService(
             handler?.disable()
             return
         }
-        // val breadCrumbsCopy = breadCrumbs.toList()
+
         val stackTrace = Log.getStackTraceString(throwable)
 
         val allStackTraces = dumpAllThreads(thread, throwable)
 
-        val errorType:String? = throwable?.javaClass?.name
-
-        // val (versionCode: String, version: String) = ConstantsAndUtil.getAppVersionNameAndVersionCode(app)
-
-        // val reportedMeta: Map<String, String> = emptyMap()
-        // val mergedMeta = Instana.meta.clone().apply { putAll(reportedMeta) }
+        var errorType:String? = throwable?.javaClass?.name
+        if(throwable is AnrException){
+            errorType = InternalEventNames.ANR.titleName
+            //REMOVE the return once UI is ready to accept the ANR
+            return
+        }
         val mergedMeta = Instana.meta
 
         val connectionProfile = ConnectionProfile(
@@ -95,7 +97,6 @@ class CrashService(
             allStackTraces = allStackTraces,
         )
         manager.queueAndFlushBlocking(beacon)
-
         breadCrumbs.clear()
     }
 
@@ -109,9 +110,6 @@ class CrashService(
         if (throwable != null) { // unhandled errors use the exception trace
             stackTraces[crashedThread] = throwable.stackTrace
         }
-
-        // val threadList = getAppThreads()
-        // val appStackTraces = getStackTracesFor(threadList)
 
         val sw = StringWriter()
         val pw = PrintWriter(sw)

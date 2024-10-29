@@ -5,7 +5,9 @@
 
 package com.instana.android.performance.anr
 
+import com.instana.android.Instana
 import com.instana.android.core.util.Logger
+import com.instana.android.crash.CrashService
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import java.util.Locale
@@ -21,12 +23,13 @@ class AnrException
  *
  * @param thread the [Thread] which is not responding
  */
-    (thread: Thread) : Exception("ANR detected") {
+    (thread: Thread, crashService: CrashService? = Instana.crashReporting) : Exception("ANR detected") {
 
     init {
         // Copy the Thread's stack,
         // so the Exception seams to occure there
         this.stackTrace = thread.stackTrace
+        crashService?.submitCrash(thread = thread,this)
     }
 
     /**
