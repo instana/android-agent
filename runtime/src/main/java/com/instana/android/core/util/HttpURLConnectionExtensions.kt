@@ -18,22 +18,33 @@ fun HttpURLConnection.isSuccessful(): Boolean =
     }
 
 fun HttpURLConnection.encodedResponseSizeOrNull(): Long? {
-    var size: Long? =
-        if (Build.VERSION.SDK_INT >= 24) contentLengthLong
-        else contentLength.toLong()
-    if (size == -1L) {
-        size = null
+    return try {
+        var size: Long? =
+            if (Build.VERSION.SDK_INT >= 24) contentLengthLong
+            else contentLength.toLong()
+        if (size == -1L) {
+            size = null
+        }
+        size
+    }catch (e:Exception){
+        e.instanaGenericExceptionFallbackHandler(type = "Extension", at = "encodedResponseSizeOrNull - contentLength")
+        null
     }
-    return size
+
 }
 
 fun HttpURLConnection.decodedResponseSizeOrNull(): Int? {
-    if ("gzip".equals(contentEncoding, ignoreCase = true)) {
-        try {
-            GZIPInputStream(inputStream.clone()).use { return it.readBytes().size }
-        } catch (e: IOException) {
-            return null
+    try {
+        if ("gzip".equals(contentEncoding, ignoreCase = true)) {
+            try {
+                GZIPInputStream(inputStream.clone()).use { return it.readBytes().size }
+            } catch (e: IOException) {
+                e.instanaGenericExceptionFallbackHandler(type = "IOException", at = "decodedResponseSizeOrNull")
+                return null
+            }
         }
+    }catch (e:Exception){
+        e.instanaGenericExceptionFallbackHandler(type = "Extension", at = "decodedResponseSizeOrNull")
     }
     return null
 }
@@ -46,19 +57,26 @@ fun HttpURLConnection.responseCodeOrNull(): Int? =
     }
 
 fun HttpURLConnection.errorMessageOrNull(): String? {
-    return when {
-        isSuccessful() -> null
-        responseCodeOrNull() == null -> try {
-            responseCode
-            null
-        } catch (e: Exception) {
-            "responseCode - $e"
+    return try {
+        when {
+            isSuccessful() -> null
+            responseCodeOrNull() == null -> try {
+                responseCode
+                null
+            } catch (e: Exception) {
+                "responseCode - $e"
+            }
+
+            compareValues(encodedResponseSizeOrNull(), 0) > 0 -> try {
+                errorStream?.use { it.readCopy() }
+            } catch (e: Exception) {
+                "errorStream - $e"
+            }
+
+            else -> null
         }
-        compareValues(encodedResponseSizeOrNull(), 0) > 0 -> try {
-            errorStream?.use { it.readCopy() }
-        } catch (e: Exception) {
-            "errorStream - $e"
-        }
-        else -> null
+    }catch (e:Exception){
+        e.instanaGenericExceptionFallbackHandler(type = "Extension", at = "errorMessageOrNull")
+        return null
     }
 }

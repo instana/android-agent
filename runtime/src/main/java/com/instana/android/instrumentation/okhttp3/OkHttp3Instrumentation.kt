@@ -6,6 +6,7 @@
 package com.instana.android.instrumentation.okhttp3
 
 import com.instana.android.core.util.Logger
+import com.instana.android.core.util.instanaGenericExceptionFallbackHandler
 
 
 @Suppress("unused")
@@ -15,30 +16,43 @@ class OkHttp3Instrumentation {
 
         @JvmStatic
         fun clientBuilderInterceptor(builder: okhttp3.OkHttpClient.Builder) {
-            Logger.i("OkHttp3: builder detected")
-            if (builder.interceptors().contains(OkHttp3GlobalInterceptor).not()) {
-                builder.addInterceptor(OkHttp3GlobalInterceptor)
-                Logger.i("OkHttp3: added interceptor to builder")
-            } else {
-                Logger.i("OkHttp3: interceptor was already present in builder")
+            try {
+                Logger.i("OkHttp3: builder detected")
+                if (builder.interceptors().contains(OkHttp3GlobalInterceptor).not()) {
+                    builder.addInterceptor(OkHttp3GlobalInterceptor)
+                    Logger.i("OkHttp3: added interceptor to builder")
+                } else {
+                    Logger.i("OkHttp3: interceptor was already present in builder")
+                }
+            }catch (e:Exception){
+                e.instanaGenericExceptionFallbackHandler(classType = "OkHttp3Instrumentation", at = "OkHttp3: clientBuilderInterceptor")
             }
         }
 
         @JvmStatic
         fun cancelCall(call: okhttp3.Call) {
-            Logger.i("OkHttp3: intercepted single-call cancel")
-            OkHttp3GlobalInterceptor.cancel(call.request())
+            try {
+                Logger.i("OkHttp3: intercepted single-call cancel")
+                OkHttp3GlobalInterceptor.cancel(call.request())
+            }catch (e:Exception){
+                e.instanaGenericExceptionFallbackHandler(classType = "OkHttp3Instrumentation", at = "OkHttp3: cancelCall")
+            }
         }
 
         @JvmStatic
         fun cancelAllCall(dispatcher: okhttp3.Dispatcher) {
-            Logger.i("OkHttp3: intercepted dispatcher all-call cancel")
-            for (call in dispatcher.runningCalls()) {
-                OkHttp3GlobalInterceptor.cancel(call.request())
+            try {
+                Logger.i("OkHttp3: intercepted dispatcher all-call cancel")
+                for (call in dispatcher.runningCalls()) {
+                    OkHttp3GlobalInterceptor.cancel(call.request())
+                }
+                for (call in dispatcher.queuedCalls()) {
+                    OkHttp3GlobalInterceptor.cancel(call.request())
+                }
+            }catch (e:Exception){
+                e.instanaGenericExceptionFallbackHandler(classType = "OkHttp3Instrumentation", at = "OkHttp3: cancelAllCall")
             }
-            for (call in dispatcher.queuedCalls()) {
-                OkHttp3GlobalInterceptor.cancel(call.request())
-            }
+
         }
 
     }

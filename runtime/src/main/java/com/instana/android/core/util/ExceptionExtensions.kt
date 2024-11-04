@@ -13,3 +13,10 @@ fun Exception.stackTraceAsString(): String =
         printStackTrace(PrintWriter(it))
         it.toString()
     }
+
+/**
+ * Fallback for any kind of crashes should not affect the customer application
+ */
+internal fun Exception.instanaGenericExceptionFallbackHandler(classType:String = "Generic",type:String = "Methods",at:String){
+    Logger.i("Instana Generic Exception: class: $classType | type: $type | at: $at \n${localizedMessage}")
+}

@@ -79,7 +79,8 @@ object OkHttp3GlobalInterceptor : Interceptor {
                 finish(request, e)
                 httpMarkers.remove(marker.headerValue(), marker)
             }
-            throw e
+            // Proceed with the original request to avoid throwing
+            chain.proceed(intercepted)
         }
     }
 

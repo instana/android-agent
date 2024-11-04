@@ -6,6 +6,10 @@ _2024-10-29_
 
 - ANR monitoring provision introduced.
 
+_2024-11-04_
+
+- Generic Error Handlers added
+
 ## Version 6.0.22
 
 _2024-10-21_

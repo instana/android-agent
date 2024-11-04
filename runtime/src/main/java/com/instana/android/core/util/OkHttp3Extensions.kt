@@ -12,21 +12,29 @@ import okio.GzipSource
 
 fun Response.decodedContentLength(): Long? {
     val source = body()?.source() ?: return null
-
-    source.request(Long.MAX_VALUE)
-    var buffer = source.buffer()
-
-    if ("gzip".equals(header("Content-Encoding"), ignoreCase = true)) {
-        GzipSource(buffer.clone()).use { gzippedResponseBody ->
-            buffer = Buffer()
-            buffer.writeAll(gzippedResponseBody)
+    return try {
+        source.request(Long.MAX_VALUE) //Will block @Stream in Retrofit
+        var buffer = source.buffer()
+        if ("gzip".equals(header("Content-Encoding"), ignoreCase = true)) {
+            GzipSource(buffer.clone()).use { gzippedResponseBody ->
+                buffer = Buffer()
+                buffer.writeAll(gzippedResponseBody)
+            }
         }
+        buffer.size()
+    }catch (e:Exception){
+        e.instanaGenericExceptionFallbackHandler(type = "Extension", at = "decodedContentLength")
+        null
     }
 
-    return buffer.size()
 }
 
 fun Headers.toMap(): Map<String, String> {
-    return this.toMultimap()
-        .mapValues { entry -> entry.value.joinToString(",") }
+    return try {
+        this.toMultimap()
+            .mapValues { entry -> entry.value.joinToString(",") }
+    }catch (e:Exception){
+        e.instanaGenericExceptionFallbackHandler(type = "Extension", at = "toMap conversion")
+        emptyMap()
+    }
 }

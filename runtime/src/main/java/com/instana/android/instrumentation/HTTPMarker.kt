@@ -26,6 +26,7 @@ import com.instana.android.core.util.encodedResponseSizeOrNull
 import com.instana.android.core.util.errorMessageOrNull
 import com.instana.android.core.util.getRequestHeadersMap
 import com.instana.android.core.util.getResponseHeadersMap
+import com.instana.android.core.util.instanaGenericExceptionFallbackHandler
 import com.instana.android.core.util.responseCodeOrNull
 import com.instana.android.core.util.toMap
 import okhttp3.Request
@@ -115,23 +116,27 @@ class HTTPMarker(
 
         status = MarkerStatus.ENDING
         stopWatch.stop()
+        try {
+            headers.putAll(ConstantsAndUtil.getCapturedResponseHeaders(response.headers().toMap()))
 
-        headers.putAll(ConstantsAndUtil.getCapturedResponseHeaders(response.headers().toMap()))
+            val method = response.request().method()
+            val requestSize = response.request().body()?.contentLength()
+            val encodedResponseSize = response.body()?.contentLength()
+            val decodedResponseSize = response.decodedContentLength()
 
-        val method = response.request().method()
-        val requestSize = response.request().body()?.contentLength()
-        val encodedResponseSize = response.body()?.contentLength()
-        val decodedResponseSize = response.decodedContentLength()
+            sendBeacon(
+                connectionMethod = method,
+                responseCode = response.code(),
+                encodedResponseSizeBytes = encodedResponseSize,
+                decodedResponseSizeBytes = decodedResponseSize,
+                backendTraceId = getBackendTraceId(response),
+                errorMessage = null,
+                headers = headers
+            )
+        }catch (e:Exception){
+            e.instanaGenericExceptionFallbackHandler(at = "finish response in HTTPMarker")
+        }
 
-        sendBeacon(
-            connectionMethod = method,
-            responseCode = response.code(),
-            encodedResponseSizeBytes = encodedResponseSize,
-            decodedResponseSizeBytes = decodedResponseSize,
-            backendTraceId = getBackendTraceId(response),
-            errorMessage = null,
-            headers = headers
-        )
     }
 
     fun finish(request: Request, error: Throwable) {
@@ -173,24 +178,28 @@ class HTTPMarker(
 
         status = MarkerStatus.ENDING
         stopWatch.stop()
+        try {
+            headers.putAll(ConstantsAndUtil.getCapturedResponseHeaders(connection.getResponseHeadersMap()))
 
-        headers.putAll(ConstantsAndUtil.getCapturedResponseHeaders(connection.getResponseHeadersMap()))
+            val method = connection.requestMethod
+            val encodedResponseSize = connection.encodedResponseSizeOrNull()
+            val decodedResponseSize = connection.decodedResponseSizeOrNull()?.toLong()
+            val responseCode = connection.responseCodeOrNull()
+            val errorMessage = connection.errorMessageOrNull()
 
-        val method = connection.requestMethod
-        val encodedResponseSize = connection.encodedResponseSizeOrNull()
-        val decodedResponseSize = connection.decodedResponseSizeOrNull()?.toLong()
-        val responseCode = connection.responseCodeOrNull()
-        val errorMessage = connection.errorMessageOrNull()
+            sendBeacon(
+                connectionMethod = method,
+                responseCode = responseCode,
+                encodedResponseSizeBytes = encodedResponseSize,
+                decodedResponseSizeBytes = decodedResponseSize,
+                backendTraceId = getBackendTraceId(connection),
+                errorMessage = errorMessage,
+                headers = headers
+            )
+        }catch (e:Exception){
+            e.instanaGenericExceptionFallbackHandler(at = "finish HttpURLConnection in HTTPMarker")
+        }
 
-        sendBeacon(
-            connectionMethod = method,
-            responseCode = responseCode,
-            encodedResponseSizeBytes = encodedResponseSize,
-            decodedResponseSizeBytes = decodedResponseSize,
-            backendTraceId = getBackendTraceId(connection),
-            errorMessage = errorMessage,
-            headers = headers
-        )
     }
 
     fun finish(connection: HttpURLConnection, error: Throwable) {
@@ -204,22 +213,26 @@ class HTTPMarker(
 
         status = MarkerStatus.ENDING
         stopWatch.stop()
+        try {
+            headers.putAll(ConstantsAndUtil.getCapturedRequestHeaders(connection.getRequestHeadersMap()))
 
-        headers.putAll(ConstantsAndUtil.getCapturedRequestHeaders(connection.getRequestHeadersMap()))
+            val method = connection.requestMethod
+            val responseCode = connection.responseCodeOrNull()
+            val errorMessage = error.message
 
-        val method = connection.requestMethod
-        val responseCode = connection.responseCodeOrNull()
-        val errorMessage = error.message
+            sendBeacon(
+                connectionMethod = method,
+                responseCode = responseCode,
+                encodedResponseSizeBytes = null,
+                decodedResponseSizeBytes = null,
+                backendTraceId = getBackendTraceId(connection),
+                errorMessage = errorMessage,
+                headers = headers
+            )
+        }catch (e:Exception){
+            e.instanaGenericExceptionFallbackHandler(at = "finish HttpURLConnection with Throwable in HTTPMarker")
+        }
 
-        sendBeacon(
-            connectionMethod = method,
-            responseCode = responseCode,
-            encodedResponseSizeBytes = null,
-            decodedResponseSizeBytes = null,
-            backendTraceId = getBackendTraceId(connection),
-            errorMessage = errorMessage,
-            headers = headers
-        )
     }
     //endregion
 
@@ -232,21 +245,25 @@ class HTTPMarker(
             Logger.e("Can't finish HTTPMarker. HTTPMarker was already finished")
             return
         }
+        try {
+            status = MarkerStatus.ENDED
+            stopWatch.stop()
 
-        status = MarkerStatus.ENDED
-        stopWatch.stop()
+            headers.putAll(ConstantsAndUtil.getCapturedResponseHeaders(httpMarkerData.headers ?: emptyMap()))
 
-        headers.putAll(ConstantsAndUtil.getCapturedResponseHeaders(httpMarkerData.headers ?: emptyMap()))
+            sendBeacon(
+                connectionMethod = httpMarkerData.requestMethod,
+                responseCode = httpMarkerData.responseStatusCode,
+                encodedResponseSizeBytes = httpMarkerData.responseSizeEncodedBytes,
+                decodedResponseSizeBytes = httpMarkerData.responseSizeDecodedBytes,
+                backendTraceId = httpMarkerData.backendTraceId,
+                errorMessage = httpMarkerData.errorMessage,
+                headers = headers
+            )
+        }catch (e:Exception){
+            e.instanaGenericExceptionFallbackHandler(at = "finish HTTPMarkerData in HTTPMarker")
+        }
 
-        sendBeacon(
-            connectionMethod = httpMarkerData.requestMethod,
-            responseCode = httpMarkerData.responseStatusCode,
-            encodedResponseSizeBytes = httpMarkerData.responseSizeEncodedBytes,
-            decodedResponseSizeBytes = httpMarkerData.responseSizeDecodedBytes,
-            backendTraceId = httpMarkerData.backendTraceId,
-            errorMessage = httpMarkerData.errorMessage,
-            headers = headers
-        )
     }
     //endregion
 
@@ -299,7 +316,7 @@ class HTTPMarker(
                 backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
             }
         }catch (e:NullPointerException){
-            Logger.i("${e.message} occurred while using java.net.URLConnection.getHeaderField");
+            Logger.i("${e.message} occurred while using java.net.URLConnection.getHeaderField")
             null
         }catch (e:Exception){
             Logger.i("Occurred ${e.message} while retrieving backendTraceId from connection headers")
