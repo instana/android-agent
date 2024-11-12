@@ -2,7 +2,7 @@
 
 REPO_DIR=`pwd`
 
-apt-get install -y maven openjdk-11-jdk android-sdk
+apt-get install -y maven openjdk-11-jdk wget
 
 export JDK_VERSION=11
 export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
