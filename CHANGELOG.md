@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.1.0
+
+_2024-11-27_
+
+- App launch time calculation initial level logic added 
+
 ## Version 6.0.23
 
 _2024-10-29_

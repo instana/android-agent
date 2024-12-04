@@ -16,6 +16,8 @@ import com.instana.android.Instana
 import com.instana.android.activity.FragmentActivityRegister
 import com.instana.android.activity.InstanaActivityLifecycleCallbacks
 import com.instana.android.fragments.FragmentLifecycleCallbacks
+import com.instana.android.performance.launchtime.LaunchTimeTracker
+import com.instana.android.performance.launchtime.LaunchTypeEnum
 
 /**
  * Util class to get current activity data and memory alerts
@@ -64,6 +66,11 @@ class InstanaLifeCycle(
     }
 
     override fun onActivityResumed(activity: Activity) {
+        if(LaunchTimeTracker.applicationStartedFromBackground){
+            LaunchTimeTracker.stopTimer(LaunchTypeEnum.WARM_START)
+        }else{
+            LaunchTimeTracker.stopTimer(LaunchTypeEnum.COLD_START)
+        }
         if (backgrounded) {
             backgrounded = false
             callback?.onAppInForeground()
@@ -72,6 +79,9 @@ class InstanaLifeCycle(
     }
 
     override fun onActivityStarted(activity: Activity) {
+        if(LaunchTimeTracker.applicationStartedFromBackground){
+            LaunchTimeTracker.startTimer()
+        }
         activityName = activity.localClassName.toString()
     }
 

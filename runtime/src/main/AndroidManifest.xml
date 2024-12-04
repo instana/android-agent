@@ -9,6 +9,15 @@
         androidx.compose.ui.graphics,
         androidx.compose.ui.unit,
         androidx.compose.ui.geometry,androidx.compose.ui.util"/>
+    <application>
+        <provider
+            android:name="com.instana.android.performance.launchtime.StartupInitializer"
+            android:authorities="com.instana.android.performance.launchtime.${applicationId}"
+            android:initOrder="200"
+            android:exported="false"
+            tools:node="merge"/>
+    </application>
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.ACCESS_SUPERUSER"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
