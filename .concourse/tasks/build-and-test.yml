@@ -40,5 +40,5 @@ run:
       cd ../../
       
       zip test.zip source/TestApplication/app/build/outputs/apk/debug/app-debug.apk
-      
-      source source/ci/add_apk_to_ibm_cos.sh "$((automation-ibm-cloud-api-key))"
+
+      source source/ci/add_apk_to_ibm_cos.sh "$((automation-ibm-cloud-api-key))" "$(cat source/.git/ref)"
