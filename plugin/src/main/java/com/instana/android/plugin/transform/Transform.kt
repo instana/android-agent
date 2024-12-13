@@ -29,6 +29,9 @@ class Transform {
         var ignores: List<Regex> = listOf()
 
         val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
+        val isAppModule = project.plugins.hasPlugin("com.android.application")
+        val instrumentationScope = if (isAppModule) InstrumentationScope.ALL else InstrumentationScope.PROJECT
+
         androidComponents.onVariants { variant ->
             if (firstLoop) {
                 firstLoop = false
@@ -43,8 +46,10 @@ class Transform {
                 project.logger.debug("Ignores list= ${ignores}")
             }
 
-            variant.instrumentation.transformClassesWith(InstanaClassVisitorFactory::class.java,
-                InstrumentationScope.ALL) {
+            variant.instrumentation.transformClassesWith(
+                InstanaClassVisitorFactory::class.java,
+                instrumentationScope
+            ) {
                 it.ignores.set(ignores)
                 it.logVisits.set(ext.logVisits)
                 it.logInstrumentation.set(ext.logInstrumentation)
