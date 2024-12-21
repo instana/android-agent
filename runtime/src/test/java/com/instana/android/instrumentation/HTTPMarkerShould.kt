@@ -427,6 +427,26 @@ class HTTPMarkerShould : BaseTest() {
         assertEquals(remoteCallMarker.headerValue().hashCode(),remoteCallMarker.hashCode())
     }
 
+    @Test
+    fun `test sendBeacons direct call with queryTrackedDomainList`(){
+        Instana.queryTrackedDomainList.add(".*10\\.0\\.2\\.2:8081.*".toRegex().toPattern())
+        val remoteCallMarker = HTTPMarker("http://example.com/images/women_cloth_06.jpeg?param=value#section", METHOD, emptyMap(), app, mockManager, config)
+        val maxCapacityMap = MaxCapacityMap<String,String>(23)
+        maxCapacityMap.put("test","retest")
+        val sendBeaconMethod = HTTPMarker::class.java.getDeclaredMethod("sendBeacon",
+            String::class.java,
+            java.lang.Integer::class.java,
+            java.lang.Long::class.java,
+            java.lang.Long::class.java,
+            String::class.java,
+            String::class.java,
+            MaxCapacityMap::class.java
+        )
+        sendBeaconMethod.isAccessible = true
+        sendBeaconMethod.invoke(remoteCallMarker,null, null,null,null,null,null,maxCapacityMap)
+        assertEquals(remoteCallMarker.headerValue().hashCode(),remoteCallMarker.hashCode())
+    }
+
     companion object {
         const val METHOD = "GET"
         const val URL = "https://www.google.com/"

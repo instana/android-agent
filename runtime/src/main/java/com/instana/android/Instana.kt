@@ -100,6 +100,12 @@ object Instana {
     val redactHTTPQuery: MutableList<Pattern> = Collections.synchronizedList(mutableListOf<Pattern>())
 
     /**
+     * List of url domains which needs to be tracked with the query params, If any domain is provided all other URLs will be captured without query params.
+     */
+    @JvmStatic
+    val queryTrackedDomainList: MutableList<Pattern> = Collections.synchronizedList(mutableListOf<Pattern>())
+
+    /**
      * Map of Key-Value pairs which all new beacons will be associated with
      *
      * Max Key Length: 98 characters

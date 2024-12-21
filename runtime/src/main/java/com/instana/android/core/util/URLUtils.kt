@@ -1,5 +1,7 @@
 package com.instana.android.core.util
 
+import com.instana.android.Instana
+
 class URLUtils {
     companion object {
         private val queryRegex = "^[^?#]+\\?([^#]+)".toRegex()
@@ -26,6 +28,24 @@ class URLUtils {
             return url.replace(originalQuery, redactedQuery)
         }
 
+        /**
+         * If none of the regex patterns match the URL, remove the query parameters and fragment.
+         */
+        fun removeQueryParamsIfNotMatched(url: String): String {
+            val queryTrackedDomainPatterns = Instana.queryTrackedDomainList
+            synchronized(queryTrackedDomainPatterns) {
+                // Using patterns: being interoperable with Java
+                val regexList = queryTrackedDomainPatterns.map { it.toRegex() }
+
+                // Check if any of the regex patterns match the URL
+                if (regexList.any { regex -> regex.containsMatchIn(url) }) {
+                    return url // Return the URL unchanged if any regex matches
+                }
+
+                // If no regex matches, remove query parameters and fragments
+                return url.substringBefore("?").substringBefore("#")
+            }
+        }
 
     }
 }

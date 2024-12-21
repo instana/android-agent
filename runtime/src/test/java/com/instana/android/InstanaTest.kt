@@ -19,8 +19,10 @@ import com.instana.android.activity.InstanaActivityLifecycleCallbacks
 import com.instana.android.activity.findContentDescription
 import com.instana.android.core.HybridAgentOptions
 import com.instana.android.core.InstanaConfig
+import com.instana.android.core.util.MaxCapacityMap
 import com.instana.android.crash.CrashService
 import com.instana.android.fragments.FragmentLifecycleCallbacks
+import com.instana.android.instrumentation.HTTPMarker
 import com.instana.android.session.SessionService
 import com.instana.android.view.VisibleScreenNameTracker
 import com.nhaarman.mockitokotlin2.any
@@ -293,6 +295,32 @@ class InstanaTest : BaseTest() {
         assert(Instana.workManager?.initialDelayQueue.toString().contains("ui\t${Instana.userId}"))
         assert(Instana.workManager?.initialDelayQueue.toString().contains("un\t${Instana.userName}"))
         assert(Instana.workManager?.initialDelayQueue.toString().contains("ue\t${Instana.userEmail}"))
+        resetConfig()
+    }
+
+    @Test
+    fun `test queryTrackedDomainList with redact query set should be tracked as redacted`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setup(app, config)
+        SessionService(app,Instana.workManager!!,config)
+        Instana.redactHTTPQuery.add("testredact".toRegex().toPattern())
+        Instana.queryTrackedDomainList.add(".*www.test.com.*".toRegex().toPattern())
+        val httpMarker = Instana.startCapture("https://www.test.com?testredact=ssdd#asdsa")
+        val maxCapacityMap = MaxCapacityMap<String,String>(23)
+        maxCapacityMap.put("test","retest")
+        val sendBeaconMethod = HTTPMarker::class.java.getDeclaredMethod("sendBeacon",
+            String::class.java,
+            java.lang.Integer::class.java,
+            java.lang.Long::class.java,
+            java.lang.Long::class.java,
+            String::class.java,
+            String::class.java,
+            MaxCapacityMap::class.java
+        )
+        sendBeaconMethod.isAccessible = true
+        sendBeaconMethod.invoke(httpMarker,null, null,null,null,null,null,maxCapacityMap)
+        Assert.assertTrue(Instana.workManager?.initialDelayQueue.toString().contains("https://www.test.com?testredact=<redacted>#asdsa"))
         resetConfig()
     }
 

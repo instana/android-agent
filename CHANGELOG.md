@@ -10,6 +10,10 @@ _2024-11-29_
 
 - Expose Plugin to be injectable at library level
 
+_2024_12_17_
+
+- Added `queryTrackedDomainList` feature to exclude parameters from url other than in this list
+
 ## Version 6.0.23
 
 _2024-10-29_

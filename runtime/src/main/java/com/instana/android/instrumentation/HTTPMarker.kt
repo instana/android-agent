@@ -20,6 +20,7 @@ import com.instana.android.core.util.ConstantsAndUtil.getConnectionType
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.MaxCapacityMap
 import com.instana.android.core.util.StopWatch
+import com.instana.android.core.util.URLUtils
 import com.instana.android.core.util.decodedContentLength
 import com.instana.android.core.util.decodedResponseSizeOrNull
 import com.instana.android.core.util.encodedResponseSizeOrNull
@@ -284,6 +285,10 @@ class HTTPMarker(
         status = MarkerStatus.ENDED
         Instana.instrumentationService?.removeTag(markerId)
 
+        var finalUrl = url;
+        if(Instana.queryTrackedDomainList.isNotEmpty()){
+            finalUrl = URLUtils.removeQueryParamsIfNotMatched(url = url)
+        }
         val beacon = Beacon.newHttpRequest(
             appKey = config.key,
             appProfile = Instana.appProfile,
@@ -295,7 +300,7 @@ class HTTPMarker(
             meta = Instana.meta.getAll(),
             duration = stopWatch.totalTimeMillis,
             method = connectionMethod,
-            url = url,
+            url = finalUrl,
             headers = headers.getAll(),
             responseCode = responseCode,
             requestSizeBytes = null,
