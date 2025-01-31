@@ -2,10 +2,11 @@
 
 REPO_DIR=`pwd`
 
-apt-get install -y maven openjdk-11-jdk wget
+yum update
+yum install -y maven java-11-openjdk wget
 
 export JDK_VERSION=11
-export JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
+export JAVA_HOME="/usr/lib/jvm/jre-11-openjdk"
 export SONAR_EXEC_GRADLE=true
 
 # install android SDK
@@ -58,3 +59,7 @@ mkdir -p plugin/build/reports/jacoco/test/
 
 cp runtime/build/reports/coverage/test/debug/report.xml runtime/build/reports/jacoco/test/jacocoTestReport.xml
 cp plugin/build/reports/jacoco/jacocoTestReportPlugin/jacocoTestReportPlugin.xml plugin/build/reports/jacoco/test/jacocoTestReport.xml
+
+yum uninstall -y java-11-openjdk
+export JDK_VERSION=21
+export JAVA_HOME="/usr/lib/jvm/jre-21-openjdk"
