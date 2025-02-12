@@ -14,7 +14,7 @@ class BeaconTypeTest {
 
     @Test
     fun `verify beaconTypes count size`() {
-        val expectedSize = 5 //increase count when new beacon type is added
+        val expectedSize = 7 //increase count when new beacon type is added
         assertEquals(expectedSize, BeaconType.values().size)
     }
     @Test

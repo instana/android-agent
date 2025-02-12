@@ -1,5 +1,12 @@
 Changelog
 ==========
+## Version 6.1.1
+
+_2025-2-11_
+
+- New beacon type added for drop beacon
+- New beacon type and sub type support for performance beacon
+
 ## Version 6.1.0
 
 _2024-11-27_

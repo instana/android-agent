@@ -48,14 +48,14 @@ class HttpDropBeaconTest:BaseTest() {
         )
 
         val expected = """
-             {"type": "HTTP",
+             {"type": "httpRequest",
                 "count": 0,    
                 "zInfo": {
-                "url": "http://example.com",
+                "hl": "http://example.com",
                 "hs": "someHs",
                 "tMin": 10,
                 "tMax": 20,
-                "view": "someView",
+                "v": "someView",
                 "hm": "someHm",
                 "headers": {"header1":"value1"}
             }}

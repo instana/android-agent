@@ -7,6 +7,7 @@
 package com.instana.android.dropbeaconhandler
 
 import com.instana.android.core.event.models.Beacon
+import com.instana.android.core.event.models.BeaconType
 import com.instana.android.core.util.extractBeaconValues
 import com.instana.android.core.util.randomAlphaNumericString
 import java.util.concurrent.atomic.AtomicInteger
@@ -27,16 +28,16 @@ internal data class CustomEventDropBeacon(
     // Convert object to a string representation
     override fun toString(): String {
         val representation = """{
-                "type": "CUSTOM_EVENT",
+                "type": "${BeaconType.CUSTOM.internalType}",
                 "count": $count,    
                 "zInfo": {
-                    "eventName": "$eventName",
+                    "cen": "$eventName",
                     "tMin": $timeMin,
                     "tMax": $timeMax,
-                    "errorMessage": "${errorMessage.take(200)}${if (errorMessage.length > 200) "..." else ""}",
-                    "customMetric": "${customMetric.take(100)}${if (customMetric.length > 100) "..." else ""}",
-                    "view": "$view",
-                    "errorCount": $errorCount
+                    "em": "${errorMessage.take(200)}${if (errorMessage.length > 200) "..." else ""}",
+                    "cm": "${customMetric.take(100)}${if (customMetric.length > 100) "..." else ""}",
+                    "v": "$view",
+                    "ec": $errorCount
                 }
         }
         """.trimIndent()

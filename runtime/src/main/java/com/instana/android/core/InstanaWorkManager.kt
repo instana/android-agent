@@ -228,7 +228,7 @@ class InstanaWorkManager(
     }
 
     @Synchronized
-    fun queue(beacon: Beacon) {
+    internal fun queue(beacon: Beacon) {
         val beaconId = beacon.getBeaconId()
         Logger.d("Queueing beacon with: `beaconId` $beaconId")
         when {
@@ -261,7 +261,7 @@ class InstanaWorkManager(
     }
 
     @Synchronized
-    fun queueAndFlushBlocking(beacon: Beacon) {
+    internal fun queueAndFlushBlocking(beacon: Beacon) {
         val beaconId = beacon.getBeaconId()
         Logger.d("Blocking Queue beacon with: `beaconId` $beaconId")
 

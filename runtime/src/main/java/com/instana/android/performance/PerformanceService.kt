@@ -34,7 +34,7 @@ class PerformanceService(
      * Monitors ANR events
      */
     val anrMonitor: PerformanceMonitor =
-        ANRMonitor(performanceMonitorConfig, lifeCycle)
+        ANRMonitor(performanceMonitorConfig)
 
     init {
         lifeCycle.registerCallback(this)

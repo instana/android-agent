@@ -15,11 +15,6 @@ import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
 import com.instana.android.core.util.ConstantsAndUtil
-import com.instana.android.core.util.InternalEventNames
-import com.instana.android.core.util.ThreadUtil
-import com.instana.android.performance.anr.AnrException
-import java.io.PrintWriter
-import java.io.StringWriter
 import java.util.Queue
 import java.util.concurrent.LinkedBlockingDeque
 
@@ -62,14 +57,10 @@ class CrashService(
 
         val stackTrace = Log.getStackTraceString(throwable)
 
-        val allStackTraces = dumpAllThreads(thread, throwable)
+        val allStackTraces = ConstantsAndUtil.dumpAllThreads(thread, throwable)
 
-        var errorType:String? = throwable?.javaClass?.name
-        if(throwable is AnrException){
-            errorType = InternalEventNames.ANR.titleName
-            //REMOVE the return once UI is ready to accept the ANR
-            return
-        }
+        val errorType:String? = throwable?.javaClass?.name
+
         val mergedMeta = Instana.meta
 
         val connectionProfile = ConnectionProfile(
@@ -100,21 +91,4 @@ class CrashService(
         breadCrumbs.clear()
     }
 
-    private fun dumpAllThreads(crashedThread: Thread?, throwable: Throwable?): String {
-        val stackTraces = Thread.getAllStackTraces()
-
-        if (!stackTraces.containsKey(crashedThread)) {
-            stackTraces[crashedThread] = crashedThread?.stackTrace
-        }
-
-        if (throwable != null) { // unhandled errors use the exception trace
-            stackTraces[crashedThread] = throwable.stackTrace
-        }
-
-        val sw = StringWriter()
-        val pw = PrintWriter(sw)
-        for ((t, u) in stackTraces) { ThreadUtil.println(pw, t, u) }
-        pw.flush()
-        return sw.toString()
-    }
 }

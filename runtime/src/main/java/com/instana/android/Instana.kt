@@ -32,8 +32,10 @@ import com.instana.android.core.util.MaxCapacityMap
 import com.instana.android.core.util.RootCheck
 import com.instana.android.core.util.UniqueIdManager
 import com.instana.android.crash.CrashService
+import com.instana.android.dropbeaconhandler.DropBeaconReporterService
 import com.instana.android.instrumentation.HTTPMarker
 import com.instana.android.instrumentation.InstrumentationService
+import com.instana.android.performance.PerformanceReporterService
 import com.instana.android.performance.PerformanceService
 import com.instana.android.session.SessionService
 import com.instana.android.view.ViewChangeService
@@ -65,6 +67,7 @@ object Instana {
     internal var firstView: String? = null
 
     private var viewChangeService: ViewChangeService? = null
+    private var dropBeaconService: DropBeaconReporterService? = null
     internal var instrumentationService: InstrumentationService? = null
     internal var customEvents: CustomEventService? = null
     internal var crashReporting: CrashService? = null
@@ -80,6 +83,9 @@ object Instana {
     @JvmStatic
     var performanceService: PerformanceService? = null
         private set
+
+    @JvmStatic
+    internal var performanceReporterService: PerformanceReporterService? = null
 
     /**
      * List of URLs which will not be tracked by Instana, defined by a list of Regex(Kotlin) or Pattern(Java)
@@ -294,6 +300,10 @@ object Instana {
         )
     }
 
+    internal fun reportDropBeacon(internalMetaInfo:Map<String,String>,droppingStartTime:Long,dropBeaconStartView:String?){
+        dropBeaconService?.sendDrop(internalMetaInfo = internalMetaInfo, droppingStartTime = droppingStartTime, dropBeaconStartView = dropBeaconStartView)
+    }
+
     init {
         avoidStrictModeFalsePositives()
     }
@@ -388,7 +398,11 @@ object Instana {
                     customEvents = CustomEventService(app, it, cm, tm, config) //TODO don't force-cast
                     instrumentationService = InstrumentationService(app, it, config)
                     performanceService = PerformanceService(app, config.performanceMonitorConfig, lifeCycle!!) //TODO don't force-cast
+                    performanceReporterService = PerformanceReporterService(app, it, config)
+                    performanceService?.anrMonitor?.enabled = config.performanceMonitorConfig.enableAnrReport
+                    performanceService?.lowMemoryMonitor?.enabled = config.performanceMonitorConfig.enableOOMReport
                     viewChangeService = ViewChangeService(app, it, config)
+                    dropBeaconService = DropBeaconReporterService(app, it, config)
                 }
                 this.isDone = true
                 (this as Object).notifyAll()

@@ -16,7 +16,7 @@ import android.os.Bundle
 import com.instana.android.BaseTest
 import com.instana.android.Instana
 import com.instana.android.InstanaTest
-import com.instana.android.core.InstanaLifeCycle
+import com.instana.android.performance.launchtime.LaunchTimeTracker
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.verify
@@ -66,8 +66,52 @@ class InstanaLifeCycleTest:BaseTest() {
     }
 
     @Test
+    fun `test onActivityResumed on the activity calls for the localClassName, after setting true as applicationStartedFromBackground`(){
+        try {
+            LaunchTimeTracker.applicationStartedFromBackground = true
+            instanaLifeCycle.onActivityResumed(activity = mockActivity)
+            verify(mockActivity, atLeastOnce()).localClassName
+        }catch (e:NullPointerException){
+            verify(mockActivity, atLeastOnce()).localClassName
+        }
+    }
+
+    @Test
+    fun `test onActivityResumed on the activity calls for the localClassName, after setting false as applicationStartedFromBackground`(){
+        try {
+            LaunchTimeTracker.applicationStartedFromBackground = false
+            instanaLifeCycle.onActivityResumed(activity = mockActivity)
+            verify(mockActivity, atLeastOnce()).localClassName
+        }catch (e:NullPointerException){
+            verify(mockActivity, atLeastOnce()).localClassName
+        }
+    }
+
+    @Test
     fun `test onActivityStarted on the activity calls for the localClassName`(){
         try {
+            instanaLifeCycle.onActivityStarted(activity = mockActivity)
+            verify(mockActivity, atLeastOnce()).localClassName
+        }catch (e:NullPointerException){
+            verify(mockActivity, atLeastOnce()).localClassName
+        }
+    }
+
+    @Test
+    fun `test onActivityStarted on the activity calls for the localClassName after setting applicationStartedFromBackground as true`(){
+        try {
+            LaunchTimeTracker.applicationStartedFromBackground = true
+            instanaLifeCycle.onActivityStarted(activity = mockActivity)
+            verify(mockActivity, atLeastOnce()).localClassName
+        }catch (e:NullPointerException){
+            verify(mockActivity, atLeastOnce()).localClassName
+        }
+    }
+
+    @Test
+    fun `test onActivityStarted on the activity calls for the localClassName after setting applicationStartedFromBackground as false`(){
+        try {
+            LaunchTimeTracker.applicationStartedFromBackground = false
             instanaLifeCycle.onActivityStarted(activity = mockActivity)
             verify(mockActivity, atLeastOnce()).localClassName
         }catch (e:NullPointerException){

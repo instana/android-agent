@@ -61,28 +61,6 @@ class FrameSkipMonitorTest :BaseTest(){
     }
 
     @Test
-    fun `test sendFrameDipEvent sends custom event`(){
-        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
-        Instana.sessionId = null
-        Instana.setup(app,config)
-        SessionService(app,mockWorkManager,config)
-        invokePrivateMethod2(frameSkipMonitor,"sendFrameDipEvent",2345L,Long::class.java)
-        assert(Instana.workManager?.initialDelayQueue.toString().contains("m_avgFrameRate\t2345"))
-        assert(Instana.workManager?.initialDelayQueue.toString().contains("cen\tFrameDip"))
-    }
-
-    @Test
-    fun `test checkConditionsAndSendEvent sends custom event with average of frame values`(){
-        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
-        Instana.sessionId = null
-        Instana.setup(app,config)
-        SessionService(app,mockWorkManager,config)
-        setPrivateField(frameSkipMonitor,"frames", mutableListOf(200L,300L))
-        invokePrivateMethod(frameSkipMonitor,"checkConditionsAndSendEvent")
-        assert(Instana.workManager?.initialDelayQueue.toString().contains("250"))
-    }
-
-    @Test
     fun `test doFrame of frame skip when frame rate is low`(){
         setPrivateField(frameSkipMonitor,"lastFrameTime",SystemClock.elapsedRealtime() - 1000)
         `when`(mockPerformanceMonitorConfig.frameRateDipThreshold).thenReturn(10000)

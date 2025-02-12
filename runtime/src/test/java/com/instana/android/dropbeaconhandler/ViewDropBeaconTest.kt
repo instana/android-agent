@@ -46,10 +46,10 @@ class ViewDropBeaconTest:BaseTest() {
         )
 
         val expected = """
-        {"type": "VIEW",
+        {"type": "viewChange",
                 "count": 1,    
                 "zInfo": {
-                    "view": "Home",
+                    "v": "Home",
                     "tMin": 12345,
                     "tMax": 67890,
                     "im_": {

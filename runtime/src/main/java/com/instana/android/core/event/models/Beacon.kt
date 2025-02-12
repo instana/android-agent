@@ -15,12 +15,14 @@ import com.instana.android.core.util.ConstantsAndUtil.EVENT_TYPE
 import com.instana.android.core.util.InternalEventNames
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.UniqueIdManager
+import com.instana.android.performance.PerformanceMetric
+import com.instana.android.performance.PerformanceSubType
 import java.math.BigInteger
 import java.security.MessageDigest
 import java.util.Locale
 
 @Suppress("MemberVisibilityCanBePrivate")
-class Beacon private constructor(
+internal class Beacon private constructor(
     type: BeaconType,
     duration: Long,
     mobileAppId: String,
@@ -572,6 +574,34 @@ class Beacon private constructor(
         stringMap["usi"] = value.take(128)
     }
 
+    fun setPerformanceSubType(@Size(max = 10) value: String){
+        stringMap["pst"] = value
+    }
+
+    fun setAppColdStart(@IntRange(from = 1) value: Long) {
+        longMap["acs"] = value
+    }
+
+    fun setAppWarmStart(@IntRange(from = 1) value: Long) {
+        longMap["aws"] = value
+    }
+
+    fun setAppHotStart(@IntRange(from = 1) value: Long) {
+        longMap["ahs"] = value
+    }
+
+    fun setMaximumMb(@IntRange(from = 1) value: Long) {
+        longMap["mmb"] = value
+    }
+
+    fun setAvailableMb(@IntRange(from = 1) value: Long) {
+        longMap["amb"] = value
+    }
+
+    fun setUsedMb(@IntRange(from = 1) value: Long) {
+        longMap["umb"] = value
+    }
+
     /**
      * Set view related meta data with this map, used in auto view capture mechanism
      */
@@ -764,6 +794,72 @@ class Beacon private constructor(
                         setInternalMeta(EVENT_TYPE,InternalEventNames.getEventNameForTitle(name))
                     }
                 }
+        }
+
+        fun newDropBeacon(
+            appKey: String,
+            appProfile: AppProfile,
+            deviceProfile: DeviceProfile,
+            connectionProfile: ConnectionProfile,
+            userProfile: UserProfile,
+            sessionId: String,
+            view: String?,
+            internalMeta: Map<String, String>,
+            startTime: Long,
+        ): Beacon {
+            return Beacon(BeaconType.DROP_BEACON, 0, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
+                .apply {
+                    view?.run { setView(this) }
+                    setTimestamp(startTime)
+                    for (it in internalMeta) {
+                        setInternalMeta(key = it.key,value = it.value)
+                    }
+                }
+        }
+
+        internal fun newPerformanceBeacon(
+            appKey: String,
+            appProfile: AppProfile,
+            deviceProfile: DeviceProfile,
+            connectionProfile: ConnectionProfile,
+            userProfile: UserProfile,
+            sessionId: String,
+            view: String?,
+            performanceMetric:PerformanceMetric
+        ):Beacon{
+            val baseBeacon = Beacon(BeaconType.PERFORMANCE,0,appKey,sessionId,0,appProfile,deviceProfile,connectionProfile,userProfile).apply {
+                view?.run { setView(this) }
+            }
+            return when(performanceMetric){
+                is PerformanceMetric.AppStartTime ->{
+                     baseBeacon.apply {
+                        setPerformanceSubType(PerformanceSubType.APP_START_TIME.internalType)
+                        performanceMetric.run {
+                            coldStart.takeIf { it != 0L }?.let { setAppColdStart(it) }
+                            warmStart.takeIf { it != 0L }?.let { setAppWarmStart(it) }
+                            hotStart.takeIf { it != 0L }?.let { setAppHotStart(it) }
+                        }
+                    }
+                }
+                is PerformanceMetric.AppNotResponding ->{
+                     baseBeacon.apply {
+                        setPerformanceSubType(PerformanceSubType.ANR.internalType)
+                        performanceMetric.duration?.let {
+                            setDuration(it)
+                        }
+                        setStackTrace(performanceMetric.stackTrace)
+                        setAllStackTraces(performanceMetric.allStackTrace)
+                    }
+                }
+                is PerformanceMetric.OutOfMemory ->{
+                     baseBeacon.apply {
+                        setPerformanceSubType(PerformanceSubType.OUT_OF_MEMORY.internalType)
+                        setAvailableMb(performanceMetric.availableMb)
+                        setMaximumMb(performanceMetric.maximumMb)
+                        setUsedMb(performanceMetric.usedMb)
+                    }
+                }
+            }
         }
 
         fun newCrash(

@@ -17,23 +17,18 @@ import java.util.concurrent.Executors
 class AnrSupervisor
 internal constructor(
     performanceMonitorConfig: PerformanceMonitorConfig,
-    callback: AnrCallback
 ) {
 
     /**
      * The [AnrSupervisorRunnable] running on a separate thread
      */
     private val supervisor: AnrSupervisorRunnable =
-        AnrSupervisorRunnable(performanceMonitorConfig, callback)
+        AnrSupervisorRunnable(performanceMonitorConfig)
 
     /**
      * The [ExecutorService] checking the UI thread
      */
     private val executor = Executors.newSingleThreadExecutor()
-
-    internal interface AnrCallback {
-        fun onAppNotResponding(anrThread: AnrException, duration: Long)
-    }
 
     /**
      * Starts the supervision

@@ -48,16 +48,6 @@ class CrashServiceTest:BaseTest() {
     }
 
     @Test
-    fun `test if the crash generated from ANRException then return should work`(){
-        val realThread = Thread() // create a real Thread instance
-        val realThrowable = AnrException(realThread) // create a real Throwable instance
-
-        crashService.submitCrash(realThread, realThrowable)
-
-        verify(mockWorkManager, times(0)).queueAndFlushBlocking(any())
-    }
-
-    @Test
     fun `test for crash submit with null value for throwable`(){
         val realThread = Thread() // create a real Thread instance
         val realThrowable = null // create a null Throwable instance

@@ -90,11 +90,12 @@ class InstanaConfig
      * about the sampled dropped beacons.
      */
     var dropBeaconReporting : Boolean = false,
-) {
     /**
      * Configuration of the Instana Performance Monitoring Service
      */
     var performanceMonitorConfig: PerformanceMonitorConfig = PerformanceMonitorConfig()
+) {
+
     val breadcrumbsBufferSize: Int = 20
 
     /**

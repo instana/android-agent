@@ -15,6 +15,7 @@ import com.instana.android.InstanaTest
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.CustomEventService
+import com.instana.android.performance.PerformanceReporterService
 import com.instana.android.performance.mem.LowMemoryMonitor
 import com.instana.android.session.SessionService
 import org.junit.Assert
@@ -41,6 +42,7 @@ class LowMemoryMonitorTest:BaseTest() {
         wrkManager.isInitialDelayComplete = false
         Instana.customEvents = CustomEventService(app,wrkManager,connectivityManager,telephonyManager,config)
         Instana.sessionId = null
+        Instana.performanceReporterService = PerformanceReporterService(app,wrkManager,config)
         SessionService(app,mockWorkManager,config)
         lowMemoryMonitor = LowMemoryMonitor(app, mockInstanaLifeCycle)
 
@@ -48,36 +50,37 @@ class LowMemoryMonitorTest:BaseTest() {
 
     @Test
     fun `onTrimMemory should send low memory event with m_activityName`() {
+        Instana.view = "test"
         lowMemoryMonitor.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
-        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("m_activityName") }.size
+        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("test") }.size
         Assert.assertTrue(size > 0)
     }
 
     @Test
     fun `onTrimMemory should send low memory event with m_maxMb`() {
         lowMemoryMonitor.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
-        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("m_maxMb") }.size
+        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("mmb") }.size
         Assert.assertTrue(size > 0)
     }
 
     @Test
     fun `onTrimMemory should send low memory event with m_availableMb`() {
         lowMemoryMonitor.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
-        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("m_availableMb") }.size
+        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("amb") }.size
         Assert.assertTrue(size > 0)
     }
 
     @Test
     fun `onTrimMemory should send low memory event with m_usedMb`() {
         lowMemoryMonitor.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
-        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("m_usedMb") }.size
+        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("umb") }.size
         Assert.assertTrue(size > 0)
     }
 
     @Test
-    fun `onTrimMemory should send low memory event name LowMemory`() {
+    fun `onTrimMemory should send low memory performance beacon with pst oom`() {
         lowMemoryMonitor.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
-        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("cen\tLowMemory") }.size
+        val size = wrkManager.initialDelayQueue.filter { it.toString().contains("oom") }.size
         Assert.assertTrue(size > 0)
     }
 
@@ -101,7 +104,7 @@ class LowMemoryMonitorTest:BaseTest() {
         lowMemoryMonitor.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL)
         val size = wrkManager.initialDelayQueue.filter { it.toString().contains("cen\tLowMemory") }.size
         lowMemoryMonitor.onLowMemory()
-        Assert.assertTrue(size > 0)
+        Assert.assertEquals(size , 0)
     }
 
 

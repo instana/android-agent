@@ -53,13 +53,13 @@ class CustomEventDropBeaconTest: BaseTest() {
         )
         val representation = beacon.toString()
         println(representation)
-        assertTrue(representation.contains("\"eventName\": \"Event\""))
+        assertTrue(representation.contains("\"cen\": \"Event\""))
         assertTrue(representation.contains("\"tMin\": 2023-01-01T00:00:00"))
         assertTrue(representation.contains("\"tMax\": 2023-01-01T01:00:00"))
-        assertTrue(representation.contains("\"errorMessage\": \"Error messageError"))
-        assertTrue(representation.contains("\"customMetric\": \"Metric"))
-        assertTrue(representation.contains("\"view\": \"View\""))
-        assertTrue(representation.contains("\"errorCount\": 1"))
+        assertTrue(representation.contains("\"em\": \"Error messageError"))
+        assertTrue(representation.contains("\"cm\": \"Metric"))
+        assertTrue(representation.contains("\"v\": \"View\""))
+        assertTrue(representation.contains("\"ec\": 1"))
         assertFalse(representation.contains("..."))
     }
 

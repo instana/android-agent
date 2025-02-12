@@ -7,7 +7,9 @@
 package com.instana.android.performance.launchtime
 
 import android.os.SystemClock
+import com.instana.android.Instana
 import com.instana.android.core.util.Logger
+import com.instana.android.performance.PerformanceMetric
 
 internal object LaunchTimeTracker{
 
@@ -25,13 +27,20 @@ internal object LaunchTimeTracker{
         if(doneTracking) return
         if(initialTimeInElapsedRealtime==0L) return
         launchTimeInNanos = SystemClock.elapsedRealtime() - initialTimeInElapsedRealtime
-        reportAppStart(startType.value,launchTimeInNanos)
+        reportAppStart(startType,launchTimeInNanos)
     }
 
-    private fun reportAppStart(type:String,value:Long){
-        if(!doneTracking){
+    private fun reportAppStart(startType:LaunchTypeEnum,value:Long){
+        if(!doneTracking && Instana.config?.performanceMonitorConfig?.enableAppStartTimeReport == true){
             doneTracking = true
-            Logger.i("App Start Time with $type is $value")//Need to report these data once backend is enabled
+            val appStartTimeMetric = when (startType) {
+                LaunchTypeEnum.COLD_START -> PerformanceMetric.AppStartTime(coldStart = value)
+                LaunchTypeEnum.WARM_START -> PerformanceMetric.AppStartTime(warmStart = value)
+            }
+            appStartTimeMetric.let {
+                Instana.performanceReporterService?.sendPerformance(it)
+            }
+            Logger.i("App Start Time with ${startType.value} is $value")//Need to report these data once backend is enabled
         }
     }
 }

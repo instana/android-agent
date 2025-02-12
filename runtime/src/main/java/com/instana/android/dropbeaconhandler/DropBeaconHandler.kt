@@ -6,7 +6,6 @@
 
 package com.instana.android.dropbeaconhandler
 
-import com.instana.android.CustomEvent
 import com.instana.android.Instana
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.BeaconType
@@ -86,9 +85,9 @@ internal object DropBeaconHandler {
         }
     }
 
-    private fun getSampledHttpDropBeacons() = httpUniqueMap.values.sortedByDescending { it.count.get() }.take(SAMPLING_BEACON_LIMIT)
-    private fun getSampledViewDropBeacons() = viewUniqueMap.values.sortedByDescending { it.count.get() }.take(SAMPLING_BEACON_LIMIT)
-    private fun getSampledCustomEventDropBeacons() = customUniqueMap.values.sortedByDescending { it.count.get() }.take(SAMPLING_BEACON_LIMIT)
+    private fun getSampledHttpDropBeacons() = httpUniqueMap.values.filterNot { it.count.get() == 0 }.sortedByDescending { it.count.get() }.take(SAMPLING_BEACON_LIMIT)
+    private fun getSampledViewDropBeacons() = viewUniqueMap.values.filterNot { it.count.get() == 0 }.sortedByDescending { it.count.get() }.take(SAMPLING_BEACON_LIMIT)
+    private fun getSampledCustomEventDropBeacons() = customUniqueMap.values.filterNot { it.count.get() == 0 }.sortedByDescending { it.count.get() }.take(SAMPLING_BEACON_LIMIT)
 
     /**
      * The totalDropBeaconCount` will represent the total number of beacons dropped within the time frame, not the total count of sampled beacons.
@@ -101,7 +100,6 @@ internal object DropBeaconHandler {
             val totalHttpDropBeaconCount = httpUniqueMap.values.sumOf { it.count.get() }
             val totalCustomEventDropBeaconCount = customUniqueMap.values.sumOf { it.count.get() }
             val totalViewDropBeaconCount = viewUniqueMap.values.sumOf { it.count.get() }
-            val totalDropBeaconCount = totalHttpDropBeaconCount + totalCustomEventDropBeaconCount + totalViewDropBeaconCount
 
             if (totalHttpDropBeaconCount > MIN_BEACONS_REQUIRED) {
                 mergedBeaconsMap.putAll(getSampledHttpDropBeacons().associateBy({ it.generateKey() }, { it.toString() }))
@@ -113,7 +111,7 @@ internal object DropBeaconHandler {
                 mergedBeaconsMap.putAll(getSampledCustomEventDropBeacons().associateBy({ it.generateKey() }, { it.toString() }))
             }
             if (mergedBeaconsMap.isNotEmpty()) {
-                sendDropperEvent(mergedBeaconsMap, InternalEventNames.BEACON_DROP.titleName,totalDropBeaconCount)
+                sendDropperEvent(mergedBeaconsMap)
             }
 
             httpUniqueMap.clear()
@@ -126,17 +124,11 @@ internal object DropBeaconHandler {
         droppingStartView = droppingStartView ?: view
     }
 
-    private suspend fun sendDropperEvent(mapBeaconValue: Map<String, String>, customEventName: String,totalCount: Int) {
+    private suspend fun sendDropperEvent(mapBeaconValue: Map<String, String>) {
         if (mapBeaconValue.values.toString() == lastSendMap.values.toString()) return
         lastSendMap = mapBeaconValue
         withContext(dispatcher) {
-            val event = CustomEvent(customEventName).apply {
-                viewName = droppingStartView
-                meta = mapBeaconValue
-                startTime = droppingStartTime
-                customMetric = totalCount.toDouble()
-            }
-            Instana.reportEvent(event)
+            Instana.reportDropBeacon(mapBeaconValue,droppingStartTime,droppingStartView)
             droppingStartTime = 0
             droppingStartView = null
         }

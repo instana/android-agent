@@ -19,5 +19,8 @@ class PerformanceMonitorConfig
      *
      * Defined in Frames per second
      */
-    val frameRateDipThreshold: Int = 15
+    val frameRateDipThreshold: Int = 15,
+    val enableAppStartTimeReport: Boolean = true,
+    val enableAnrReport:Boolean = false,
+    val enableOOMReport:Boolean = true
 )

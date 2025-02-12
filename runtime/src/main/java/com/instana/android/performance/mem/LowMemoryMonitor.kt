@@ -12,14 +12,14 @@ import android.content.res.Configuration
 import com.instana.android.Instana
 import com.instana.android.core.InstanaLifeCycle
 import com.instana.android.core.util.ConstantsAndUtil
-import com.instana.android.core.util.InternalEventNames
 import com.instana.android.core.util.Logger
+import com.instana.android.performance.PerformanceMetric
 import com.instana.android.performance.PerformanceMonitor
 import kotlin.properties.Delegates
 
 class LowMemoryMonitor(
     private val app: Application,
-    private val lifeCycle: InstanaLifeCycle
+    private val lifeCycle: InstanaLifeCycle,
 ) : ComponentCallbacks2, PerformanceMonitor {
 
     override var enabled by Delegates.observable(false) { _, oldValue, newValue ->
@@ -32,7 +32,7 @@ class LowMemoryMonitor(
     }
 
     override fun onLowMemory() {
-        // not implemented for now
+        Logger.i("On Low Memory called!")
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
@@ -55,20 +55,10 @@ class LowMemoryMonitor(
         val maxInMb = maxMem / MB
         val availableInMb = availableMem / MB
         val usedInMb = usedMem / MB
-        Instana.customEvents?.submit(
-            eventName = InternalEventNames.LOW_MEMORY.titleName,
-            startTime = System.currentTimeMillis(),
-            duration = 0L,
-            meta = mapOf(
-                "activityName" to activityName,
-                "maxMb" to maxInMb.toString(),
-                "availableMb" to availableInMb.toString(),
-                "usedMb" to usedInMb.toString()
-            ),
-            viewName = Instana.view,
-            backendTracingID = null,
-            error = null,
-            customMetric = null
+        Instana.performanceReporterService?.sendPerformance(PerformanceMetric.OutOfMemory(
+            availableMb = availableInMb,
+            usedMb = usedInMb,
+            maximumMb = maxInMb)
         )
     }
 

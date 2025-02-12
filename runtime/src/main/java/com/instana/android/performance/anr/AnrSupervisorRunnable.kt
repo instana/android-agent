@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit
 class AnrSupervisorRunnable
 internal constructor(
     private val performanceMonitorConfig: PerformanceMonitorConfig,
-    private val anrCallback: AnrSupervisor.AnrCallback
 ) : Runnable {
 
     /**
@@ -80,8 +79,8 @@ internal constructor(
                             valueAlreadySendOnce = true
                             duration = System.currentTimeMillis() - startTime!!
                             Logger.i("UI Thread blocked for $duration ms")
-                            val e = AnrException(this.handler.looper.thread)
-                            anrCallback.onAppNotResponding(e, duration!!)
+                            val e = AnrException(this.handler.looper.thread,duration)
+                            Logger.i(e.message.toString())
                             startTime = null
                         }
                     } else {
@@ -89,8 +88,8 @@ internal constructor(
                         if (startTime != null) {
                             duration = System.currentTimeMillis() - startTime!!
                             Logger.i("UI Thread blocked for $duration")
-                            val e = AnrException(this.handler.looper.thread)
-                            anrCallback.onAppNotResponding(e, duration!!)
+                            val e = AnrException(this.handler.looper.thread,duration)
+                            Logger.i(e.message.toString())
                             startTime = null
                         }
                     }

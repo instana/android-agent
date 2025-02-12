@@ -7,6 +7,7 @@
 package com.instana.android.dropbeaconhandler
 
 import com.instana.android.core.event.models.Beacon
+import com.instana.android.core.event.models.BeaconType
 import com.instana.android.core.util.ConstantsAndUtil.mapToJsonString
 import com.instana.android.core.util.extractBeaconValues
 import com.instana.android.core.util.randomAlphaNumericString
@@ -25,10 +26,10 @@ internal data class ViewDropBeacon(
     // Convert object to a string representation
     override fun toString(): String {
         val representation = """{
-                "type": "VIEW",
+                "type": "${BeaconType.VIEW_CHANGE.internalType}",
                 "count": $count,    
                 "zInfo": {
-                    "view": "$viewName",
+                    "v": "$viewName",
                     "tMin": $timeMin,
                     "tMax": $timeMax,
                     "im_": ${mapToJsonString(imMap)}

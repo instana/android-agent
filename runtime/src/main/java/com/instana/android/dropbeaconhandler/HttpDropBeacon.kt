@@ -7,6 +7,7 @@
 package com.instana.android.dropbeaconhandler
 
 import com.instana.android.core.event.models.Beacon
+import com.instana.android.core.event.models.BeaconType
 import com.instana.android.core.util.ConstantsAndUtil.mapToJsonString
 import com.instana.android.core.util.extractBeaconValues
 import com.instana.android.core.util.randomAlphaNumericString
@@ -28,14 +29,14 @@ internal data class HttpDropBeacon(
     // Convert object to a string representation
     override fun toString(): String {
         val representation = """{
-                "type": "HTTP",
+                "type": "${BeaconType.HTTP_REQUEST.internalType}",
                 "count": $count,    
                 "zInfo": {
-                    "url": "$url",
+                    "hl": "$url",
                     "hs": "$hs",
                     "tMin": $timeMin,
                     "tMax": $timeMax,
-                    "view": "$view",
+                    "v": "$view",
                     "hm": "$hm",
                     "headers": ${mapToJsonString(headerMapString)}
                 }

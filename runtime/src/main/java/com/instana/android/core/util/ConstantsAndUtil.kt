@@ -18,12 +18,15 @@ import android.view.WindowManager
 import androidx.annotation.RestrictTo
 import androidx.core.app.ActivityCompat
 import com.instana.android.Instana
+import com.instana.android.core.event.models.ConnectionProfile
 import com.instana.android.core.event.models.ConnectionType
 import com.instana.android.core.event.models.EffectiveConnectionType
 import com.instana.android.core.event.models.Platform
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import com.instana.android.view.ScreenAttributes
 import okhttp3.OkHttpClient
+import java.io.PrintWriter
+import java.io.StringWriter
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -105,6 +108,15 @@ object ConstantsAndUtil {
         return null
     }
 
+    fun getConnectionProfile(context: Context):ConnectionProfile {
+        val cm: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val tm: TelephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        return ConnectionProfile(
+            carrierName = getCarrierName(context, cm, tm),
+            connectionType = getConnectionType(context, cm),
+            effectiveConnectionType = getCellularConnectionType(context, cm, tm)
+        )
+    }
     fun getCarrierName(context: Context, cm: ConnectivityManager, tm: TelephonyManager): String? =
         when (getConnectionType(context, cm)) {
             ConnectionType.CELLULAR -> tm.networkOperatorName
@@ -308,6 +320,24 @@ object ConstantsAndUtil {
         return map.entries.joinToString(prefix = "{", postfix = "}", separator = ", ") {
             "\"${it.key}\": \"${it.value}\""
         }
+    }
+
+    internal fun dumpAllThreads(crashedThread: Thread?, throwable: Throwable?): String {
+        val stackTraces = Thread.getAllStackTraces()
+
+        if (!stackTraces.containsKey(crashedThread)) {
+            stackTraces[crashedThread] = crashedThread?.stackTrace
+        }
+
+        if (throwable != null) { // unhandled errors use the exception trace
+            stackTraces[crashedThread] = throwable.stackTrace
+        }
+
+        val sw = StringWriter()
+        val pw = PrintWriter(sw)
+        for ((t, u) in stackTraces) { ThreadUtil.println(pw, t, u) }
+        pw.flush()
+        return sw.toString()
     }
 
 }

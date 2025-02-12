@@ -11,5 +11,7 @@ enum class BeaconType(val internalType: String) {
     HTTP_REQUEST("httpRequest"),
     CRASH("crash"),
     CUSTOM("custom"),
-    VIEW_CHANGE("viewChange");
+    VIEW_CHANGE("viewChange"),
+    DROP_BEACON("dropBeacon"),
+    PERFORMANCE("perf");
 }
