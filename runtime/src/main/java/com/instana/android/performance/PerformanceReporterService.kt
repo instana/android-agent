@@ -15,6 +15,9 @@ import com.instana.android.core.event.models.UserProfile
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 
+/**
+ * Handler/Reporter service for all performance related Beacons
+ */
 internal class PerformanceReporterService(
     private val context: Application,
     private val manager: InstanaWorkManager,

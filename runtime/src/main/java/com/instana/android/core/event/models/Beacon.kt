@@ -11,8 +11,6 @@ import androidx.annotation.Size
 import androidx.annotation.VisibleForTesting
 import com.instana.android.Instana
 import com.instana.android.android.agent.BuildConfig
-import com.instana.android.core.util.ConstantsAndUtil.EVENT_TYPE
-import com.instana.android.core.util.InternalEventNames
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.UniqueIdManager
 import com.instana.android.performance.PerformanceMetric
@@ -574,30 +572,51 @@ internal class Beacon private constructor(
         stringMap["usi"] = value.take(128)
     }
 
+    /**
+     * This decides to what type of performance beacon is being send
+     */
     fun setPerformanceSubType(@Size(max = 10) value: String){
         stringMap["pst"] = value
     }
 
+    /**
+     * First-time launch (app is not in memory), Time in milli seconds
+     */
     fun setAppColdStart(@IntRange(from = 1) value: Long) {
         longMap["acs"] = value
     }
 
+    /**
+     * The app was in memory but not actively running (after being idle), Time in milli seconds
+     */
     fun setAppWarmStart(@IntRange(from = 1) value: Long) {
         longMap["aws"] = value
     }
 
+    /**
+     * The app was in the foreground or already running in the background, Time in milli seconds
+     */
     fun setAppHotStart(@IntRange(from = 1) value: Long) {
         longMap["ahs"] = value
     }
 
+    /**
+     *  The total memory capacity available on the device., Value in Mb
+     */
     fun setMaximumMb(@IntRange(from = 1) value: Long) {
         longMap["mmb"] = value
     }
 
+    /**
+     * The free memory currently available for apps and processes to use., Value in Mb
+     */
     fun setAvailableMb(@IntRange(from = 1) value: Long) {
         longMap["amb"] = value
     }
 
+    /**
+     * The memory already allocated and actively being used by the system and apps, Value in Mb
+     */
     fun setUsedMb(@IntRange(from = 1) value: Long) {
         longMap["umb"] = value
     }
@@ -790,9 +809,6 @@ internal class Beacon private constructor(
                     backendTraceId?.run { setBackendTraceId(backendTraceId) }
                     error?.run { setErrorMessage(this) }
                     customMetric?.run { setCustomMetricData(this) }
-                    if(InternalEventNames.getEventNameForTitle(name).isNotEmpty()){
-                        setInternalMeta(EVENT_TYPE,InternalEventNames.getEventNameForTitle(name))
-                    }
                 }
         }
 
@@ -885,9 +901,6 @@ internal class Beacon private constructor(
                     errorType?.run { setErrorType(this) }
                     stackTrace?.run { setStackTrace(this) }
                     allStackTraces?.run { setAllStackTraces(this) }
-                    if (errorType == InternalEventNames.ANR.titleName){
-                        setInternalMeta(EVENT_TYPE,InternalEventNames.ANR.eventName)
-                    }
                 }
         }
 

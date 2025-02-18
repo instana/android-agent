@@ -41,4 +41,14 @@ class BeaconTypeTest {
     fun `test viewChange internalType`() {
         assertEquals("viewChange", BeaconType.VIEW_CHANGE.internalType)
     }
+
+    @Test
+    fun `test drop beacon internalType`() {
+        assertEquals("dropBeacon", BeaconType.DROP_BEACON.internalType)
+    }
+
+    @Test
+    fun `test Performance beacon internalType`() {
+        assertEquals("perf", BeaconType.PERFORMANCE.internalType)
+    }
 }

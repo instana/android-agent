@@ -9,7 +9,6 @@ package com.instana.android.dropbeaconhandler
 import com.instana.android.Instana
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.BeaconType
-import com.instana.android.core.util.InternalEventNames
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,7 +71,6 @@ internal object DropBeaconHandler {
         val extractedBeacon = beacon.extractCustomBeaconValues()
         val key = "${extractedBeacon.eventName}|${extractedBeacon.errorMessage}|${extractedBeacon.errorCount}|${extractedBeacon.view}"
         updateDroppingStartView(extractedBeacon.view)
-        if (extractedBeacon.eventName == InternalEventNames.BEACON_DROP.titleName) return
         val existingBeacon = customUniqueMap[key]
         if (existingBeacon != null) {
             existingBeacon.count.incrementAndGet()

@@ -10,6 +10,7 @@ import com.instana.android.BaseTest
 import com.instana.android.Instana
 import com.instana.android.InstanaTest
 import com.instana.android.core.InstanaConfig
+import com.instana.android.performance.PerformanceMetric
 import com.instana.android.session.SessionService
 import org.junit.Assert
 import org.junit.Before
@@ -782,5 +783,205 @@ class BeaconTest: BaseTest() {
 
         )
         Assert.assertEquals(sampleBeacon.getHttpCallStatus(),"")
+    }
+
+    @Test
+    fun `test beacons class with set app cold start time`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val customEvent = Beacon.newCustomEvent(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null",
+            meta = mapOf(),
+            startTime = 9413,
+            duration = 7629,
+            backendTraceId = "null",
+            error = null,
+            name = "Raymond Griffith",
+            customMetric = null
+        )
+        customEvent.setAppColdStart(5)
+        assert(customEvent.toString().contains("acs\t5"))
+    }
+
+    @Test
+    fun `test beacons class with set app warm start time`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val customEvent = Beacon.newCustomEvent(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null",
+            meta = mapOf(),
+            startTime = 9413,
+            duration = 7629,
+            backendTraceId = "null",
+            error = null,
+            name = "Raymond Griffith",
+            customMetric = null
+        )
+        customEvent.setAppWarmStart(5)
+        assert(customEvent.toString().contains("aws\t5"))
+    }
+
+    @Test
+    fun `test beacons class with set app hot start time`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val customEvent = Beacon.newCustomEvent(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null",
+            meta = mapOf(),
+            startTime = 9413,
+            duration = 7629,
+            backendTraceId = "null",
+            error = null,
+            name = "Raymond Griffith",
+            customMetric = null
+        )
+        customEvent.setAppHotStart(5)
+        assert(customEvent.toString().contains("ahs\t5"))
+    }
+    
+    @Test
+    fun `test newPerformanceBeacon function should return beacon with ANR details`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val performance = Beacon.newPerformanceBeacon(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null", performanceMetric = PerformanceMetric.AppNotResponding(5L,"stackTrace","All stack trace"),
+        )
+        assert(performance.toString().contains("d\t5"))
+        assert(performance.toString().contains("st\tstackTrace"))
+        assert(performance.toString().contains("ast\tAll stack trace"))
+    }
+
+    @Test
+    fun `test newPerformanceBeacon function should return beacon with ANR details with null value as 0`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val performance = Beacon.newPerformanceBeacon(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null", performanceMetric = PerformanceMetric.AppNotResponding(null,"stackTrace","All stack trace"),
+        )
+        assert(performance.toString().contains("d\t0"))
+    }
+
+    @Test
+    fun `test newPerformanceBeacon function should return beacon with ANR details with performanceSubType as anr`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val performance = Beacon.newPerformanceBeacon(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null", performanceMetric = PerformanceMetric.AppNotResponding(null,"stackTrace","All stack trace"),
+        )
+        assert(performance.toString().contains("pst\tanr"))
+    }
+
+    @Test
+    fun `test newPerformanceBeacon function should return beacon with App Start Time details with performanceSubType as ast`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val performance = Beacon.newPerformanceBeacon(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null", performanceMetric = PerformanceMetric.AppStartTime(0L,0L,0L),
+        )
+        assert(performance.toString().contains("pst\tast"))
+    }
+
+    @Test
+    fun `test newPerformanceBeacon function should return beacon with Out Of Memory details with performanceSubType as oom`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val performance = Beacon.newPerformanceBeacon(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null", performanceMetric = PerformanceMetric.OutOfMemory(0L,0L,0L),
+        )
+        assert(performance.toString().contains("pst\toom"))
+    }
+
+    @Test
+    fun `test newPerformanceBeacon function should return beacon with App Start Time details with 0L provided should not take`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val performance = Beacon.newPerformanceBeacon(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null", performanceMetric = PerformanceMetric.AppStartTime(0L,1L,0L),
+        )
+        assert(performance.toString().contains("acs\t0").not())
+        assert(performance.toString().contains("aws\t1"))
+        assert(performance.toString().contains("ahs\t0").not())
+    }
+
+    @Test
+    fun `test newPerformanceBeacon function should return beacon with App Start Time details with value greater than 0L provided should take directly`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val performance = Beacon.newPerformanceBeacon(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null", performanceMetric = PerformanceMetric.AppStartTime(22L,0L,24L),
+        )
+        assert(performance.toString().contains("acs\t22"))
+        assert(performance.toString().contains("aws\t0").not())
+        assert(performance.toString().contains("ahs\t24"))
     }
 }
