@@ -28,6 +28,14 @@ internal class RateLimiter(
         lastFiveMinuteCount += newItems
         lastTenSecondsCount += newItems
 
-        return lastFiveMinuteCount > maxPerFiveMinutes || lastTenSecondsCount > maxPerTenSeconds
+        if (lastFiveMinuteCount > maxPerFiveMinutes){
+            Logger.e("Exceeded maximum beacon per 5 minutes: $lastFiveMinuteCount/$maxPerFiveMinutes")
+            return true
+        }
+        if (lastTenSecondsCount > maxPerTenSeconds){
+            Logger.e("Exceeded maximum beacon per 10 seconds: $lastTenSecondsCount/$maxPerTenSeconds")
+            return true
+        }
+        return false
     }
 }

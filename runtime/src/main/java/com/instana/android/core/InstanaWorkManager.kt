@@ -41,7 +41,7 @@ class InstanaWorkManager(
     /**
      * Rate-limits the creation of beacons, to protect the servers from accidental over-usage
      */
-    private val rateLimiter = RateLimiter(500, 20)
+    private val rateLimiter = RateLimiter(config.rateLimits.maxPerFiveMinutes, config.rateLimits.maxPerTenSeconds)
 
     /**
      * Protects WorkManager from receiving too many scheduled tasks, which can generate Sqlite errors
@@ -238,7 +238,6 @@ class InstanaWorkManager(
                 if(config?.dropBeaconReporting == true) {
                     DropBeaconHandler.addBeaconToDropHandler(beacon = beacon)
                 }
-                Logger.e("Max beacon-generation rate exceeded. Dropping beacon: $beacon")
             }
 
             else -> {

@@ -7,6 +7,7 @@
 package com.instana.android.core
 
 import com.instana.android.core.event.models.Platform
+import com.instana.android.dropbeaconhandler.RateLimits
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -82,6 +83,7 @@ class InstanaConfigTest {
         assertEquals(20, config.breadcrumbsBufferSize)
         assertEquals(Platform.ANDROID.internalType, config.hybridAgentId)
         assertEquals("", config.hybridAgentVersion)
+        assertEquals(RateLimits.DEFAULT_LIMITS,config.rateLimits)
     }
 
     @Test

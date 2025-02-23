@@ -9,6 +9,7 @@ import android.webkit.URLUtil
 import com.instana.android.core.event.models.Platform
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
+import com.instana.android.dropbeaconhandler.RateLimits
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import com.instana.android.performance.PerformanceMonitorConfig
 
@@ -93,7 +94,23 @@ class InstanaConfig
     /**
      * Configuration of the Instana Performance Monitoring Service
      */
-    var performanceMonitorConfig: PerformanceMonitorConfig = PerformanceMonitorConfig()
+    var performanceMonitorConfig: PerformanceMonitorConfig = PerformanceMonitorConfig(),
+    /**
+     * Rate-Limiter configuration for the maximum number of beacons allowed within specific time intervals:
+     *
+     * - `DEFAULT_LIMITS`:
+     *     - 500 beacons per 5 minutes
+     *     - 20 beacons per 10 seconds
+     *
+     * - `MID_LIMITS`:
+     *     - 1000 beacons per 5 minutes
+     *     - 40 beacons per 10 seconds
+     *
+     * - `MAX_LIMITS`:
+     *     - 2500 beacons per 5 minutes
+     *     - 100 beacons per 10 seconds
+     */
+    var rateLimits:RateLimits = RateLimits.DEFAULT_LIMITS
 ) {
 
     val breadcrumbsBufferSize: Int = 20
