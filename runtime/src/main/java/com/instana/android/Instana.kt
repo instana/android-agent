@@ -37,6 +37,7 @@ import com.instana.android.instrumentation.HTTPMarker
 import com.instana.android.instrumentation.InstrumentationService
 import com.instana.android.performance.PerformanceReporterService
 import com.instana.android.performance.PerformanceService
+import com.instana.android.performance.network.NetworkStatsHelper
 import com.instana.android.session.SessionService
 import com.instana.android.view.ViewChangeService
 import kotlinx.coroutines.Dispatchers
@@ -331,6 +332,7 @@ object Instana {
         this.config = config
         this.config?.hybridAgentId = hybridAgentOptions?.id
         this.config?.hybridAgentVersion = hybridAgentOptions?.version
+        this.config?.networkStatsHelper = NetworkStatsHelper(app)
         initProfiles(app)
         initLifecycle(app)
         initWorkManager(app, config)

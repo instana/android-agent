@@ -2,6 +2,10 @@ Changelog
 ==========
 ## Version 6.1.1
 
+_2024-01-28_
+
+- Added logic for calculating network usage details
+
 _2025-2-11_
 
 - New beacon type added for drop beacon

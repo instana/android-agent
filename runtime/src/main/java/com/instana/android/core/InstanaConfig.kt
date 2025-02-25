@@ -12,6 +12,7 @@ import com.instana.android.core.util.Logger
 import com.instana.android.dropbeaconhandler.RateLimits
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import com.instana.android.performance.PerformanceMonitorConfig
+import com.instana.android.performance.network.NetworkStatsHelper
 
 class InstanaConfig
 @JvmOverloads constructor(
@@ -143,6 +144,8 @@ class InstanaConfig
      * No need for assigning custom value
      */
     var hybridAgentVersion: String? = ""
+
+    internal var networkStatsHelper: NetworkStatsHelper? = null
 
     fun isValid(): Boolean {
         return when {

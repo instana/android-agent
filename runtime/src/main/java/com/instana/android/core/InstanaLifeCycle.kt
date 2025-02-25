@@ -9,6 +9,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.ComponentCallbacks2
 import android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -18,6 +19,7 @@ import com.instana.android.activity.InstanaActivityLifecycleCallbacks
 import com.instana.android.fragments.FragmentLifecycleCallbacks
 import com.instana.android.performance.launchtime.LaunchTimeTracker
 import com.instana.android.performance.launchtime.LaunchTypeEnum
+import com.instana.android.performance.network.AppLifecycleIdentificationService
 
 /**
  * Util class to get current activity data and memory alerts
@@ -28,7 +30,8 @@ class InstanaLifeCycle(
 
     private var callback: AppStateCallback? = null
     private var backgrounded: Boolean = false
-
+    private var activityCount = 0  // Track active activities
+    private var isConfigurationChange = false  // Track if the activity is just being recreated
     /**
      * Public variable that provides activity name for reports that require it
      */
@@ -41,6 +44,7 @@ class InstanaLifeCycle(
             application.registerActivityLifecycleCallbacks(InstanaActivityLifecycleCallbacks())
             registerFragmentCallbacks(application)
         }
+        application.startService(Intent(application, AppLifecycleIdentificationService::class.java))
     }
 
     override fun onLowMemory() {
@@ -48,7 +52,7 @@ class InstanaLifeCycle(
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
-        // not implemented
+        isConfigurationChange = true
     }
 
     /**
@@ -83,10 +87,12 @@ class InstanaLifeCycle(
             LaunchTimeTracker.startTimer()
         }
         activityName = activity.localClassName.toString()
+        activityCount++
     }
 
     override fun onActivityDestroyed(activity: Activity) {
         activityName = activity.localClassName.toString()
+        activityCount--
     }
 
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
@@ -99,6 +105,10 @@ class InstanaLifeCycle(
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         activityName = activity.localClassName.toString()
+        if(activityCount==0 && !isConfigurationChange){
+            Instana.config?.networkStatsHelper?.calculateNetworkUsage(true)
+        }
+        isConfigurationChange = false
     }
 
     fun registerCallback(appStateCallback: AppStateCallback) {

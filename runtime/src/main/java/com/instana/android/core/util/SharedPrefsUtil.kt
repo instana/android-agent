@@ -64,4 +64,9 @@ internal object SharedPrefsUtil {
             putLong(key, value)
         }
     }
+    fun putLongImmediate(context: Context, key: String, value: Long) {
+        getSharedPreferences(context).edit {
+            putLong(key, value).commit()
+        }
+    }
 }

@@ -16,6 +16,7 @@
             android:initOrder="200"
             android:exported="false"
             tools:node="merge"/>
+        <service android:name="com.instana.android.performance.network.AppLifecycleIdentificationService" />
     </application>
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
