@@ -24,7 +24,7 @@ internal class PerformanceMonitorConfigTest {
         assertEquals(15, config.frameRateDipThreshold)
         assertTrue(config.enableAppStartTimeReport)
         assertFalse(config.enableAnrReport)
-        assertTrue(config.enableOOMReport)
+        assertTrue(config.enableLowMemoryReport)
     }
 
     @Test
@@ -35,7 +35,7 @@ internal class PerformanceMonitorConfigTest {
             frameRateDipThreshold = 20,
             enableAppStartTimeReport = false,
             enableAnrReport = true,
-            enableOOMReport = false
+            enableLowMemoryReport = false
         )
 
         // When & Then (check if the custom values are properly set)
@@ -43,7 +43,7 @@ internal class PerformanceMonitorConfigTest {
         assertEquals(20, customConfig.frameRateDipThreshold)
         assertFalse(customConfig.enableAppStartTimeReport)
         assertTrue(customConfig.enableAnrReport)
-        assertFalse(customConfig.enableOOMReport)
+        assertFalse(customConfig.enableLowMemoryReport)
     }
 
     @Test
@@ -85,9 +85,9 @@ internal class PerformanceMonitorConfigTest {
     @Test
     fun `test enableOOMReport flag`() {
         // Given
-        val customConfig = PerformanceMonitorConfig(enableOOMReport = false)
+        val customConfig = PerformanceMonitorConfig(enableLowMemoryReport = false)
 
         // When & Then
-        assertFalse(customConfig.enableOOMReport)
+        assertFalse(customConfig.enableLowMemoryReport)
     }
 }

@@ -400,7 +400,7 @@ object Instana {
                     performanceService = PerformanceService(app, config.performanceMonitorConfig, lifeCycle!!) //TODO don't force-cast
                     performanceReporterService = PerformanceReporterService(app, it, config)
                     performanceService?.anrMonitor?.enabled = config.performanceMonitorConfig.enableAnrReport
-                    performanceService?.lowMemoryMonitor?.enabled = config.performanceMonitorConfig.enableOOMReport
+                    performanceService?.lowMemoryMonitor?.enabled = config.performanceMonitorConfig.enableLowMemoryReport
                     viewChangeService = ViewChangeService(app, it, config)
                     dropBeaconService = DropBeaconReporterService(app, it, config)
                 }
