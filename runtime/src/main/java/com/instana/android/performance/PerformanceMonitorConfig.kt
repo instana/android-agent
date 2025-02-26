@@ -20,7 +20,7 @@ class PerformanceMonitorConfig
      * Defined in Frames per second
      */
     val frameRateDipThreshold: Int = 15,
-    val enableAppStartTimeReport: Boolean = true,
+    val enableAppStartTimeReport: Boolean = false,
     val enableAnrReport:Boolean = false,
-    val enableLowMemoryReport:Boolean = true
+    val enableLowMemoryReport:Boolean = false
 )
