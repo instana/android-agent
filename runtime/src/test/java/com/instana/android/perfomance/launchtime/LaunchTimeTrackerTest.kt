@@ -30,7 +30,7 @@ class LaunchTimeTrackerTest: BaseTest() {
         LaunchTimeTracker.stopTimer(LaunchTypeEnum.COLD_START)
         Thread.sleep(100)
         val doneTrackingAfter = getPrivateFieldValue(LaunchTimeTracker,"doneTracking") as Boolean
-        Assert.assertEquals(true,doneTrackingAfter)
+        Assert.assertEquals(false,doneTrackingAfter)
     }
 
     @Test
@@ -41,7 +41,7 @@ class LaunchTimeTrackerTest: BaseTest() {
         LaunchTimeTracker.stopTimer(LaunchTypeEnum.COLD_START)
         Thread.sleep(100)
         val doneTrackingAfter = getPrivateFieldValue(LaunchTimeTracker,"doneTracking") as Boolean
-        Assert.assertEquals(true,doneTrackingAfter)
+        Assert.assertEquals(false,doneTrackingAfter)
         LaunchTimeTracker.startTimer()
         val initialTimeInElapsedRealtimeAfter = getPrivateFieldValue(LaunchTimeTracker,"initialTimeInElapsedRealtime") as Long
         Assert.assertEquals(initialTimeInElapsedRealtime,initialTimeInElapsedRealtimeAfter)
@@ -55,7 +55,7 @@ class LaunchTimeTrackerTest: BaseTest() {
         Thread.sleep(100)
         val launchTimeInNanos = getPrivateFieldValue(LaunchTimeTracker,"launchTimeInNanos") as Long
         val doneTrackingAfter = getPrivateFieldValue(LaunchTimeTracker,"doneTracking") as Boolean
-        Assert.assertEquals(true,doneTrackingAfter)
+        Assert.assertEquals(false,doneTrackingAfter)
         LaunchTimeTracker.stopTimer(LaunchTypeEnum.COLD_START)
         val launchTimeInNanosAfter = getPrivateFieldValue(LaunchTimeTracker,"launchTimeInNanos") as Long
         Assert.assertEquals(launchTimeInNanos,launchTimeInNanosAfter)

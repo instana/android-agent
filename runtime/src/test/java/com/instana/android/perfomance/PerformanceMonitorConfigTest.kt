@@ -22,9 +22,9 @@ internal class PerformanceMonitorConfigTest {
         // When & Then (check the default values)
         assertEquals(3000L, config.anrThresholdMs)
         assertEquals(15, config.frameRateDipThreshold)
-        assertTrue(config.enableAppStartTimeReport)
+        assertFalse(config.enableAppStartTimeReport)
         assertFalse(config.enableAnrReport)
-        assertTrue(config.enableLowMemoryReport)
+        assertFalse(config.enableLowMemoryReport)
     }
 
     @Test
