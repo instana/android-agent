@@ -1,17 +1,23 @@
 Changelog
 ==========
+## Version 6.1.2
+
+_2024-03-02_
+
+- Added useFeature for performance and drop metrics
+
 ## Version 6.1.1
 
 _2024-01-28_
 
 - Added logic for calculating network usage details
 
-_2025-2-11_
+_2025-02-11_
 
 - New beacon type added for drop beacon
 - New beacon type and sub type support for performance beacon
 
-_2025-2-17_
+_2025-02-17_
 
 - Added RateLimits feature to customize beacon transmission frequency.
 

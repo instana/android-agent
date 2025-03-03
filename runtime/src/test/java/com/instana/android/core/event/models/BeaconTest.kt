@@ -103,6 +103,33 @@ class BeaconTest: BaseTest() {
         assert(customEvent.toString().contains("uf\tc"))
     }
 
+
+    @Test
+    fun `test beacons class with setMobileFeatures list is been added with perf and drop`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val customEvent = Beacon.newCustomEvent(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = Instana.sessionId?:"test",
+            view = "null",
+            meta = mapOf(),
+            startTime = 9413,
+            duration = 7629,
+            backendTraceId = "null",
+            error = null,
+            name = "Raymond Griffith",
+            customMetric = null
+        )
+        customEvent.setMobileFeatures(listOf(MobileFeature.CRASH,MobileFeature.LOW_MEMORY,MobileFeature.DROP_BEACON,MobileFeature.ANR))
+        assert(customEvent.toString().contains("uf\tc,lm,db,anr"))
+    }
+
+
     @Test
     fun `test beacons class with BatchSize is been added`(){
         val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)

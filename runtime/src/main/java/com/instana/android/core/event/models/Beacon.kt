@@ -94,6 +94,9 @@ internal class Beacon private constructor(
             val features = mutableListOf<MobileFeature>()
             if (enableCrashReporting) features += MobileFeature.CRASH
             if (autoCaptureScreenNames) features += MobileFeature.AUTO_CAPTURE_SCREEN_NAME
+            if (performanceMonitorConfig.enableAnrReport) features += MobileFeature.ANR
+            if (performanceMonitorConfig.enableLowMemoryReport) features += MobileFeature.LOW_MEMORY
+            if (dropBeaconReporting) features += MobileFeature.DROP_BEACON
             if (features.isNotEmpty()) setMobileFeatures(features)
         }
     }
@@ -256,8 +259,8 @@ internal class Beacon private constructor(
      *
      * For example: c for crash
      */
-    fun setMobileFeatures(@Size(max = 15) value: List<MobileFeature>) {
-        stringMap["uf"] = value.take(15).joinToString(separator = ",") { it.internalType }
+    fun setMobileFeatures(@Size(max = 50) value: List<MobileFeature>) {
+        stringMap["uf"] = value.take(50).joinToString(separator = ",") { it.internalType }
     }
 
     /**

@@ -10,7 +10,10 @@ package com.instana.android.core.event.models
  * Any new features requiring identification should be included here with their corresponding internalType, following the
  * agreement with the backend.
  */
-enum class MobileFeature(val internalType: String) {
+internal enum class MobileFeature(val internalType: String) {
     CRASH("c"),
-    AUTO_CAPTURE_SCREEN_NAME("sn")
+    AUTO_CAPTURE_SCREEN_NAME("sn"),
+    DROP_BEACON("db"),
+    ANR("anr"),
+    LOW_MEMORY("lm")
 }
