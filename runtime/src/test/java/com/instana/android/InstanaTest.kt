@@ -528,6 +528,18 @@ class InstanaTest : BaseTest() {
         Instana.viewMeta.clear()
     }
 
+    @Test
+    fun `test create new session from active session`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setupInternal(app, config = config, hybridAgentOptions = HybridAgentOptions("hyID","1.0.4"))
+        val oldSessionId = Instana.sessionId
+        Instana.createNewSession()
+        val newSessionId = Instana.sessionId
+        Assert.assertNotEquals(oldSessionId,newSessionId)
+        resetConfig()
+    }
+
     private fun resetConfig(){
         Instana.config = null
         Instana.workManager = null

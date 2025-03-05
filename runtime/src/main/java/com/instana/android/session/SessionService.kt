@@ -51,9 +51,8 @@ class SessionService(
             meta = Instana.meta.getAll(),
         )
 
-        Instana.sessionId = sessionId
-
-        Logger.i("Session started with: `id` $sessionId")
         manager.queue(session)
+        Instana.sessionId = sessionId
+        Logger.i("Session started with: `id` $sessionId")
     }
 }

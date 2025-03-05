@@ -309,6 +309,16 @@ object Instana {
         avoidStrictModeFalsePositives()
     }
 
+    fun createNewSession(){
+        app?.let { app ->
+            config?.let { config->
+            workManager?.let {  workManager->
+                    sessionService = SessionService(app,workManager,config)
+                }
+            }
+        }
+    }
+
     /**
      * Initialize Instana
      */

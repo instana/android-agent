@@ -2,6 +2,10 @@ Changelog
 ==========
 ## Version 6.1.2
 
+_2024-02-27_
+
+- API added to manually create the sessionStart.
+
 _2024-03-02_
 
 - Added useFeature for performance and drop metrics
