@@ -111,7 +111,12 @@ class InstanaConfig
      *     - 2500 beacons per 5 minutes
      *     - 100 beacons per 10 seconds
      */
-    var rateLimits:RateLimits = RateLimits.DEFAULT_LIMITS
+    var rateLimits:RateLimits = RateLimits.DEFAULT_LIMITS,
+
+    /**
+     * When enabled, this prevents beacons older than 15 minutes (saved while the device was offline) from being sent to the backend.
+     */
+    var deleteOldBeacons:Boolean = false,
 ) {
 
     val breadcrumbsBufferSize: Int = 20

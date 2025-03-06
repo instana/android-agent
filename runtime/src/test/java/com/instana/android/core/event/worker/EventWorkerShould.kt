@@ -276,4 +276,18 @@ class EventWorkerShould : BaseTest() {
         Assert.assertEquals(result.size,3000)
     }
 
+    @Test
+    fun `test if removeOldFiles works with older time than 15 minutes`(){
+        val directory = createListOfFiles("directory",3000,20).toTypedArray()
+        val result = invokePrivateMethod3(eventWorker,"removeOldFiles",directory,Array<File>::class.java,15,Int::class.java) as Array<File>
+        Assert.assertEquals(result.size,2980)
+    }
+
+    @Test
+    fun `test if removeOldFiles works within 15 minutes files`(){
+        val directory = createListOfFiles("directory",3000,0).toTypedArray()
+        val result = invokePrivateMethod3(eventWorker,"removeOldFiles",directory,Array<File>::class.java,15,Int::class.java) as Array<File>
+        Assert.assertEquals(result.size,3000)
+    }
+
 }

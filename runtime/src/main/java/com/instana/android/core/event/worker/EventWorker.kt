@@ -145,7 +145,10 @@ open class EventWorker(
         directory: File, limit: Int,
     ): Pair<String, Array<File>> {
         val files = directory.listFiles() ?: emptyArray()
-        val filteredFileList = staleBeaconsRemover(files)
+        var filteredFileList = staleBeaconsRemover(files)
+        if(Instana.config?.deleteOldBeacons == true){
+            filteredFileList = removeOldFiles(filteredFileList);
+        }
         val sb = StringBuffer()
         var retFiles: Array<File> = arrayOf()
         val meta = instanaManager?.slowSendStartTime?.toString()
@@ -245,6 +248,23 @@ open class EventWorker(
             files
         }
     }
+
+    /**
+     * Adding 15 minutes as the backend will update the timestamp if the clock-skew is more than 30 minutes
+     */
+    private fun removeOldFiles(files: Array<File>, minutes: Int = 15): Array<File> {
+        val cutoffTime = System.currentTimeMillis() - minutes * 60 * 1000
+        return files.filter {
+            if (it.lastModified() < cutoffTime) {
+                val isDeleted = it.delete()
+                Logger.i(if (isDeleted) "Deleted file: ${it.name}" else "Failed to delete file: ${it.name}")
+                false
+            } else {
+                true
+            }
+        }.toTypedArray()
+    }
+
 
 
 }

@@ -10,6 +10,10 @@ _2024-03-02_
 
 - Added useFeature for performance and drop metrics
 
+_2024-03-05_
+
+- Added `deleteOldBeacons` feature to remove older beacons.
+
 ## Version 6.1.1
 
 _2024-01-28_
