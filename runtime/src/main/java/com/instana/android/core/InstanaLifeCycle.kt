@@ -44,7 +44,9 @@ class InstanaLifeCycle(
             application.registerActivityLifecycleCallbacks(InstanaActivityLifecycleCallbacks())
             registerFragmentCallbacks(application)
         }
-        application.startService(Intent(application, AppLifecycleIdentificationService::class.java))
+        if(Instana.config?.enableNetworkUsageAnalytics == true && !backgrounded){
+            application.startService(Intent(application, AppLifecycleIdentificationService::class.java))
+        }
     }
 
     override fun onLowMemory() {

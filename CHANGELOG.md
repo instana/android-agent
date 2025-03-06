@@ -13,6 +13,7 @@ _2024-03-02_
 _2024-03-05_
 
 - Added `deleteOldBeacons` feature to remove older beacons.
+- Added read/write locks for thread safety in MaxCapacityMap.
 
 ## Version 6.1.1
 
