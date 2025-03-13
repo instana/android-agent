@@ -1011,4 +1011,30 @@ class BeaconTest: BaseTest() {
         assert(performance.toString().contains("aws\t0").not())
         assert(performance.toString().contains("ahs\t24"))
     }
+
+    @Test
+    fun `test beacons class contains the tdt trust device timing when the config is true`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, trustDeviceTiming = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        Instana.config = config
+        val customEvent = Beacon.newCustomEvent(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = Instana.sessionId?:"test",
+            view = "null",
+            meta = mapOf(),
+            startTime = 9413,
+            duration = 7629,
+            backendTraceId = "null",
+            error = null,
+            name = "Raymond Griffith",
+            customMetric = null
+        )
+        Instana.config = null
+        assert(customEvent.toString().contains("tdt\t1"))
+    }
 }

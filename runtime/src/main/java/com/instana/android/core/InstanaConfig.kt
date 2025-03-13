@@ -117,6 +117,12 @@ class InstanaConfig
      * When enabled, this prevents beacons older than 15 minutes (saved while the device was offline) from being sent to the backend.
      */
     var deleteOldBeacons:Boolean = false,
+
+    /**
+     * When enabled, the backend will consider the device's (beacon creation) time as the actual time, rather than updating it to the ingestion time
+     * (the time the beacon arrived at the server). If the beacon is received after 30 minutes, the ingestion time will be used instead.
+     */
+    var trustDeviceTiming:Boolean = false,
 ) {
 
     //This need to be provided in Performance config If the n/w analytic is need to be

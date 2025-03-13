@@ -98,6 +98,7 @@ internal class Beacon private constructor(
             if (performanceMonitorConfig.enableLowMemoryReport) features += MobileFeature.LOW_MEMORY
             if (dropBeaconReporting) features += MobileFeature.DROP_BEACON
             if (features.isNotEmpty()) setMobileFeatures(features)
+            if (trustDeviceTiming) setTrustDeviceTiming()
         }
     }
 
@@ -622,6 +623,15 @@ internal class Beacon private constructor(
      */
     fun setUsedMb(@IntRange(from = 1) value: Long) {
         longMap["umb"] = value
+    }
+
+    /**
+     * This method is invoked only when InstanaConfig.trustDeviceTiming is enabled.
+     * The value is set to 1 to minimize bandwidth usage and it helps the backend
+     * determine whether to trust the device's time.
+     */
+    fun setTrustDeviceTiming(){
+        intMap["tdt"] = 1
     }
 
     /**

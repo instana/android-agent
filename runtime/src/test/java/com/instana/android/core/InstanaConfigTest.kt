@@ -84,6 +84,7 @@ class InstanaConfigTest {
         assertEquals(Platform.ANDROID.internalType, config.hybridAgentId)
         assertEquals("", config.hybridAgentVersion)
         assertEquals(RateLimits.DEFAULT_LIMITS,config.rateLimits)
+        assertFalse(config.trustDeviceTiming)
     }
 
     @Test

@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.1.3
+
+_2024-03-12_
+
+- Added `trustDeviceTiming` configuration option for backend to trust the device timing
+
 ## Version 6.1.2
 
 _2024-02-27_
