@@ -1,10 +1,12 @@
 Changelog
 ==========
-## Version 6.1.3
+## Version 6.2.0
 
 _2024-03-12_
 
 - Added `trustDeviceTiming` configuration option for backend to trust the device timing
+- Enabled App Start Time by default, so a new metric for cold start time will now be sent.
+- Support for Android vitals
 
 ## Version 6.1.2
 

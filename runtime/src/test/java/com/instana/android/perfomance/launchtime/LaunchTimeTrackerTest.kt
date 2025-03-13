@@ -7,8 +7,12 @@
 package com.instana.android.perfomance.launchtime
 
 import com.instana.android.BaseTest
+import com.instana.android.Instana
+import com.instana.android.InstanaTest
+import com.instana.android.core.InstanaConfig
 import com.instana.android.performance.launchtime.LaunchTimeTracker
 import com.instana.android.performance.launchtime.LaunchTypeEnum
+import com.instana.android.session.SessionService
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -23,6 +27,10 @@ class LaunchTimeTrackerTest: BaseTest() {
     }
     @Test
     fun `test startTimer should start and set initialTimeInElapsedRealtime to some value`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        Instana.config = config
         val doneTracking = getPrivateFieldValue(LaunchTimeTracker,"doneTracking") as Boolean
         Assert.assertEquals(false,doneTracking)
         LaunchTimeTracker.startTimer()
@@ -30,7 +38,8 @@ class LaunchTimeTrackerTest: BaseTest() {
         LaunchTimeTracker.stopTimer(LaunchTypeEnum.COLD_START)
         Thread.sleep(100)
         val doneTrackingAfter = getPrivateFieldValue(LaunchTimeTracker,"doneTracking") as Boolean
-        Assert.assertEquals(false,doneTrackingAfter)
+        Assert.assertEquals(true,doneTrackingAfter)
+        Instana.config = null
     }
 
     @Test
@@ -49,16 +58,22 @@ class LaunchTimeTrackerTest: BaseTest() {
 
     @Test
     fun `test stopTimer should not work if already doneTracking`(){
+        //setPrivateField(LaunchTimeTracker,"doneTracking",false)
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        Instana.config = config
         LaunchTimeTracker.startTimer()
         Thread.sleep(100)
         LaunchTimeTracker.stopTimer(LaunchTypeEnum.COLD_START)
         Thread.sleep(100)
         val launchTimeInNanos = getPrivateFieldValue(LaunchTimeTracker,"launchTimeInNanos") as Long
         val doneTrackingAfter = getPrivateFieldValue(LaunchTimeTracker,"doneTracking") as Boolean
-        Assert.assertEquals(false,doneTrackingAfter)
+        Assert.assertEquals(true,doneTrackingAfter)
         LaunchTimeTracker.stopTimer(LaunchTypeEnum.COLD_START)
         val launchTimeInNanosAfter = getPrivateFieldValue(LaunchTimeTracker,"launchTimeInNanos") as Long
         Assert.assertEquals(launchTimeInNanos,launchTimeInNanosAfter)
+        Instana.config = null
     }
 
 

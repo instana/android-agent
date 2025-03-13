@@ -46,13 +46,13 @@ allprojects {
 In your module (app-level) Gradle file (usually `app/build.gradle`):
 ```groovy
 dependencies {
-    implementation 'com.instana:android-agent-runtime:6.1.3'
+    implementation 'com.instana:android-agent-runtime:6.2.0'
 }
 ```
 While using kotlin-scripts, In (app-level) Gradle file (usually `app/build.gradle.kts`):
 ```groovy
 dependencies {
-  implementation("com.instana:android-agent-runtime:6.1.3")
+  implementation("com.instana:android-agent-runtime:6.2.0")
 }
 ```
 
@@ -79,7 +79,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.instana:android-agent-plugin:6.1.3"
+        classpath "com.instana:android-agent-plugin:6.2.0"
     }
 }
 ```
@@ -87,7 +87,7 @@ While using kotlin-scripts, In (project-level) Gradle file (usually `/build.grad
 ```groovy
 buildscript {
   dependencies {
-    classpath("com.instana:android-agent-plugin:6.1.3")
+    classpath("com.instana:android-agent-plugin:6.2.0")
   }
 }
 ```
