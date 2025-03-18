@@ -540,6 +540,21 @@ class InstanaTest : BaseTest() {
         resetConfig()
     }
 
+    @Test
+    fun `test getApplication fun should return if exists`(){
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setupInternal(app, config = config, hybridAgentOptions = HybridAgentOptions("hyID","1.0.4"))
+        Assert.assertEquals(Instana.getApplication(),app)
+        resetConfig()
+    }
+
+    @Test
+    fun `test getApplication fun should return null if does not exists`(){
+        Assert.assertEquals(Instana.getApplication(),null)
+        resetConfig()
+    }
+
     private fun resetConfig(){
         Instana.config = null
         Instana.workManager = null

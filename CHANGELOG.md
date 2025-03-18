@@ -8,6 +8,10 @@ _2024-03-12_
 - Enabled App Start Time by default, so a new metric for cold start time will now be sent.
 - Support for Android vitals
 
+_2024-03-17_
+
+- Added current app state identifier logic
+
 ## Version 6.1.2
 
 _2024-02-27_

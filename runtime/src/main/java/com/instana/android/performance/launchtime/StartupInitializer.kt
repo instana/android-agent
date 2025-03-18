@@ -6,16 +6,16 @@
 
 package com.instana.android.performance.launchtime
 
-import android.app.ActivityManager
 import android.content.ContentProvider
 import android.content.ContentValues
-import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import com.instana.android.core.util.ConstantsAndUtil.isAppInForeground
+import com.instana.android.performance.appstate.AppState
 
 internal class StartupInitializer : ContentProvider() {
     override fun onCreate(): Boolean {
-        if (context == null || !isAppInForeground()) {
+        if (context == null || isAppInForeground(context) != AppState.FOREGROUND) {
             LaunchTimeTracker.applicationStartedFromBackground = true
             return false
         } else {
@@ -42,12 +42,5 @@ internal class StartupInitializer : ContentProvider() {
 
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
         return 0
-    }
-
-    private fun isAppInForeground(): Boolean {
-        val activityManager = context?.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        val runningAppProcesses = activityManager.runningAppProcesses ?: return false
-        val myProcess = runningAppProcesses.firstOrNull { it.pid == android.os.Process.myPid() }
-        return myProcess?.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
     }
 }

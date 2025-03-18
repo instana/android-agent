@@ -11,6 +11,7 @@ import androidx.annotation.Size
 import androidx.annotation.VisibleForTesting
 import com.instana.android.Instana
 import com.instana.android.android.agent.BuildConfig
+import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 import com.instana.android.core.util.UniqueIdManager
 import com.instana.android.performance.PerformanceMetric
@@ -46,6 +47,11 @@ internal class Beacon private constructor(
         appProfile.appVersion?.run { setAppVersion(this) }
         appProfile.appBuild?.run { setAppBuild(this) }
         appProfile.appId?.run { setBundleIdentifier(this) }
+
+        // Current Foreground/Background detection
+        Instana.getApplication()?.takeIf { Instana.config?.performanceMonitorConfig?.enableAppStateDetection == true }?.let {
+            setCurrentAppStateValue(ConstantsAndUtil.isAppInForeground(it).value.toString())
+        }
 
         // Device
         deviceProfile.platform?.run { setPlatform(this) }
@@ -632,6 +638,13 @@ internal class Beacon private constructor(
      */
     fun setTrustDeviceTiming(){
         intMap["tdt"] = 1
+    }
+
+    /**
+     * Setting the current app state with every beacons `b`,`f`,`u` - background, foreground, unknown
+     */
+    fun setCurrentAppStateValue(@Size(max = 10) value: String){
+        stringMap["cas"] = value
     }
 
     /**

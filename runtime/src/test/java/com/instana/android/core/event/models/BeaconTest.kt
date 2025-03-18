@@ -11,6 +11,7 @@ import com.instana.android.Instana
 import com.instana.android.InstanaTest
 import com.instana.android.core.InstanaConfig
 import com.instana.android.performance.PerformanceMetric
+import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.session.SessionService
 import org.junit.Assert
 import org.junit.Before
@@ -1036,5 +1037,58 @@ class BeaconTest: BaseTest() {
         )
         Instana.config = null
         assert(customEvent.toString().contains("tdt\t1"))
+    }
+
+    @Test
+    fun `test beacons class should not contains the cas by default`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, trustDeviceTiming = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        Instana.config = config
+        val customEvent = Beacon.newCustomEvent(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = Instana.sessionId?:"test",
+            view = "null",
+            meta = mapOf(),
+            startTime = 9413,
+            duration = 7629,
+            backendTraceId = "null",
+            error = null,
+            name = "Raymond Griffith",
+            customMetric = null
+        )
+        Instana.config = null
+        Assert.assertFalse(customEvent.toString().contains("cas\t1"))
+    }
+    
+    @Test
+    fun `test setCurrentAppStateValue should set the value to beacon`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, trustDeviceTiming = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        Instana.config = config
+        val customEvent = Beacon.newCustomEvent(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = UserProfile(userId = null, userName = null, userEmail = null),
+            sessionId = Instana.sessionId?:"test",
+            view = "null",
+            meta = mapOf(),
+            startTime = 9413,
+            duration = 7629,
+            backendTraceId = "null",
+            error = null,
+            name = "Raymond Griffith",
+            customMetric = null
+        )
+        customEvent.setCurrentAppStateValue("f")
+        Instana.config = null
+        assert(customEvent.toString().contains("cas\tf"))
     }
 }

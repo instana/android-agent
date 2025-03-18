@@ -6,6 +6,7 @@
 package com.instana.android.core.util
 
 import android.Manifest
+import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageManager
@@ -23,6 +24,7 @@ import com.instana.android.core.event.models.ConnectionType
 import com.instana.android.core.event.models.EffectiveConnectionType
 import com.instana.android.core.event.models.Platform
 import com.instana.android.instrumentation.HTTPCaptureConfig
+import com.instana.android.performance.appstate.AppState
 import com.instana.android.view.ScreenAttributes
 import okhttp3.OkHttpClient
 import java.io.PrintWriter
@@ -37,8 +39,6 @@ object ConstantsAndUtil {
     const val EMPTY_STR = ""
 
     const val TRACKING_HEADER_KEY = "X-INSTANA-ANDROID"
-
-    const val EVENT_TYPE = "event.type"
 
     val runtime: Runtime by lazy {
         Runtime.getRuntime()
@@ -340,4 +340,20 @@ object ConstantsAndUtil {
         return sw.toString()
     }
 
+    internal fun isAppInForeground(context: Context?): AppState {
+        return try {
+            val activityManager = context?.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager?
+            val runningAppProcesses = activityManager?.runningAppProcesses ?: return AppState.BACKGROUND
+            val myProcess = runningAppProcesses?.firstOrNull { it.pid == android.os.Process.myPid() }
+            val isForeground = myProcess?.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+             if (isForeground){
+                AppState.FOREGROUND
+            }else{
+                AppState.BACKGROUND
+            }
+        }catch (e: Exception){
+            Logger.i("App State not identified! : ${e.localizedMessage}")
+            AppState.UN_IDENTIFIED
+        }
+    }
 }

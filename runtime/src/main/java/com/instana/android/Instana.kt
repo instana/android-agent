@@ -358,6 +358,10 @@ object Instana {
         }
     }
 
+    internal fun getApplication(): Application?{
+        return this.app
+    }
+
     private fun initProfiles(app: Application) {
         val appAndBuildVersion = ConstantsAndUtil.getAppVersionNameAndVersionCode(app)
         val viewportWidthAndHeight = ConstantsAndUtil.getViewportWidthAndHeight(app)

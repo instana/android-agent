@@ -40,7 +40,7 @@ internal object LaunchTimeTracker{
             appStartTimeMetric.let {
                 Instana.performanceReporterService?.sendPerformance(it)
             }
-            Logger.i("App Start Time with ${startType.value} is $value")//Need to report these data once backend is enabled
+            Logger.i("App Start Time with ${startType.value} is $value")
         }
     }
 }

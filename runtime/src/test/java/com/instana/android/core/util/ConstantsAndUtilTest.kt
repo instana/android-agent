@@ -6,6 +6,7 @@
 
 package com.instana.android.core.util
 
+import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.content.pm.PackageInfo
@@ -22,10 +23,13 @@ import com.instana.android.core.util.ConstantsAndUtil.toDaysInMillis
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import com.instana.android.instrumentation.HTTPMarkerShould
 import com.instana.android.instrumentation.InstrumentationService
+import com.instana.android.performance.appstate.AppState
+import junit.framework.TestCase.assertEquals
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
+import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
@@ -210,6 +214,67 @@ class ConstantsAndUtilTest:BaseTest() {
             "{\"key with space\": \"value with space\", \"keyWith\"Quotes\"\": \"valueWith\\Backslash\"}",
             result
         )
+    }
+
+    @Test
+    fun `test Is AppInForeground_Background`() {
+        // Mocking Context and ActivityManager
+        val context = mock(Context::class.java)
+        val activityManager = mock(ActivityManager::class.java)
+
+        // Creating a mock process info to simulate a background process
+        val processInfo = mock(ActivityManager.RunningAppProcessInfo::class.java)
+        processInfo.pid = android.os.Process.myPid()  // Simulate the current process
+        processInfo.importance = ActivityManager.RunningAppProcessInfo.IMPORTANCE_BACKGROUND
+
+        // Creating a list with a single mocked process (the current process)
+        val runningAppProcesses = listOf(processInfo)
+
+        // Simulate ActivityManager returning the list of running app processes
+        `when`(context.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(activityManager)
+        `when`(activityManager.runningAppProcesses).thenReturn(runningAppProcesses)
+
+        // Call method and verify result
+        val appState = ConstantsAndUtil.isAppInForeground(context)
+        assertEquals(AppState.BACKGROUND, appState)
+    }
+
+    @Test
+    fun `test Is AppInForeground_Foreground`() {
+        // Mocking Context and ActivityManager
+        val context = mock(Context::class.java)
+        val activityManager = mock(ActivityManager::class.java)
+
+        // Creating a mock process info to simulate a foreground process
+        val processInfo = mock(ActivityManager.RunningAppProcessInfo::class.java)
+        processInfo.pid = android.os.Process.myPid()  // Simulate the current process
+        processInfo.importance = ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+
+        // Creating a list with a single mocked process (the current process)
+        val runningAppProcesses = listOf(processInfo)
+
+        // Simulate ActivityManager returning the list of running app processes
+        `when`(context.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(activityManager)
+        `when`(activityManager.runningAppProcesses).thenReturn(runningAppProcesses)
+
+        // Call method and verify result
+        val appState = ConstantsAndUtil.isAppInForeground(context)
+        assertEquals(AppState.FOREGROUND, appState)
+    }
+
+    @Test
+    fun testIsAppInForeground_UnIdentified() {
+        // Mocking Context and ActivityManager
+        val context = mock(Context::class.java)
+        val activityManager = mock(ActivityManager::class.java)
+
+        // Simulating an exception in the method (this will return AppState.UN_IDENTIFIED)
+        `when`(context.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(activityManager)
+        `when`(activityManager.runningAppProcesses).thenThrow(RuntimeException("Mocked Exception"))
+
+        // Call method and verify result
+        val appState = ConstantsAndUtil.isAppInForeground(context)
+        assertEquals(AppState.UN_IDENTIFIED, appState)
     }
 
 }
