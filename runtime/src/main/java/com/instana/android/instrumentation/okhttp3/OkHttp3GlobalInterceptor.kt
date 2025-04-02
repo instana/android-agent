@@ -51,7 +51,12 @@ object OkHttp3GlobalInterceptor : Interceptor {
                 request = if (marker != null) {
                     Logger.d("Automatically marked OkHttp3 request with: `url` $logUrl")
                     httpMarkers[marker.headerValue()] = marker
-                    chain.request().newBuilder().header(TRACKING_HEADER_KEY, marker.headerValue()).build()
+                    chain.request().newBuilder().apply {
+                        header(TRACKING_HEADER_KEY, marker.headerValue())
+                        if (Instana.config?.enableW3CHeaders == true) {
+                            ConstantsAndUtil.generateW3CHeaders().forEach { (key, value) -> header(key, value) }
+                        }
+                    }.build()
                 } else {
                     Logger.e("Failed to automatically mark OkHttp3 request with: `url` $logUrl")
                     intercepted

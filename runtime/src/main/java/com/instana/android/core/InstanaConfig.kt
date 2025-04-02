@@ -123,6 +123,12 @@ class InstanaConfig
      * (the time the beacon arrived at the server). If the beacon is received after 30 minutes, the ingestion time will be used instead.
      */
     var trustDeviceTiming:Boolean = false,
+
+    /**
+     * If true, this option adds W3C-compliant headers to the request headers of all outgoing application requests,
+     * ensuring compatibility with W3C tracing standards.
+     */
+    var enableW3CHeaders: Boolean = false
 ) {
 
     //This need to be provided in Performance config If the n/w analytic is need to be

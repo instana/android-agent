@@ -35,6 +35,9 @@ class UrlConnectionInstrumentation {
                 val header = connection.getRequestProperty(TRACKING_HEADER_KEY)
                 val url = connection.url.toString()
 
+                Instana.config?.takeIf { it.enableW3CHeaders }?.let {
+                    ConstantsAndUtil.generateW3CHeaders().forEach { (key, value) -> connection.setRequestProperty(key, value) }
+                }
                 if (isAutoEnabled && !checkTag(header) && !isLibraryCallBoolean(url) && !isBlacklistedURL(url)) {
                     val marker = Instana.startCapture(url = url)
                     if (marker != null) {

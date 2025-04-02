@@ -40,6 +40,10 @@ object ConstantsAndUtil {
 
     const val TRACKING_HEADER_KEY = "X-INSTANA-ANDROID"
 
+    const val TRACE_PARENT = "traceparent"
+
+    const val TRACE_STATE = "tracestate"
+
     val runtime: Runtime by lazy {
         Runtime.getRuntime()
     }
@@ -355,5 +359,25 @@ object ConstantsAndUtil {
             Logger.i("App State not identified! : ${e.localizedMessage}")
             AppState.UN_IDENTIFIED
         }
+    }
+
+    /**
+     * The following code generate W3C trace context headers, ensuring compatibility with OpenTelemetry (OTel).
+     * The "03" flag at the end indicates that the trace was randomly generated and is not sampled from the frontend.
+     * If the trace generation method changes in the future, remove the "03" flag from the end.
+     * The format is made similar to the weasel implementation
+     * References:
+     * https://www.w3.org/TR/trace-context-2/#trace-flags
+     * https://www.w3.org/TR/trace-context-2/#random-trace-id-flag
+     * Instana Trace header support details:
+     * https://github.ibm.com/instana/technical-documentation/tree/master/tracing/specification#incoming-correlation-part-plus-w3c-trace-context-specification-headers
+     */
+    internal fun generateW3CHeaders(): Map<String, String> {
+        val traceState = UniqueIdManager.generateUniqueIdImpl()
+        val traceParent = "00-0000000000000000$traceState-$traceState-03"
+        return mapOf(
+            TRACE_PARENT to traceParent,
+            TRACE_STATE to traceState
+        )
     }
 }

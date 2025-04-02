@@ -14,6 +14,7 @@ import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.models.ConnectionProfile
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.ConstantsAndUtil.EMPTY_STR
+import com.instana.android.core.util.ConstantsAndUtil.TRACE_STATE
 import com.instana.android.core.util.ConstantsAndUtil.getCarrierName
 import com.instana.android.core.util.ConstantsAndUtil.getCellularConnectionType
 import com.instana.android.core.util.ConstantsAndUtil.getConnectionType
@@ -160,7 +161,7 @@ class HTTPMarker(
             responseCode = null,
             encodedResponseSizeBytes = null,
             decodedResponseSizeBytes = null,
-            backendTraceId = null,
+            backendTraceId = if(config.enableW3CHeaders == true) request.header(TRACE_STATE) else null,
             errorMessage = error.toString(),
             headers = headers
         )
@@ -314,11 +315,18 @@ class HTTPMarker(
         Logger.i("HttpRequest finished with url: $url")
         manager.queue(beacon)
     }
-
+    /**
+     * If the w3cheaders are enabled then the generated tracestate should be send to instana backend
+     * as the backendTraceId else need to send the Server-Timing headers
+     */
     private fun getBackendTraceId(connection: HttpURLConnection): String? {
         return try {
-            connection.getHeaderField(backendTraceIdHeaderKey)?.let { it ->
-                backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
+            if(config.enableW3CHeaders){
+                connection.requestProperties[TRACE_STATE]?.toString()?.takeIf { it.isNotEmpty() }
+            }else{
+                connection.getHeaderField(backendTraceIdHeaderKey)?.let { it ->
+                    backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
+                }
             }
         }catch (e:NullPointerException){
             Logger.i("${e.message} occurred while using java.net.URLConnection.getHeaderField")
@@ -331,8 +339,12 @@ class HTTPMarker(
 
     private fun getBackendTraceId(response: Response): String? {
         return try {
-            response.header(backendTraceIdHeaderKey)?.let { it ->
-                backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
+            if(config.enableW3CHeaders) {
+                response.request().header(TRACE_STATE)
+            }else {
+                response.header(backendTraceIdHeaderKey)?.let { it ->
+                    backendTraceIdParser.matchEntire(it)?.groupValues?.get(1)
+                }
             }
         }catch (e:Exception){
             Logger.i("Occurred ${e.message} while retrieving backendTraceId from response headers")

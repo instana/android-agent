@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.2.1
+
+_2024-03-27_
+
+- Added `enableW3CHeaders` configuration to support the W3CHeader based trace propagation support from agent
+
 ## Version 6.2.0
 
 _2024-03-12_
