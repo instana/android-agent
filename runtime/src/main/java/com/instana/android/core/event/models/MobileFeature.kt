@@ -15,5 +15,6 @@ internal enum class MobileFeature(val internalType: String) {
     AUTO_CAPTURE_SCREEN_NAME("sn"),
     DROP_BEACON("db"),
     ANR("anr"),
-    LOW_MEMORY("lm")
+    LOW_MEMORY("lm"),
+    W3C_HEADER("ot") //OpenTelemetry based
 }

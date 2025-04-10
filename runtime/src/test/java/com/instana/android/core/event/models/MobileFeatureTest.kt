@@ -18,5 +18,6 @@ class MobileFeatureTest {
         Assert.assertEquals("sn",MobileFeature.AUTO_CAPTURE_SCREEN_NAME.internalType)
         Assert.assertEquals("lm",MobileFeature.LOW_MEMORY.internalType)
         Assert.assertEquals("db",MobileFeature.DROP_BEACON.internalType)
+        Assert.assertEquals("ot", MobileFeature.W3C_HEADER.internalType)
     }
 }

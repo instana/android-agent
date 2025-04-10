@@ -102,6 +102,7 @@ internal class Beacon private constructor(
             if (autoCaptureScreenNames) features += MobileFeature.AUTO_CAPTURE_SCREEN_NAME
             if (performanceMonitorConfig.enableAnrReport) features += MobileFeature.ANR
             if (performanceMonitorConfig.enableLowMemoryReport) features += MobileFeature.LOW_MEMORY
+            if (enableW3CHeaders) features += MobileFeature.W3C_HEADER
             if (dropBeaconReporting) features += MobileFeature.DROP_BEACON
             if (features.isNotEmpty()) setMobileFeatures(features)
             if (trustDeviceTiming) setTrustDeviceTiming()
