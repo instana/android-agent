@@ -222,4 +222,49 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         verify(mockRequest, never()).headers()
     }
 
+    @Test(expected = IOException::class)
+    fun `test intercept propagates exception when autoRetryOnNetworkException is false`() {
+        config.httpCaptureConfig = HTTPCaptureConfig.AUTO
+        config.autoRetryOnNetworkException = false
+        Instana.setup(app, config)
+        
+        `when`(mockChain.request()).thenReturn(mockRequest)
+        `when`(mockChain.request().headers()).thenReturn(mockHeaders)
+        `when`(mockChain.request().newBuilder()).thenReturn(mockBuilders)
+        `when`(mockHeaders.toMap()).thenReturn(emptyMap())
+        `when`(mockRequest.url()).thenReturn(HttpUrl.parse("https://www.example.com"))
+        `when`(mockRequest.header(TRACKING_HEADER_KEY)).thenReturn(null)
+        `when`(mockChain.proceed(any(Request::class.java))).thenThrow(IOException("Network error"))
+        
+        // This should throw IOException
+        OkHttp3GlobalInterceptor.intercept(mockChain)
+    }
+
+    @Test
+    fun `test intercept retries request when autoRetryOnNetworkException is true`() {
+        config.httpCaptureConfig = HTTPCaptureConfig.AUTO
+        config.autoRetryOnNetworkException = true
+        Instana.setup(app, config)
+        
+        `when`(mockChain.request()).thenReturn(mockRequest)
+        `when`(mockChain.request().headers()).thenReturn(mockHeaders)
+        `when`(mockChain.request().newBuilder()).thenReturn(mockBuilders)
+        `when`(mockHeaders.toMap()).thenReturn(emptyMap())
+        `when`(mockRequest.url()).thenReturn(HttpUrl.parse("https://www.example.com"))
+        `when`(mockRequest.header(TRACKING_HEADER_KEY)).thenReturn(null)
+        `when`(mockBuilders.header(any(String::class.java), any(String::class.java))).thenReturn(mockBuilders)
+        `when`(mockBuilders.build()).thenReturn(mockRequest)
+        
+        // First call throws exception, second call succeeds
+        `when`(mockChain.proceed(any(Request::class.java)))
+            .thenThrow(IOException("Network error"))
+            .thenReturn(mockResponse)
+        
+        val result = OkHttp3GlobalInterceptor.intercept(mockChain)
+        
+        // Verify chain.proceed was called twice (once for error, once for retry)
+        verify(mockChain, org.mockito.Mockito.times(2)).proceed(any(Request::class.java))
+        assert(result == mockResponse)
+    }
+
 }
