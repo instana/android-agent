@@ -128,7 +128,14 @@ class InstanaConfig
      * If true, this option adds W3C-compliant headers to the request headers of all outgoing application requests,
      * ensuring compatibility with W3C tracing standards.
      */
-    var enableW3CHeaders: Boolean = false
+    var enableW3CHeaders: Boolean = false,
+
+    /**
+     * When enabled, automatic retries will be performed when exceptions occur during HTTP requests.
+     * When disabled, exceptions will propagate normally without retrying.
+     * Default is false to prevent unexpected duplicate requests.
+     */
+    var autoRetryOnNetworkException: Boolean = false
 ) {
 
     //This need to be provided in Performance config If the n/w analytic is need to be

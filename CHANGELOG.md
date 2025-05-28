@@ -1,5 +1,13 @@
 Changelog
 ==========
+## Unreleased
+
+_TBD_
+
+- Fixed duplicate network request issue in OkHttp3GlobalInterceptor
+- Added `autoRetryOnNetworkException` configuration flag to control automatic retry behavior
+- Default behavior now prevents unexpected duplicate requests by disabling automatic retries
+
 ## Version 6.2.1
 
 _2024-03-27_

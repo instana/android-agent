@@ -84,8 +84,15 @@ object OkHttp3GlobalInterceptor : Interceptor {
                 finish(request, e)
                 httpMarkers.remove(marker.headerValue(), marker)
             }
-            // Proceed with the original request to avoid throwing
-            chain.proceed(intercepted)
+            
+            // Only retry if the flag is enabled
+            if (Instana.config?.autoRetryOnNetworkException == true) {
+                // Proceed with the original request to retry
+                chain.proceed(intercepted)
+            } else {
+                // Otherwise rethrow the exception to let it propagate normally
+                throw e
+            }
         }
     }
 
