@@ -39,6 +39,12 @@ class ViewChangeService(
             connectionType = ConstantsAndUtil.getConnectionType(context, cm),
             effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(context, cm, tm)
         )
+
+        val screenRenderingTime = Instana.viewMeta.get(ScreenAttributes.SCREEN_RENDERING_TIME.value)
+            ?.takeIf { it != "0" && it != "null" }
+            ?.toLongOrNull()
+            ?: 0L
+
         val view = Beacon.newViewChange(
             appKey = appKey,
             appProfile = Instana.appProfile,
@@ -48,7 +54,8 @@ class ViewChangeService(
             sessionId = sessionId,
             view = viewName,
             meta = Instana.meta.getAll(),
-            viewMeta = Instana.viewMeta.getAll().validateAllKeys()
+            viewMeta = Instana.viewMeta.getAll().validateAllKeys(),
+            duration = screenRenderingTime
         )
 
         Logger.i("View changed with: `name` $viewName")

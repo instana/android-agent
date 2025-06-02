@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.2.2
+
+_2024-05-06_
+
+- Added screen rendering time support along with view change
+
 ## Version 6.2.1
 
 _2024-03-27_

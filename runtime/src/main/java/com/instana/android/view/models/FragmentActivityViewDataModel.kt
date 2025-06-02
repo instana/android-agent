@@ -8,5 +8,6 @@ data class FragmentActivityViewDataModel(
     val fragmentLocalPathName:String?=null,
     val customFragmentScreenName:String?=null,
     val activeFragmentList:String?=null,
-    val fragmentHierarchyType:String?=null
+    val fragmentHierarchyType:String?=null,
+    val screenRenderingDuration:Long=0L
 )

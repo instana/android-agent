@@ -6,6 +6,7 @@
 
 package com.instana.android.fragments
 
+import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
@@ -17,6 +18,13 @@ import com.instana.android.view.VisibleScreenNameTracker
 
 
 internal class FragmentLifecycleCallbacks : FragmentManager.FragmentLifecycleCallbacks() {
+
+    private val fragmentStartTimes = mutableMapOf<Fragment, Long>()
+
+    override fun onFragmentPreAttached(fm: FragmentManager, f: Fragment, context: Context) {
+        super.onFragmentPreAttached(fm, f, context)
+        fragmentStartTimes[f] = System.currentTimeMillis()
+    }
 
     private val fragmentStack = arrayListOf<Fragment>()
     override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
@@ -42,13 +50,16 @@ internal class FragmentLifecycleCallbacks : FragmentManager.FragmentLifecycleCal
                 if (it != simpleFragmentClassName) "$it : $simpleFragmentClassName" else simpleFragmentClassName
             } ?: simpleFragmentClassName
         }
+        val startTime = fragmentStartTimes.remove(f)  // Removes and returns start time if available
+        val duration = startTime?.let { System.currentTimeMillis() - it } ?: 0L
         VisibleScreenNameTracker.updateActivityFragmentViewData(
             VisibleScreenNameTracker.activityFragmentViewData.get()?.copy(
                 fragmentLocalPathName = f.getLocalPathName(),
                 fragmentClassName = simpleFragmentClassName,
                 customFragmentScreenName = label ?: f.findContentDescription() ?: simpleFragmentClassName,
                 activeFragmentList = fragmentNames,
-                fragmentHierarchyType = fragmentHierarchyType.toString()
+                fragmentHierarchyType = fragmentHierarchyType.toString(),
+                screenRenderingDuration = duration
             )
         )
     }

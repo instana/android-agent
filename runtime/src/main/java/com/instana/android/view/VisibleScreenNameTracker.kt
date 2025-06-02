@@ -50,10 +50,10 @@ internal object VisibleScreenNameTracker {
 
     private fun updateInitialViewMap(newValue: FragmentActivityViewDataModel?) {
         initialViewMap = mapOf(
-            ScreenAttributes.ACTIVITY_RESUME_TIME.value to System.nanoTime().toString(),
             ScreenAttributes.ACTIVITY_CLASS_NAME.value to "${newValue?.activityClassName}",
             ScreenAttributes.ACTIVITY_LOCAL_PATH_NAME.value to "${newValue?.activityLocalPathName}",
-            ScreenAttributes.ACTIVITY_SCREEN_NAME.value to "${newValue?.customActivityScreenName}"
+            ScreenAttributes.ACTIVITY_SCREEN_NAME.value to "${newValue?.customActivityScreenName}",
+            ScreenAttributes.SCREEN_RENDERING_TIME.value to "${newValue?.screenRenderingDuration}"
         )
         applyMetaForActivity(newValue)
         setViewName(newValue?.customActivityScreenName)
@@ -67,19 +67,19 @@ internal object VisibleScreenNameTracker {
 
     private fun applyMetaForActivity(newValue: FragmentActivityViewDataModel?){
         Instana.viewMeta.apply {
-            put(ScreenAttributes.ACTIVITY_RESUME_TIME.value, System.nanoTime().toString())
             put(ScreenAttributes.ACTIVITY_CLASS_NAME.value, "${newValue?.activityClassName}")
             put(ScreenAttributes.ACTIVITY_LOCAL_PATH_NAME.value, "${newValue?.activityLocalPathName}")
             put(ScreenAttributes.ACTIVITY_SCREEN_NAME.value, "${newValue?.customActivityScreenName}")
+            put(ScreenAttributes.SCREEN_RENDERING_TIME.value , "${newValue?.screenRenderingDuration}")
         }
     }
 
     private fun updateMetaForFragment(newValue: FragmentActivityViewDataModel?) {
         Instana.viewMeta.apply {
-            put(ScreenAttributes.FRAGMENT_RESUME_TIME.value, System.nanoTime().toString())
             put(ScreenAttributes.FRAGMENT_CLASS_NAME.value, "${newValue?.fragmentClassName}")
             put(ScreenAttributes.FRAGMENT_LOCAL_PATH_NAME.value, "${newValue?.fragmentLocalPathName}")
             put(ScreenAttributes.FRAGMENT_SCREEN_NAME.value, "${newValue?.customFragmentScreenName}")
+            put(ScreenAttributes.SCREEN_RENDERING_TIME.value , "${newValue?.screenRenderingDuration}")
         }
 
         if (!newValue?.activeFragmentList.isNullOrBlank()) {
@@ -101,7 +101,6 @@ internal object VisibleScreenNameTracker {
             remove(ScreenAttributes.FRAGMENT_CLASS_NAME.value)
             remove(ScreenAttributes.FRAGMENT_ACTIVE_SCREENS_LIST.value)
             remove(ScreenAttributes.FRAGMENT_LOCAL_PATH_NAME.value)
-            remove(ScreenAttributes.FRAGMENT_RESUME_TIME.value)
         }
     }
 }
@@ -113,10 +112,9 @@ internal enum class ScreenAttributes(val value: String) {
     ACTIVITY_CLASS_NAME("act.class.name"),
     ACTIVITY_LOCAL_PATH_NAME("act.local.path.name"),
     ACTIVITY_SCREEN_NAME("act.screen.name"),
-    ACTIVITY_RESUME_TIME("act.resume.time"),
     FRAGMENT_CLASS_NAME("frag.class.name"),
     FRAGMENT_LOCAL_PATH_NAME("frag.local.path.name"),
     FRAGMENT_SCREEN_NAME("frag.screen.name"),
     FRAGMENT_ACTIVE_SCREENS_LIST("frag.active.screen.list"),
-    FRAGMENT_RESUME_TIME("frag.resume.time"),
+    SCREEN_RENDERING_TIME("eum.screen.rendering.time")
 }

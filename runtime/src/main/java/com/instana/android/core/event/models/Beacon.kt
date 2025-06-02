@@ -800,9 +800,10 @@ internal class Beacon private constructor(
             sessionId: String,
             view: String,
             meta: Map<String, String>,
-            viewMeta:Map<String,String>
+            viewMeta:Map<String,String>,
+            duration: Long = 0
         ): Beacon {
-            return Beacon(BeaconType.VIEW_CHANGE, 0, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
+            return Beacon(BeaconType.VIEW_CHANGE, duration, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     setView(view)
                     for (it in viewMeta) { setInternalMeta(it.key, it.value) }
