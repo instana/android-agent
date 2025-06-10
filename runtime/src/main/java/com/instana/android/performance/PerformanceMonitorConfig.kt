@@ -23,6 +23,7 @@ class PerformanceMonitorConfig
     val enableAppStartTimeReport: Boolean = true,
     val enableAnrReport:Boolean = false,
     val enableLowMemoryReport:Boolean = false,
+    val enableBackgroundEnuReport: Boolean = false,
 ){
     internal val enableAppStateDetection: Boolean = false
 }

@@ -12,7 +12,7 @@ import android.net.TrafficStats
 import android.os.Build
 import com.instana.android.core.util.Logger
 
-internal class NetworkStatsHelper(private val appContext:Application) {
+internal class NetworkStatsHelper(private val appContext: Application) {
 
     // Get the package name of the current application
     private val packageName: String = appContext.packageName
@@ -64,51 +64,43 @@ internal class NetworkStatsHelper(private val appContext:Application) {
 
 
     fun calculateNetworkUsage(fromOnCreate: Boolean) {
-        val currentNetworkUsed = getAppNetworkUsage()
-        val currentTimeStamp = System.currentTimeMillis()
 
+        val currentNetworkUsed = getAppNetworkUsage()
         // Guard clause if network usage is invalid
         if (currentNetworkUsed == -1L) return
 
-        // If data is unavailable or reboot detected, save current network usage and time
+        // If data is unavailable or reboot detected, save current network usage
         if (shouldSaveInitialData(currentNetworkUsed)) {
-            saveNetworkUsage(currentNetworkUsed, currentTimeStamp, fromOnCreate)
+            networkUsageStorageHelper.resetNetworkUsage()
+            saveNetworkUsage(currentNetworkUsed, fromOnCreate)
             return
         }
 
-        // Calculate the network usage difference and time difference
-        val timeDiff = currentTimeStamp - networkUsageStorageHelper.getStartTime()
+        // Calculate the network usage difference
         val dataUsed = currentNetworkUsed - networkUsageStorageHelper.getDataUsed()
 
         // Save the current usage as a new baseline
-        saveNetworkUsage(currentNetworkUsed, currentTimeStamp, fromOnCreate)
+        saveNetworkUsage(currentNetworkUsed, fromOnCreate)
 
-        // Log and report the event
-        logAndReportNetworkUsage(fromOnCreate, dataUsed, timeDiff)
+        // report the event
+        reportNetworkUsage(fromOnCreate, dataUsed)
     }
 
     private fun shouldSaveInitialData(currentNetworkUsed: Long): Boolean {
-        return !networkUsageStorageHelper.isTimeDataAvailable() ||
-                networkUsageStorageHelper.isRebooted(currentNetworkUsed)
+        return networkUsageStorageHelper.getDataUsed() == 0L || networkUsageStorageHelper.isRebooted(currentNetworkUsed)
     }
 
-    private fun saveNetworkUsage(currentNetworkUsed: Long, currentTimeStamp: Long, fromOnCreate: Boolean) {
-        val saveMethod = if (fromOnCreate) {
-            // Use the regular save methods
-            networkUsageStorageHelper::saveDataUsed to networkUsageStorageHelper::saveStartTime
-        } else {
-            // Use immediate save methods for commit before the app destroy
-            networkUsageStorageHelper::saveDataUsedImmediate to networkUsageStorageHelper::saveStartTimeImmediate
+    private fun saveNetworkUsage(currentUsageBytes: Long, isFromOnCreate: Boolean) =
+        (if (isFromOnCreate) networkUsageStorageHelper::saveDataUsed else networkUsageStorageHelper::saveDataUsedImmediate)(currentUsageBytes)
+
+
+    private fun reportNetworkUsage(fromOnCreate: Boolean, dataUsed: Long) {
+        //Only save the data used if its background n/w usage
+        if (fromOnCreate) {
+            val backgroundDataUsedAlready = networkUsageStorageHelper.getBackgroundNetworkUsage()
+            networkUsageStorageHelper.saveBackgroundNetworkUsage(backgroundDataUsedAlready + dataUsed)
         }
-        saveMethod.first(currentNetworkUsed)
-        saveMethod.second(currentTimeStamp)
     }
-
-    private fun logAndReportNetworkUsage(fromOnCreate: Boolean, dataUsed: Long, timeDiff: Long) {
-        val logMessage = "$dataUsed Bytes used in last $timeDiff ms from ${if (fromOnCreate) "Background" else "Foreground"}"
-        Logger.i(logMessage)
-    }
-
 
 
 }

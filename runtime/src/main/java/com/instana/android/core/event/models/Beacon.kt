@@ -102,6 +102,7 @@ internal class Beacon private constructor(
             if (autoCaptureScreenNames) features += MobileFeature.AUTO_CAPTURE_SCREEN_NAME
             if (performanceMonitorConfig.enableAnrReport) features += MobileFeature.ANR
             if (performanceMonitorConfig.enableLowMemoryReport) features += MobileFeature.LOW_MEMORY
+            if (performanceMonitorConfig.enableBackgroundEnuReport && trustDeviceTiming) features += MobileFeature.BACKGROUND_ENU
             if (enableW3CHeaders) features += MobileFeature.W3C_HEADER
             if (dropBeaconReporting) features += MobileFeature.DROP_BEACON
             if (features.isNotEmpty()) setMobileFeatures(features)
@@ -900,6 +901,12 @@ internal class Beacon private constructor(
                         setPerformanceSubType(PerformanceSubType.OUT_OF_MEMORY.internalType)
                         setAvailableMb(performanceMetric.availableMb)
                         setMaximumMb(performanceMetric.maximumMb)
+                        setUsedMb(performanceMetric.usedMb)
+                    }
+                }
+                is PerformanceMetric.ExcessiveBackgroundNetworkUsage -> {
+                    baseBeacon.apply {
+                        setPerformanceSubType(PerformanceSubType.EXCESSIVE_BACKGROUND_NETWORK_USAGE.internalType)
                         setUsedMb(performanceMetric.usedMb)
                     }
                 }

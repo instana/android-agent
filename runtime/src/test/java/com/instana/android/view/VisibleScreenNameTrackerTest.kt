@@ -202,7 +202,6 @@ class VisibleScreenNameTrackerTest :BaseTest(){
     fun `test removeFragmentSection should remove the fragment details from the viewMeta`(){
         Instana.viewMeta.clear()
         Instana.viewMeta.apply {
-            put(ScreenAttributes.FRAGMENT_RESUME_TIME.value, System.nanoTime().toString())
             put(ScreenAttributes.FRAGMENT_CLASS_NAME.value, "fragmentClassName")
             put(ScreenAttributes.FRAGMENT_LOCAL_PATH_NAME.value, "fragmentLocalPathName")
             put(ScreenAttributes.FRAGMENT_SCREEN_NAME.value, "customFragmentScreenName")

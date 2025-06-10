@@ -112,7 +112,7 @@ object ConstantsAndUtil {
         return null
     }
 
-    fun getConnectionProfile(context: Context):ConnectionProfile {
+    fun getConnectionProfile(context: Context): ConnectionProfile {
         val cm: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val tm: TelephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         return ConnectionProfile(
@@ -146,7 +146,9 @@ object ConstantsAndUtil {
             TelephonyManager.NETWORK_TYPE_EDGE,
             TelephonyManager.NETWORK_TYPE_CDMA,
             TelephonyManager.NETWORK_TYPE_1xRTT,
-            TelephonyManager.NETWORK_TYPE_IDEN -> EffectiveConnectionType.TYPE_2G
+            TelephonyManager.NETWORK_TYPE_IDEN,
+                -> EffectiveConnectionType.TYPE_2G
+
             TelephonyManager.NETWORK_TYPE_UMTS,
             TelephonyManager.NETWORK_TYPE_EVDO_0,
             TelephonyManager.NETWORK_TYPE_EVDO_A,
@@ -155,7 +157,9 @@ object ConstantsAndUtil {
             TelephonyManager.NETWORK_TYPE_HSPA,
             TelephonyManager.NETWORK_TYPE_EVDO_B,
             TelephonyManager.NETWORK_TYPE_EHRPD,
-            TelephonyManager.NETWORK_TYPE_HSPAP -> EffectiveConnectionType.TYPE_3G
+            TelephonyManager.NETWORK_TYPE_HSPAP,
+                -> EffectiveConnectionType.TYPE_3G
+
             TelephonyManager.NETWORK_TYPE_LTE -> EffectiveConnectionType.TYPE_4G
             else -> null
         }
@@ -234,7 +238,7 @@ object ConstantsAndUtil {
                 .filter { headerName -> isHeaderToCapture(headerName) }
                 .associateWith { headerName -> headers[headerName] }
                 .filterValues { value -> value != null } as Map<String, String>
-        }catch (e:Exception){
+        } catch (e: Exception) {
             //Instana agent crashes shouldn't affect app performance.
             Logger.i("Exception at getCapturedResponseHeaders: ${e.localizedMessage}")
             emptyMap()
@@ -249,7 +253,7 @@ object ConstantsAndUtil {
                 .filter { headerName -> isHeaderToCapture(headerName) }
                 .associateWith { headerName -> headers[headerName] }
                 .filterValues { value -> value != null } as Map<String, String>
-        }catch (e:Exception){
+        } catch (e: Exception) {
             //Instana agent crashes shouldn't affect app performance.
             Logger.i("Exception at getCapturedResponseHeaders: ${e.localizedMessage}")
             emptyMap()
@@ -309,7 +313,7 @@ object ConstantsAndUtil {
             "child.widget.title",
             "go.router.path"
         )
-        return if (this.keys.all {key -> key in listOfValidKeysAndroid || key in listOfValidKeysFlutter  }) {
+        return if (this.keys.all { key -> key in listOfValidKeysAndroid || key in listOfValidKeysFlutter }) {
             this
         } else {
             emptyMap()
@@ -339,7 +343,9 @@ object ConstantsAndUtil {
 
         val sw = StringWriter()
         val pw = PrintWriter(sw)
-        for ((t, u) in stackTraces) { ThreadUtil.println(pw, t, u) }
+        for ((t, u) in stackTraces) {
+            ThreadUtil.println(pw, t, u)
+        }
         pw.flush()
         return sw.toString()
     }
@@ -350,12 +356,12 @@ object ConstantsAndUtil {
             val runningAppProcesses = activityManager?.runningAppProcesses ?: return AppState.BACKGROUND
             val myProcess = runningAppProcesses?.firstOrNull { it.pid == android.os.Process.myPid() }
             val isForeground = myProcess?.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-             if (isForeground){
+            if (isForeground) {
                 AppState.FOREGROUND
-            }else{
+            } else {
                 AppState.BACKGROUND
             }
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Logger.i("App State not identified! : ${e.localizedMessage}")
             AppState.UN_IDENTIFIED
         }
@@ -380,4 +386,11 @@ object ConstantsAndUtil {
             TRACE_STATE to traceState
         )
     }
+
+    internal fun bytesToMbConvertor(bytes: Long): Long {
+        return bytes / (1024 * 1024)
+    }
+
+    internal fun isBackgroundEnuEnabled() =
+        (Instana.config?.trustDeviceTiming == true && Instana.config?.performanceMonitorConfig?.enableBackgroundEnuReport == true)
 }

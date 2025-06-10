@@ -9,5 +9,6 @@ package com.instana.android.performance
 internal enum class PerformanceSubType(val internalType:String) {
     ANR("anr"),
     APP_START_TIME("ast"),
-    OUT_OF_MEMORY("oom");
+    OUT_OF_MEMORY("oom"),
+    EXCESSIVE_BACKGROUND_NETWORK_USAGE("enu");
 }

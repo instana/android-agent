@@ -19,6 +19,7 @@ internal class PerformanceSubTypeTest {
         assertEquals("anr", PerformanceSubType.ANR.internalType)
         assertEquals("ast", PerformanceSubType.APP_START_TIME.internalType)
         assertEquals("oom", PerformanceSubType.OUT_OF_MEMORY.internalType)
+        assertEquals("enu", PerformanceSubType.EXCESSIVE_BACKGROUND_NETWORK_USAGE.internalType)
     }
 
     @Test
@@ -27,12 +28,13 @@ internal class PerformanceSubTypeTest {
         val enumValues = PerformanceSubType.values()
 
         // Verify that we have three enum constants
-        assertEquals(3, enumValues.size)
+        assertEquals(4, enumValues.size)
 
         // Verify the expected enum values
         assertTrue(enumValues.contains(PerformanceSubType.ANR))
         assertTrue(enumValues.contains(PerformanceSubType.APP_START_TIME))
         assertTrue(enumValues.contains(PerformanceSubType.OUT_OF_MEMORY))
+        assertTrue(enumValues.contains(PerformanceSubType.EXCESSIVE_BACKGROUND_NETWORK_USAGE))
     }
 
     @Test

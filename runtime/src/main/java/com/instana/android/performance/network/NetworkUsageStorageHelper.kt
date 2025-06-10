@@ -10,24 +10,24 @@ import android.app.Application
 import com.instana.android.core.util.SharedPrefsUtil
 
 internal class NetworkUsageStorageHelper(private val appContext: Application) {
-    private val startTimeStamp:String = "n_w_start_time"
     private val dataUsedTillTime:String = "data_used_till_date"
+    private val backgroundNetworkUsage:String = "instana_background_n_w_usage"
 
-    fun isTimeDataAvailable() = !(getStartTime() == 0L || getDataUsed() == 0L)
-
-    fun getStartTime() = SharedPrefsUtil.getLong(appContext, startTimeStamp)
-
-    fun getDataUsed() = SharedPrefsUtil.getLong(appContext, dataUsedTillTime)
-
-    fun saveStartTime(timestamp:Long) = SharedPrefsUtil.putLong(appContext,startTimeStamp,timestamp)
-
-    fun saveStartTimeImmediate(timestamp:Long) = SharedPrefsUtil.putLongImmediate(appContext,startTimeStamp,timestamp)
+    fun getDataUsed() = SharedPrefsUtil.getLong(appContext, dataUsedTillTime,0L)
 
     fun saveDataUsed(dataBytes:Long) = SharedPrefsUtil.putLong(appContext,dataUsedTillTime,dataBytes)
 
     fun saveDataUsedImmediate(dataBytes:Long) = SharedPrefsUtil.putLongImmediate(appContext,dataUsedTillTime,dataBytes)
 
-    fun isRebooted(currentNetworkUsedFromReboot:Long) = getDataUsed()!=0L && getDataUsed()>currentNetworkUsedFromReboot
+    fun isRebooted(currentNetworkUsedFromReboot:Long) = getDataUsed() > currentNetworkUsedFromReboot
 
+    fun saveBackgroundNetworkUsage(dataBytes:Long) = SharedPrefsUtil.putLongImmediate(appContext,backgroundNetworkUsage,dataBytes)
 
+    fun getBackgroundNetworkUsage() = SharedPrefsUtil.getLong(appContext,backgroundNetworkUsage,0L)
+
+    fun resetNetworkUsage() {
+        saveDataUsedImmediate(0L)
+        saveDataUsed(0L)
+        saveBackgroundNetworkUsage(0L)
+    }
 }

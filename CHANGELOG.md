@@ -6,6 +6,10 @@ _2024-05-06_
 
 - Added screen rendering time support along with view change
 
+_2024-06-09_
+
+- Excessive background network usage identification added.
+
 ## Version 6.2.1
 
 _2024-03-27_

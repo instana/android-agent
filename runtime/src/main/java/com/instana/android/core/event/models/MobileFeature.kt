@@ -16,5 +16,6 @@ internal enum class MobileFeature(val internalType: String) {
     DROP_BEACON("db"),
     ANR("anr"),
     LOW_MEMORY("lm"),
-    W3C_HEADER("ot") //OpenTelemetry based
+    W3C_HEADER("ot"), //OpenTelemetry based
+    BACKGROUND_ENU("nu") //Excessive network usage
 }

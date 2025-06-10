@@ -131,9 +131,6 @@ class InstanaConfig
     var enableW3CHeaders: Boolean = false
 ) {
 
-    //This need to be provided in Performance config If the n/w analytic is need to be
-    internal var enableNetworkUsageAnalytics: Boolean = false
-
     val breadcrumbsBufferSize: Int = 20
 
     /**

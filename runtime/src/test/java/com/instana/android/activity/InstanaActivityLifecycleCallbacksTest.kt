@@ -124,7 +124,7 @@ class InstanaActivityLifecycleCallbacksTest:BaseTest() {
     @Test
     fun `updateScreenTracker should update VisibleScreenNameTracker`() {
         `when`(mockActivity.localClassName).thenReturn("MockActivity")
-        invokePrivateMethod2(lifecycleCallbacks,"updateScreenTracker",mockActivity, Activity::class.java)
+        invokePrivateMethod3(lifecycleCallbacks,"updateScreenTracker",mockActivity, Activity::class.java,0,Long::class.java)
         assert(VisibleScreenNameTracker.initialViewMap.isNotEmpty())
     }
 
@@ -132,7 +132,7 @@ class InstanaActivityLifecycleCallbacksTest:BaseTest() {
     fun `updateScreenTracker should handle null content description`() {
         `when`(mockActivity.localClassName).thenReturn("MockActivity")
         `when`(mockActivity.findContentDescription()).thenReturn(null)
-        invokePrivateMethod2(lifecycleCallbacks,"updateScreenTracker",mockActivity, Activity::class.java)
+        invokePrivateMethod3(lifecycleCallbacks,"updateScreenTracker",mockActivity, Activity::class.java,0,Long::class.java)
         assert(VisibleScreenNameTracker.initialViewMap.isNotEmpty())
     }
 }

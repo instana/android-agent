@@ -13,13 +13,20 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import androidx.work.Constraints
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.instana.android.Instana
 import com.instana.android.activity.FragmentActivityRegister
 import com.instana.android.activity.InstanaActivityLifecycleCallbacks
+import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.fragments.FragmentLifecycleCallbacks
 import com.instana.android.performance.launchtime.LaunchTimeTracker
 import com.instana.android.performance.launchtime.LaunchTypeEnum
 import com.instana.android.performance.network.AppLifecycleIdentificationService
+import com.instana.android.performance.network.NetworkUsageWorker
+import java.util.concurrent.TimeUnit
 
 /**
  * Util class to get current activity data and memory alerts
@@ -44,9 +51,31 @@ class InstanaLifeCycle(
             application.registerActivityLifecycleCallbacks(InstanaActivityLifecycleCallbacks())
             registerFragmentCallbacks(application)
         }
-        if(Instana.config?.enableNetworkUsageAnalytics == true && !backgrounded){
+        if(ConstantsAndUtil.isBackgroundEnuEnabled() && !backgrounded){
             application.startService(Intent(application, AppLifecycleIdentificationService::class.java))
+            startTheDailyWorkerForENU()
         }
+    }
+
+
+    private fun startTheDailyWorkerForENU(){
+        val workRequest = PeriodicWorkRequestBuilder<NetworkUsageWorker>(
+            24, TimeUnit.HOURS
+        )
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiresBatteryNotLow(true)
+                    .build()
+            )
+            .build()
+        Instana.getApplication()?.let {
+            WorkManager.getInstance(it).enqueueUniquePeriodicWork(
+                "InstanaEnuWork",
+                ExistingPeriodicWorkPolicy.KEEP, // prevent duplication
+                workRequest
+            )
+        }
+
     }
 
     override fun onLowMemory() {
@@ -107,7 +136,7 @@ class InstanaLifeCycle(
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
         activityName = activity.localClassName.toString()
-        if(activityCount==0 && !isConfigurationChange){
+        if(activityCount==0 && !isConfigurationChange && ConstantsAndUtil.isBackgroundEnuEnabled()){
             Instana.config?.networkStatsHelper?.calculateNetworkUsage(true)
         }
         isConfigurationChange = false
