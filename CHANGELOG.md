@@ -9,6 +9,7 @@ _2024-05-06_
 _2024-06-09_
 
 - Excessive background network usage identification added.
+- Set current app state detection to be enabled by default.
 
 ## Version 6.2.1
 
