@@ -1,5 +1,11 @@
 Changelog
 ==========
+## Version 6.2.3
+
+_2024-06-17_
+
+- Fixed issue with excessive background network usage calculations triggered during crashes.
+
 ## Version 6.2.2
 
 _2024-05-06_

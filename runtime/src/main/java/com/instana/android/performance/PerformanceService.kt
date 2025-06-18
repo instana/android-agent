@@ -6,11 +6,14 @@
 package com.instana.android.performance
 
 import android.app.Application
+import com.instana.android.Instana
 import com.instana.android.core.InstanaLifeCycle
+import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 import com.instana.android.performance.anr.ANRMonitor
 import com.instana.android.performance.frame.FrameSkipMonitor
 import com.instana.android.performance.mem.LowMemoryMonitor
+import com.instana.android.performance.network.NetworkStatsHelper
 
 class PerformanceService(
     app: Application,
@@ -41,12 +44,22 @@ class PerformanceService(
     }
 
     override fun onAppInBackground() {
-        Logger.d("Detected app is on background")
+        Logger.i("Detected app is on background")
+        handleNetworkUsage(false)
         (frameSkipMonitor as FrameSkipMonitor).appInBackground = true
     }
 
     override fun onAppInForeground() {
-        Logger.d("Detected app is on foreground")
+        Logger.i("Detected app is on foreground")
+        handleNetworkUsage(true)
         (frameSkipMonitor as FrameSkipMonitor).appInBackground = false
+    }
+
+    private fun handleNetworkUsage(isInForeground: Boolean) {
+        if (!ConstantsAndUtil.isBackgroundEnuEnabled()) return
+
+        Instana.getApplication()?.let { app ->
+            NetworkStatsHelper(app).calculateNetworkUsage(isInForeground)
+        }
     }
 }

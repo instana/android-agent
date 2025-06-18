@@ -27,7 +27,6 @@ internal class NetworkUsageStorageHelper(private val appContext: Application) {
 
     fun resetNetworkUsage() {
         saveDataUsedImmediate(0L)
-        saveDataUsed(0L)
         saveBackgroundNetworkUsage(0L)
     }
 }

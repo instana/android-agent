@@ -8,7 +8,9 @@ package com.instana.android.crash
 import android.os.Handler
 import android.os.Looper
 import androidx.annotation.RestrictTo
+import com.instana.android.Instana
 import com.instana.android.core.util.Logger
+import com.instana.android.performance.network.NetworkUsageStorageHelper
 import java.lang.Thread.UncaughtExceptionHandler
 
 /**
@@ -33,6 +35,10 @@ class ExceptionHandler(
     }
 
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
+        //Need to reset the network usage calculator for any crashes
+        Instana.getApplication()?.let {
+            NetworkUsageStorageHelper(it).resetNetworkUsage()
+        }
         if (Looper.getMainLooper().thread === Thread.currentThread()) {
             crashService.submitCrash(thread, throwable)
         } else {

@@ -23,6 +23,15 @@ class PerformanceMonitorConfig
     val enableAppStartTimeReport: Boolean = true,
     val enableAnrReport:Boolean = false,
     val enableLowMemoryReport:Boolean = false,
+
+    /**
+     * To use this feature, you must also enable `trustDeviceTiming` in `InstanaConfig`.
+     */
     val enableBackgroundEnuReport: Boolean = false,
+
+    /*
+     * Enables detection of app state (Background/Foreground) at the time each beacon is created.
+     * If the agent cannot determine the state, it will report it as "unidentified".
+     */
     val enableAppStateDetection: Boolean = true
 )
