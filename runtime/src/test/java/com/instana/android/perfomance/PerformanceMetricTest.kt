@@ -83,4 +83,16 @@ internal class PerformanceMetricTest {
         assertEquals(usedMb, outOfMemory.usedMb)
         assertEquals(maximumMb, outOfMemory.maximumMb)
     }
+
+    @Test
+    fun `test ExcessiveBackgroundNetworkUsage data class with usage values`() {
+        // Given
+        val usedMb = 150L
+        val outOfMemory = PerformanceMetric.ExcessiveBackgroundNetworkUsage(
+            usedMb = usedMb,
+        )
+
+        // When & Then
+        assertEquals(usedMb, outOfMemory.usedMb)
+    }
 }

@@ -17,15 +17,24 @@ import com.instana.android.BaseTest
 import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.event.models.Platform
+import com.instana.android.core.util.ConstantsAndUtil.TRACE_PARENT
+import com.instana.android.core.util.ConstantsAndUtil.TRACE_STATE
+import com.instana.android.core.util.ConstantsAndUtil.bytesToMbConvertor
+import com.instana.android.core.util.ConstantsAndUtil.generateW3CHeaders
 import com.instana.android.core.util.ConstantsAndUtil.getAppVersionNameAndVersionCode
+import com.instana.android.core.util.ConstantsAndUtil.isBackgroundEnuEnabled
 import com.instana.android.core.util.ConstantsAndUtil.mapToJsonString
 import com.instana.android.core.util.ConstantsAndUtil.toDaysInMillis
 import com.instana.android.instrumentation.HTTPCaptureConfig
 import com.instana.android.instrumentation.HTTPMarkerShould
 import com.instana.android.instrumentation.InstrumentationService
+import com.instana.android.performance.PerformanceMonitorConfig
 import com.instana.android.performance.appstate.AppState
 import junit.framework.TestCase.assertEquals
 import org.junit.Assert
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -276,5 +285,219 @@ class ConstantsAndUtilTest:BaseTest() {
         val appState = ConstantsAndUtil.isAppInForeground(context)
         assertEquals(AppState.UN_IDENTIFIED, appState)
     }
+
+
+    @Test
+    fun `returns both traceparent and tracestate keys`() {
+        val result = generateW3CHeaders()
+        assertTrue(result.containsKey(TRACE_PARENT))
+        assertTrue(result.containsKey(TRACE_STATE))
+    }
+
+    @Test
+    fun `traceState is 16 characters long`() {
+        val result = generateW3CHeaders()
+        assertEquals(16, result[TRACE_STATE]?.length)
+    }
+
+    @Test
+    fun `traceState contains only lowercase hex chars`() {
+        val traceState = generateW3CHeaders()[TRACE_STATE]!!
+        assertTrue(traceState.all { it in "0123456789abcdef" })
+    }
+
+    @Test
+    fun `traceParent has 3 dashes`() {
+        val traceParent = generateW3CHeaders()[TRACE_PARENT]!!
+        assertEquals(3, traceParent.count { it == '-' })
+    }
+
+    @Test
+    fun `traceParent starts with 00-0000000000000000`() {
+        val traceParent = generateW3CHeaders()[TRACE_PARENT]!!
+        assertTrue(traceParent.startsWith("00-0000000000000000"))
+    }
+
+    @Test
+    fun `traceParent ends with -03`() {
+        val traceParent = generateW3CHeaders()[TRACE_PARENT]!!
+        assertTrue(traceParent.endsWith("-03"))
+    }
+
+    @Test
+    fun `traceParent contains traceState twice`() {
+        val result = generateW3CHeaders()
+        val traceState = result[TRACE_STATE]!!
+        val traceParent = result[TRACE_PARENT]!!
+        assertEquals(2, traceParent.split(traceState).size - 1)
+    }
+
+    @Test
+    fun `traceParent total length is correct`() {
+        val result = generateW3CHeaders()
+        val traceParent = result[TRACE_PARENT]!!
+        println(traceParent)
+        val version = "00"                          // 2 chars
+        val traceId = "0000000000000000"            // 16 chars
+        val traceState = result[TRACE_STATE]!!      // 16 chars
+        val traceFlags = "03"                       // 2 chars
+        val totalDashes = 3                         // 4 dash separators
+
+        val expectedLength =
+            version.length +
+                    traceId.length +
+                    traceState.length * 2 +
+                    traceFlags.length +
+                    totalDashes // 4 dashes total
+
+        assertEquals(55, expectedLength)
+        assertEquals(expectedLength, traceParent.length)
+
+    }
+
+    @Test
+    fun `traceParent is correctly structured`() {
+        val result = generateW3CHeaders()
+        val parts = result[TRACE_PARENT]!!.split("-")
+        assertEquals(4, parts.size)
+        assertEquals("00", parts[0])
+        assertEquals("0000000000000000"+result[TRACE_STATE], parts[1])
+        assertEquals(result[TRACE_STATE], parts[2])
+        assertEquals("03", parts[3])
+    }
+
+    @Test
+    fun `two calls produce different headers`() {
+        val a = generateW3CHeaders()
+        val b = generateW3CHeaders()
+        assertNotEquals(a[TRACE_PARENT], b[TRACE_PARENT])
+        assertNotEquals(a[TRACE_STATE], b[TRACE_STATE])
+    }
+
+    @Test
+    fun `traceState is not empty`() {
+        assertTrue(generateW3CHeaders()[TRACE_STATE]!!.isNotEmpty())
+    }
+
+    @Test
+    fun `traceParent is not empty`() {
+        assertTrue(generateW3CHeaders()[TRACE_PARENT]!!.isNotEmpty())
+    }
+
+    @Test fun `1MB is converted correctly`() {
+        assertEquals(1, bytesToMbConvertor(1024 * 1024))
+    }
+
+    @Test fun `0 bytes returns 0MB`() {
+        assertEquals(0, bytesToMbConvertor(0))
+    }
+
+    @Test fun `just under 1MB returns 0MB`() {
+        assertEquals(0, bytesToMbConvertor(1024 * 1024 - 1))
+    }
+
+    @Test fun `just over 1MB returns 1MB`() {
+        assertEquals(1, bytesToMbConvertor(1024 * 1024 + 1))
+    }
+
+    @Test fun `exact 2MB returns 2`() {
+        assertEquals(2, bytesToMbConvertor(2 * 1024 * 1024))
+    }
+
+    @Test fun `500MB returns 500`() {
+        assertEquals(500, bytesToMbConvertor(500L * 1024 * 1024))
+    }
+
+    @Test fun `MAX_VALUE returns large number`() {
+        assertTrue(bytesToMbConvertor(Long.MAX_VALUE) > 0)
+    }
+
+    @Test fun `negative bytes convert correctly`() {
+        assertEquals(-1, bytesToMbConvertor(-1024 * 1024))
+    }
+
+    @Test fun `1 byte returns 0`() {
+        assertEquals(0, bytesToMbConvertor(1))
+    }
+
+    @Test fun `arbitrary large value converts correctly`() {
+        val bytes = 1234567890L
+        assertEquals(bytes / (1024 * 1024), bytesToMbConvertor(bytes))
+    }
+
+    @Test
+    fun `isBackgroundEnuEnabled should return true when both trustDeviceTiming and enableBackgroundEnuReport are true`() {
+        // Given
+        Instana.config?.performanceMonitorConfig = PerformanceMonitorConfig(
+            enableBackgroundEnuReport = true
+        )
+        Instana.config?.trustDeviceTiming = true
+
+        // When
+        val result = isBackgroundEnuEnabled()
+
+        // Then
+        assertTrue(result)
+    }
+
+    @Test
+    fun `isBackgroundEnuEnabled should return false when trustDeviceTiming is false and enableBackgroundEnuReport is true`() {
+        // Given
+        Instana.config?.performanceMonitorConfig = PerformanceMonitorConfig(
+            enableBackgroundEnuReport = true
+        )
+        Instana.config?.trustDeviceTiming = false
+
+        // When
+        val result = isBackgroundEnuEnabled()
+
+        // Then
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isBackgroundEnuEnabled should return false when trustDeviceTiming is true and enableBackgroundEnuReport is false`() {
+        // Given
+        Instana.config?.performanceMonitorConfig = PerformanceMonitorConfig(
+            enableBackgroundEnuReport = false
+        )
+        Instana.config?.trustDeviceTiming = true
+
+
+        // When
+        val result = isBackgroundEnuEnabled()
+
+        // Then
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isBackgroundEnuEnabled should return false when both trustDeviceTiming and enableBackgroundEnuReport are false`() {
+        // Given
+        Instana.config?.performanceMonitorConfig = PerformanceMonitorConfig(
+            enableBackgroundEnuReport = false
+        )
+        Instana.config?.trustDeviceTiming = false
+
+
+        // When
+        val result = isBackgroundEnuEnabled()
+
+        // Then
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isBackgroundEnuEnabled should return false when config is null`() {
+        // Given
+        Instana.config = null
+
+        // When
+        val result = isBackgroundEnuEnabled()
+
+        // Then
+        assertFalse(result)
+    }
+
 
 }

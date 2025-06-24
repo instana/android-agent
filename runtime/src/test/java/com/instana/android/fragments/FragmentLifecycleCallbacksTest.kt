@@ -27,6 +27,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import kotlin.collections.mutableMapOf
 
 private class TestFragment1 : Fragment()
 private class TestFragment2 : NavHostFragment()
@@ -138,6 +139,25 @@ class FragmentLifecycleCallbacksTest : BaseTest() {
         instanaActivityLifecycleCallbacks.onActivityResumed(mockActivity)
         fragmentLifecycleCallbacks.onFragmentResumed(mockFragmentManager, testFragment)
         Assert.assertEquals(VisibleScreenNameTracker.activityFragmentViewData.get()?.fragmentClassName , "Fragment")
+        VisibleScreenNameTracker.activityFragmentViewData.set(null)
+    }
+
+    @Test
+    fun `test fragmentStartTimes will have value when onFragmentPreAttached is called`() {
+        val mockActivity = mock(Activity::class.java)
+        val mockView = mock(View::class.java)
+        `when`(mockActivity.localClassName).thenReturn("MockActivity")
+        `when`(mockActivity.findViewById<View>(android.R.id.content)).thenReturn(mockView)
+        `when`(mockView.contentDescription).thenReturn("Mock Activity")
+        `when`(mockActivity.findContentDescription()).thenReturn("MockActivityDescription")
+        val testFragment = mock(Fragment::class.java)
+        `when`(testFragment.userVisibleHint).thenReturn(true)
+        val fragmentLifecycleCallbacks = FragmentLifecycleCallbacks()
+        val instanaActivityLifecycleCallbacks = InstanaActivityLifecycleCallbacks()
+        instanaActivityLifecycleCallbacks.onActivityResumed(mockActivity)
+        fragmentLifecycleCallbacks.onFragmentPreAttached(mockFragmentManager, testFragment,app)
+        val fragmentStartTimes = getPrivateFieldValue(fragmentLifecycleCallbacks,"fragmentStartTimes") as MutableMap<Fragment, Long>;
+        Assert.assertEquals(fragmentStartTimes.isEmpty() , false)
         VisibleScreenNameTracker.activityFragmentViewData.set(null)
     }
 

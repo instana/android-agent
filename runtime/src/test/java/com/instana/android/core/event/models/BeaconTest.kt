@@ -1039,6 +1039,25 @@ class BeaconTest: BaseTest() {
     }
 
     @Test
+    fun `test newPerformanceBeacon function should return beacon with excessive background network usage with umb value`(){
+        val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, enableCrashReporting = true)
+        Instana.sessionId = null
+        SessionService(app,mockWorkManager,config)
+        val performance = Beacon.newPerformanceBeacon(
+            appKey = "maiorum",
+            appProfile = AppProfile(appVersion = null, appBuild = null, appId = null),
+            deviceProfile = Instana.deviceProfile,
+            connectionProfile = ConnectionProfile(carrierName = null, connectionType = ConnectionType.CELLULAR, effectiveConnectionType =EffectiveConnectionType.TYPE_4G),
+            userProfile = Instana.userProfile,
+            sessionId = Instana.sessionId?:"test",
+            view = "null", performanceMetric = PerformanceMetric.ExcessiveBackgroundNetworkUsage(223),
+        )
+        println(performance.toString())
+        assert(performance.toString().contains("umb\t223"))
+        assert(performance.toString().contains("pst\tenu"))
+    }
+
+    @Test
     fun `test beacons class contains the tdt trust device timing when the config is true`(){
         val config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL, trustDeviceTiming = true)
         Instana.sessionId = null

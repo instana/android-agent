@@ -81,6 +81,7 @@ abstract class BaseTest {
                 is Int -> param1 as Int
                 is Long -> param1 as Long
                 is Double -> param1 as Double
+                is Boolean -> param1 as Boolean
                 // Add other primitive types as needed
                 else -> throw IllegalArgumentException("Unsupported primitive type: $paramType1")
             }
@@ -94,6 +95,7 @@ abstract class BaseTest {
                 is Int -> param2 as Int
                 is Long -> param2 as Long
                 is Double -> param2 as Double
+                is Boolean -> param2 as Boolean
                 // Add other primitive types as needed
                 else -> throw IllegalArgumentException("Unsupported primitive type: $paramType2")
             }

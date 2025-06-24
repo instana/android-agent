@@ -174,9 +174,7 @@ class StartupInitializerTest :BaseTest(){
         Mockito.`when`(startupInitializer.context).thenReturn(mockContext)
 
         // Act
-        val result = startupInitializer.delete(
-            uri = Uri.parse("http://www.google.com"), selection = null, selectionArgs = null,
-        )
+        val result = startupInitializer.update(uri =Uri.parse("http://www.google.com"), values = null, selection = "invidunt", selectionArgs = arrayOf())
         // Assert
         Assert.assertEquals(result,0)
     }

@@ -11,7 +11,6 @@ import android.os.Build
 import android.os.Bundle
 import com.instana.android.Instana
 import com.instana.android.core.DefaultActivityLifecycleCallbacks
-import com.instana.android.core.util.Logger
 import com.instana.android.view.VisibleScreenNameTracker
 import com.instana.android.view.models.FragmentActivityViewDataModel
 import java.util.WeakHashMap
