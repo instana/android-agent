@@ -21,6 +21,7 @@ import okhttp3.Interceptor
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
+import java.net.ProtocolException
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -84,8 +85,15 @@ object OkHttp3GlobalInterceptor : Interceptor {
                 finish(request, e)
                 httpMarkers.remove(marker.headerValue(), marker)
             }
-            // Proceed with the original request to avoid throwing
-            chain.proceed(intercepted)
+
+            // Only retry if the flag is enabled and its not a ProtocolException
+            if (Instana.config?.autoRetryOnNetworkException == true && e !is ProtocolException) {
+                // Proceed with the original request to retry
+                chain.proceed(intercepted)
+            } else {
+                // Otherwise rethrow the exception to let it propagate normally
+                throw e
+            }
         }
     }
 

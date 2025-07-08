@@ -27,9 +27,13 @@ import org.junit.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mock
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.times
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import java.io.IOException
+import java.net.ConnectException
+import java.net.ProtocolException
+import java.net.SocketTimeoutException
 
 class OkHttp3GlobalInterceptorTest:BaseTest() {
 
@@ -86,7 +90,7 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         `when`(mockChain.proceed(any(Request::class.java))).thenReturn(mockResponse)
         `when`(mockHTTPMarker.headerValue()).thenReturn(trackingHeaderValue)
         try {
-            val resultResponse = OkHttp3GlobalInterceptor.intercept(mockChain)
+            OkHttp3GlobalInterceptor.intercept(mockChain)
             verify(mockHTTPMarker, never()).finish(mockResponse)
             verify(mockChain, atLeastOnce()).request()
             verify(mockRequest, atLeastOnce()).url()
@@ -99,7 +103,6 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
 
     @Test
     fun `test intercept check call with chain values all conditions fail case 1`(){
-        val testUrl = "http://example.com"
         val trackingHeaderValue = "your_tracking_header_value"
         Instana.setup(app,config)
         config.httpCaptureConfig = HTTPCaptureConfig.AUTO
@@ -112,7 +115,7 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         `when`(mockChain.proceed(any(Request::class.java))).thenReturn(mockResponse)
         `when`(mockHTTPMarker.headerValue()).thenReturn(trackingHeaderValue)
         try {
-            val resultResponse = OkHttp3GlobalInterceptor.intercept(mockChain)
+            OkHttp3GlobalInterceptor.intercept(mockChain)
             verify(mockHTTPMarker, never()).finish(mockResponse)
             verify(mockChain, atLeastOnce()).request()
             verify(mockRequest, atLeastOnce()).url()
@@ -125,7 +128,6 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
 
     @Test
     fun `test intercept check call with chain values all conditions fail case 2 instrumentationService as null`(){
-        val testUrl = "http://example.com"
         val trackingHeaderValue = "your_tracking_header_value"
         Instana.setup(app,config)
         config.httpCaptureConfig = HTTPCaptureConfig.AUTO
@@ -139,7 +141,7 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         `when`(mockHTTPMarker.headerValue()).thenReturn(trackingHeaderValue)
         try {
             Instana.instrumentationService = null
-            val resultResponse = OkHttp3GlobalInterceptor.intercept(mockChain)
+            OkHttp3GlobalInterceptor.intercept(mockChain)
             verify(mockHTTPMarker, never()).finish(mockResponse)
             verify(mockChain, atLeastOnce()).request()
             verify(mockRequest, atLeastOnce()).url()
@@ -152,7 +154,6 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
 
     @Test
     fun `test intercept check call with chain values all conditions fail case 2 as Exception `(){
-        val testUrl = "http://example.com"
         val trackingHeaderValue = "your_tracking_header_value"
         Instana.setup(app,config)
         config.httpCaptureConfig = HTTPCaptureConfig.AUTO
@@ -166,7 +167,7 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         `when`(mockHTTPMarker.headerValue()).thenReturn(trackingHeaderValue)
         try {
             Instana.instrumentationService = null
-            val resultResponse = OkHttp3GlobalInterceptor.intercept(mockChain)
+            OkHttp3GlobalInterceptor.intercept(mockChain)
             verify(mockHTTPMarker, never()).finish(mockResponse)
             verify(mockChain, atLeastOnce()).request()
             verify(mockRequest, atLeastOnce()).url()
@@ -192,7 +193,7 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         `when`(mockRequest.header(TRACKING_HEADER_KEY)).thenReturn("null")
         `when`(mockChain.proceed(any(Request::class.java))).thenReturn(mockResponse)
         `when`(mockHTTPMarker.headerValue()).thenReturn(trackingHeaderValue)
-        val resultResponse = OkHttp3GlobalInterceptor.intercept(mockChain)
+        OkHttp3GlobalInterceptor.intercept(mockChain)
         verify(mockHTTPMarker, never()).finish(mockResponse)
         verify(mockChain, atLeastOnce()).request()
         verify(mockRequest, atLeastOnce()).url()
@@ -220,6 +221,136 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         `when`(mockHeaders.toMap()).thenReturn(emptyMap())
         OkHttp3GlobalInterceptor.cancel(mockRequest)
         verify(mockRequest, never()).headers()
+    }
+
+    @Test(expected = IOException::class)
+    fun `test intercept propagates exception when autoRetryOnNetworkException is false`() {
+        config.httpCaptureConfig = HTTPCaptureConfig.AUTO
+        config.autoRetryOnNetworkException = false
+        Instana.setup(app, config)
+
+        `when`(mockChain.request()).thenReturn(mockRequest)
+        `when`(mockChain.request().headers()).thenReturn(mockHeaders)
+        `when`(mockChain.request().newBuilder()).thenReturn(mockBuilders)
+        `when`(mockHeaders.toMap()).thenReturn(emptyMap())
+        `when`(mockRequest.url()).thenReturn(HttpUrl.parse("https://www.example.com"))
+        `when`(mockRequest.header(TRACKING_HEADER_KEY)).thenReturn(null)
+        `when`(mockChain.proceed(any(Request::class.java))).thenThrow(IOException("Network error"))
+
+        // This should throw IOException
+        OkHttp3GlobalInterceptor.intercept(mockChain)
+    }
+
+    @Test
+    fun `test intercept retries request when autoRetryOnNetworkException is true`() {
+        config.httpCaptureConfig = HTTPCaptureConfig.AUTO
+        config.autoRetryOnNetworkException = true
+        Instana.setup(app, config)
+
+        `when`(mockChain.request()).thenReturn(mockRequest)
+        `when`(mockChain.request().headers()).thenReturn(mockHeaders)
+        `when`(mockChain.request().newBuilder()).thenReturn(mockBuilders)
+        `when`(mockHeaders.toMap()).thenReturn(emptyMap())
+        `when`(mockRequest.url()).thenReturn(HttpUrl.parse("https://www.example.com"))
+        `when`(mockRequest.header(TRACKING_HEADER_KEY)).thenReturn(null)
+        `when`(mockBuilders.header(any(String::class.java), any(String::class.java))).thenReturn(mockBuilders)
+        `when`(mockBuilders.build()).thenReturn(mockRequest)
+
+        // First call throws exception, second call succeeds
+        `when`(mockChain.proceed(any(Request::class.java)))
+            .thenThrow(IOException("Network error"))
+            .thenReturn(mockResponse)
+
+        val result = OkHttp3GlobalInterceptor.intercept(mockChain)
+
+        // Verify chain.proceed was called twice (once for error, once for retry)
+        verify(mockChain, times(2)).proceed(any(Request::class.java))
+        assert(result == mockResponse)
+    }
+
+    @Test(expected = ProtocolException::class)
+    fun `test intercept does not retry when exception is ProtocolException even if autoRetryOnNetworkException is true`() {
+        config.httpCaptureConfig = HTTPCaptureConfig.AUTO
+        config.autoRetryOnNetworkException = true
+        Instana.setup(app, config)
+
+        `when`(mockChain.request()).thenReturn(mockRequest)
+        `when`(mockChain.request().headers()).thenReturn(mockHeaders)
+        `when`(mockChain.request().newBuilder()).thenReturn(mockBuilders)
+        `when`(mockHeaders.toMap()).thenReturn(emptyMap())
+        `when`(mockRequest.url()).thenReturn(HttpUrl.parse("https://www.example.com"))
+        `when`(mockRequest.header(TRACKING_HEADER_KEY)).thenReturn(null)
+        `when`(mockBuilders.header(any(String::class.java), any(String::class.java))).thenReturn(mockBuilders)
+        `when`(mockBuilders.build()).thenReturn(mockRequest)
+
+        // Throw a ProtocolException
+        `when`(mockChain.proceed(any(Request::class.java)))
+            .thenThrow(ProtocolException("Protocol error"))
+
+        // This should throw ProtocolException without retrying
+        OkHttp3GlobalInterceptor.intercept(mockChain)
+    }
+
+    @Test(expected = IOException::class)
+    fun `test intercept propagates exception when Instana config is null`() {
+        // Save the original config
+        val originalConfig = Instana.config
+
+        try {
+            // Set config to null using reflection
+            val configField = Instana::class.java.getDeclaredField("config")
+            configField.isAccessible = true
+            configField.set(null, null)
+
+            `when`(mockChain.request()).thenReturn(mockRequest)
+            `when`(mockChain.request().headers()).thenReturn(mockHeaders)
+            `when`(mockHeaders.toMap()).thenReturn(emptyMap())
+            `when`(mockRequest.url()).thenReturn(HttpUrl.parse("https://www.example.com"))
+            `when`(mockRequest.header(TRACKING_HEADER_KEY)).thenReturn(null)
+            `when`(mockChain.proceed(any(Request::class.java))).thenThrow(IOException("Network error"))
+
+            // This should throw IOException without retrying
+            OkHttp3GlobalInterceptor.intercept(mockChain)
+        } finally {
+            // Restore the original config
+            val configField = Instana::class.java.getDeclaredField("config")
+            configField.isAccessible = true
+            configField.set(null, originalConfig)
+        }
+    }
+
+    @Test
+    fun `test intercept retries for different exception types when autoRetryOnNetworkException is true`() {
+        config.httpCaptureConfig = HTTPCaptureConfig.AUTO
+        config.autoRetryOnNetworkException = true
+        Instana.setup(app, config)
+
+        `when`(mockChain.request()).thenReturn(mockRequest)
+        `when`(mockChain.request().headers()).thenReturn(mockHeaders)
+        `when`(mockChain.request().newBuilder()).thenReturn(mockBuilders)
+        `when`(mockHeaders.toMap()).thenReturn(emptyMap())
+        `when`(mockRequest.url()).thenReturn(HttpUrl.parse("https://www.example.com"))
+        `when`(mockRequest.header(TRACKING_HEADER_KEY)).thenReturn(null)
+        `when`(mockBuilders.header(any(String::class.java), any(String::class.java))).thenReturn(mockBuilders)
+        `when`(mockBuilders.build()).thenReturn(mockRequest)
+
+        // Test with SocketTimeoutException
+        `when`(mockChain.proceed(any(Request::class.java)))
+            .thenThrow(SocketTimeoutException("Timeout"))
+            .thenReturn(mockResponse)
+
+        val result1 = OkHttp3GlobalInterceptor.intercept(mockChain)
+        verify(mockChain, times(2)).proceed(any(Request::class.java))
+        assert(result1 == mockResponse)
+
+        // Reset and test with ConnectException
+        `when`(mockChain.proceed(any(Request::class.java)))
+            .thenThrow(ConnectException("Connection failed"))
+            .thenReturn(mockResponse)
+
+        val result2 = OkHttp3GlobalInterceptor.intercept(mockChain)
+        verify(mockChain, times(4)).proceed(any(Request::class.java)) // 2 more calls
+        assert(result2 == mockResponse)
     }
 
 }
