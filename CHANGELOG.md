@@ -6,6 +6,10 @@ _2024-07-01_
 
 - Added `autoRetryOnNetworkException` configuration flag to control automatic retry behavior when exceptions occur during HTTP requests.
 
+_2024-09-01_
+
+- Migration of OSSRH nexus to central maven publications .
+
 ## Version 6.2.3
 
 _2024-06-17_

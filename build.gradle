@@ -13,8 +13,9 @@ buildscript {
         }
         classpath "org.bouncycastle:bcprov-jdk15on:1.70"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
+        //classpath "io.codearte.gradle.nexus:gradle-nexus-staging-plugin:0.30.0"
         classpath "org.jacoco:org.jacoco.core:0.8.7"
+        classpath "io.github.gradle-nexus:publish-plugin:2.0.0"
     }
 }
 
@@ -24,7 +25,7 @@ plugins {
 
 apply from: 'publish.gradle'
 apply from: 'version.gradle'
-
+apply plugin: "io.github.gradle-nexus.publish-plugin"
 allprojects {
     apply plugin: 'jacoco'
     repositories {
