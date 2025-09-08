@@ -26,3 +26,4 @@ nexusPublishing {
         }
     }
 }
+group = "com.instana"
