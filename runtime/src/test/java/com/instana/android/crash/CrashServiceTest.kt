@@ -12,9 +12,7 @@ import com.instana.android.BaseTest
 import com.instana.android.InstanaTest.Companion.API_KEY
 import com.instana.android.InstanaTest.Companion.SERVER_URL
 import com.instana.android.core.InstanaConfig
-import com.instana.android.performance.anr.AnrException
 import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.times
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -26,15 +24,10 @@ import java.util.Queue
 class CrashServiceTest:BaseTest() {
     private lateinit var crashService: CrashService
 
-    @Mock
-    lateinit var connectivityManager:ConnectivityManager
-
-    @Mock
-    lateinit var telephonyManager: TelephonyManager
     @Before
     fun `setup crash Service`(){
         MockitoAnnotations.openMocks(this)
-        crashService = CrashService(app = app, manager = mockWorkManager, config = InstanaConfig(API_KEY,SERVER_URL, enableCrashReporting = true), cm = connectivityManager, tm = telephonyManager)
+        crashService = CrashService(app = app, manager = mockWorkManager, config = InstanaConfig(API_KEY,SERVER_URL, enableCrashReporting = true))
     }
 
     @Test

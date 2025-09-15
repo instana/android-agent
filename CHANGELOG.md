@@ -1,61 +1,67 @@
 Changelog
 ==========
+## Version 6.2.5
+
+_2025-09-12_
+
+- Resolved issue with dynamic enabling and disabling of runtime data collection
+
 ## Version 6.2.4
 
-_2024-07-01_
+_2025-07-01_
 
 - Added `autoRetryOnNetworkException` configuration flag to control automatic retry behavior when exceptions occur during HTTP requests.
 
-_2024-09-01_
+_2025-09-01_
 
 - Migration of OSSRH nexus to central maven publications .
 
 ## Version 6.2.3
 
-_2024-06-17_
+_2025-06-17_
 
 - Fixed issue with excessive background network usage calculations triggered during crashes.
 
 ## Version 6.2.2
 
-_2024-05-06_
+_2025-05-06_
 
 - Added screen rendering time support along with view change
 
-_2024-06-09_
+_2025-06-09_
 
 - Excessive background network usage identification added.
 - Set current app state detection to be enabled by default.
 
 ## Version 6.2.1
 
-_2024-03-27_
+_2025-03-27_
 
 - Added `enableW3CHeaders` configuration to support the W3CHeader based trace propagation support from agent
 
 ## Version 6.2.0
 
-_2024-03-12_
+_2025-03-12_
 
 - Added `trustDeviceTiming` configuration option for backend to trust the device timing
 - Enabled App Start Time by default, so a new metric for cold start time will now be sent.
 - Support for Android vitals
 
-_2024-03-17_
+_2025-03-17_
 
 - Added current app state identifier logic
 
 ## Version 6.1.2
 
-_2024-02-27_
+_2025-02-27_
 
 - API added to manually create the sessionStart.
 
-_2024-03-02_
+_2025-03-02_
 
 - Added useFeature for performance and drop metrics
 
-_2024-03-05_
+_2025-03-05_
 
 - Added `deleteOldBeacons` feature to remove older beacons.
 - Added read/write locks for thread safety in MaxCapacityMap.

@@ -26,12 +26,6 @@ class CustomEventServiceTest : BaseTest() {
 
     lateinit var wrkManager:InstanaWorkManager
 
-    @Mock
-    lateinit var connectivityManager: ConnectivityManager
-
-    @Mock
-    lateinit var telephonyManager: TelephonyManager
-
     @Before
     fun `test setup`() {
         config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
@@ -39,7 +33,7 @@ class CustomEventServiceTest : BaseTest() {
         MockitoAnnotations.openMocks(this)
         Instana.sessionId = null
         SessionService(app, mockWorkManager, config)
-        val service = CustomEventService(app, wrkManager, config = config, cm = connectivityManager, tm = telephonyManager)
+        val service = CustomEventService(app, wrkManager, config = config)
         service.submit(
             eventName = "EVENT_NAME",
             startTime = 1709531867061,
@@ -58,7 +52,7 @@ class CustomEventServiceTest : BaseTest() {
     @Test
     fun `test is session Id is null submit should return instead of reporting`(){
         Instana.sessionId = null
-        val service = CustomEventService(app, wrkManager, config = config, cm = connectivityManager, tm = telephonyManager)
+        val service = CustomEventService(app, wrkManager, config = config)
         service.submit(
             eventName = "TEST_EVENT_NAME",
             startTime = 1709531867061,

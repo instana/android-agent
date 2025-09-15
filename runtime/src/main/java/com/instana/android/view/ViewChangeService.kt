@@ -6,15 +6,12 @@
 package com.instana.android.view
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.telephony.TelephonyManager
 import androidx.annotation.RestrictTo
 import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
-import com.instana.android.core.event.models.ConnectionProfile
-import com.instana.android.core.util.ConstantsAndUtil
+import com.instana.android.core.util.ConstantsAndUtil.getConnectionProfile
 import com.instana.android.core.util.ConstantsAndUtil.validateAllKeys
 import com.instana.android.core.util.Logger
 
@@ -25,8 +22,6 @@ class ViewChangeService(
     config: InstanaConfig
 ) {
     private val appKey = config.key
-    private val cm: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val tm: TelephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
     fun sendViewChange(viewName: String) {
         val sessionId = Instana.sessionId
@@ -34,11 +29,7 @@ class ViewChangeService(
             Logger.e("Tried send CustomEvent with null sessionId")
             return
         }
-        val connectionProfile = ConnectionProfile(
-            carrierName = ConstantsAndUtil.getCarrierName(context, cm, tm),
-            connectionType = ConstantsAndUtil.getConnectionType(context, cm),
-            effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(context, cm, tm)
-        )
+        val connectionProfile = getConnectionProfile(context)
 
         val screenRenderingTime = Instana.viewMeta.get(ScreenAttributes.SCREEN_RENDERING_TIME.value)
             ?.takeIf { it != "0" && it != "null" }

@@ -19,6 +19,7 @@ import com.instana.android.activity.InstanaActivityLifecycleCallbacks
 import com.instana.android.activity.findContentDescription
 import com.instana.android.core.HybridAgentOptions
 import com.instana.android.core.InstanaConfig
+import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.util.MaxCapacityMap
 import com.instana.android.crash.CrashService
 import com.instana.android.fragments.FragmentLifecycleCallbacks
@@ -37,6 +38,7 @@ import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.robolectric.shadows.ShadowBuild
 
+@Suppress("DEPRECATION")
 class InstanaTest : BaseTest() {
 
     @Mock
@@ -46,12 +48,6 @@ class InstanaTest : BaseTest() {
     private lateinit var mockFragmentManager: FragmentManager
 
     private lateinit var crashService: CrashService
-
-    @Mock
-    lateinit var connectivityManager: ConnectivityManager
-
-    @Mock
-    lateinit var telephonyManager: TelephonyManager
 
     @Before
     fun `test setup`(){
@@ -407,7 +403,7 @@ class InstanaTest : BaseTest() {
         Instana.setCrashReportingEnabled(false)
         val realThread = Thread() // create a real Thread instance
         val realThrowable = RuntimeException("Test Exception") // create a real Throwable instance
-        crashService = CrashService(app = app, manager = mockWorkManager, config = config, cm = connectivityManager, tm = telephonyManager)
+        crashService = CrashService(app = app, manager = mockWorkManager, config = config)
         crashService.submitCrash(realThread, realThrowable)
         Mockito.verify(mockWorkManager, never()).queueAndFlushBlocking(any())
         resetConfig()
@@ -421,7 +417,7 @@ class InstanaTest : BaseTest() {
         Instana.setCrashReportingEnabled(true)
         val realThread = Thread() // create a real Thread instance
         val realThrowable = RuntimeException("Test Exception") // create a real Throwable instance
-        crashService = CrashService(app = app, manager = mockWorkManager, config = config, cm = connectivityManager, tm = telephonyManager)
+        crashService = CrashService(app = app, manager = mockWorkManager, config = config)
         crashService.submitCrash(realThread, realThrowable)
         Mockito.verify(mockWorkManager).queueAndFlushBlocking(any())
         resetConfig()
@@ -436,7 +432,7 @@ class InstanaTest : BaseTest() {
         Instana.setCrashReportingEnabled(true)
         val realThread = Thread() // create a real Thread instance
         val realThrowable = RuntimeException("Test Exception") // create a real Throwable instance
-        crashService = CrashService(app = app, manager = mockWorkManager, config = config, cm = connectivityManager, tm = telephonyManager)
+        crashService = CrashService(app = app, manager = mockWorkManager, config = config)
         crashService.submitCrash(realThread, realThrowable)
         Mockito.verify(mockWorkManager, never()).queueAndFlushBlocking(any())
         resetConfig()
@@ -546,6 +542,80 @@ class InstanaTest : BaseTest() {
         val config = InstanaConfig(API_KEY, SERVER_URL)
         Instana.setupInternal(app, config = config, hybridAgentOptions = HybridAgentOptions("hyID","1.0.4"))
         Assert.assertEquals(Instana.getApplication(),app)
+        resetConfig()
+    }
+    
+    @Test
+    fun `test disableAllServices should set all services to null and disable monitors`() {
+        // Given
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        Instana.setup(app, config)
+
+        // Verify services are initialized
+        Assert.assertNotNull(Instana.performanceService)
+        Assert.assertNotNull(Instana.crashReporting)
+        Assert.assertNotNull(Instana.customEvents)
+        Assert.assertNotNull(Instana.instrumentationService)
+        Assert.assertNotNull(Instana.performanceReporterService)
+
+        // When - invoke disableAllServices
+        val disableAllServicesMethod = Instana::class.java.getDeclaredMethod("disableAllServices")
+        disableAllServicesMethod.isAccessible = true
+        disableAllServicesMethod.invoke(Instana)
+
+        // Then - verify all services are null and monitors are disabled
+        Assert.assertNull(Instana.crashReporting)
+        Assert.assertNull(Instana.customEvents)
+        Assert.assertNull(Instana.instrumentationService)
+        Assert.assertNull(Instana.performanceService)
+        Assert.assertNull(Instana.performanceReporterService)
+
+        resetConfig()
+    }
+        
+    @Test
+    fun `test initialiseServices should create all required services`() {
+        // Given
+        val app: Application = app
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+
+        // Set all services to null first
+        Instana.crashReporting = null
+        Instana.customEvents = null
+        Instana.instrumentationService = null
+        Instana.performanceReporterService = null
+        setPrivateField(Instana, "viewChangeService", null)
+        setPrivateField(Instana, "dropBeaconService", null)
+
+        // Initialize lifecycle
+        setPrivateField(Instana, "lifeCycle", mockInstanaLifeCycle)
+
+        // When - invoke initialiseServices
+        val initialiseServicesMethod = Instana::class.java.getDeclaredMethod(
+            "initialiseServices",
+            InstanaWorkManager::class.java,
+            Application::class.java,
+            InstanaConfig::class.java
+        )
+        initialiseServicesMethod.isAccessible = true
+        initialiseServicesMethod.invoke(Instana, mockWorkManager, app, config)
+
+        // Then - verify all services are initialized
+        Assert.assertNotNull(Instana.crashReporting)
+        Assert.assertNotNull(Instana.customEvents)
+        Assert.assertNotNull(Instana.instrumentationService)
+        Assert.assertNotNull(Instana.performanceService)
+        Assert.assertNotNull(Instana.performanceReporterService)
+        Assert.assertNotNull(getPrivateFieldValue(Instana, "viewChangeService"))
+        Assert.assertNotNull(getPrivateFieldValue(Instana, "dropBeaconService"))
+
+        // Verify performance monitors are enabled according to config
+        Assert.assertEquals(config.performanceMonitorConfig.enableAnrReport,
+            Instana.performanceService?.anrMonitor?.enabled)
+        Assert.assertEquals(config.performanceMonitorConfig.enableLowMemoryReport,
+            Instana.performanceService?.lowMemoryMonitor?.enabled)
+
         resetConfig()
     }
 

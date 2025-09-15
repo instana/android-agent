@@ -42,7 +42,7 @@ object OkHttp3GlobalInterceptor : Interceptor {
         val request: Request
         var marker: HTTPMarker? = null
 
-        if (isAutoEnabled && !hasTrackingHeader(header) && !isBlacklistedURL(url)) {
+        if (isAutoEnabled && !hasTrackingHeader(header) && !isBlacklistedURL(url) && Instana.config?.collectionEnabled != false) {
             if (!checkTag(header) && !isLibraryCallBoolean(url)) {
                 val requestHeaders = ConstantsAndUtil.getCapturedRequestHeaders(intercepted.headers().toMap())
                 marker = Instana.startCapture(

@@ -6,14 +6,11 @@
 package com.instana.android.crash
 
 import android.app.Application
-import android.net.ConnectivityManager
-import android.telephony.TelephonyManager
 import android.util.Log
 import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
-import com.instana.android.core.event.models.ConnectionProfile
 import com.instana.android.core.util.ConstantsAndUtil
 import java.util.Queue
 import java.util.concurrent.LinkedBlockingDeque
@@ -25,8 +22,6 @@ class CrashService(
     private val app: Application,
     private val manager: InstanaWorkManager,
     private val config: InstanaConfig,
-    private val cm: ConnectivityManager,
-    private val tm: TelephonyManager,
     defaultThreadHandler: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler(),
 ) {
 
@@ -63,11 +58,8 @@ class CrashService(
 
         val mergedMeta = Instana.meta
 
-        val connectionProfile = ConnectionProfile(
-            carrierName = ConstantsAndUtil.getCarrierName(app, cm, tm),
-            connectionType = ConstantsAndUtil.getConnectionType(app, cm),
-            effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(app, cm, tm)
-        )
+        val connectionProfile = ConstantsAndUtil.getConnectionProfile(app)
+
         val errorMessage = if (throwable?.message?.isNotBlank() == true) {
             "${throwable.javaClass.name} (${throwable.message})"
         } else throwable?.javaClass?.name

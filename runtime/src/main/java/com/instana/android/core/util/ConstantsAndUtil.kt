@@ -113,12 +113,12 @@ object ConstantsAndUtil {
     }
 
     fun getConnectionProfile(context: Context): ConnectionProfile {
-        val cm: ConnectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val tm: TelephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        val tm = context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         return ConnectionProfile(
-            carrierName = getCarrierName(context, cm, tm),
-            connectionType = getConnectionType(context, cm),
-            effectiveConnectionType = getCellularConnectionType(context, cm, tm)
+            carrierName = if (cm != null && tm != null) getCarrierName(context, cm, tm) else null,
+            connectionType = if (cm != null) getConnectionType(context, cm) else null,
+            effectiveConnectionType = if (cm != null && tm != null) getCellularConnectionType(context, cm, tm) else null
         )
     }
     fun getCarrierName(context: Context, cm: ConnectivityManager, tm: TelephonyManager): String? =
@@ -265,7 +265,7 @@ object ConstantsAndUtil {
         val redactHTTPQuery = Instana.redactHTTPQuery
         synchronized(redactHTTPQuery) {
             val regexList =
-                if (redactHTTPQuery.size > 0) redactHTTPQuery.map { it.toRegex() }
+                if (redactHTTPQuery.isNotEmpty()) redactHTTPQuery.map { it.toRegex() }
                 else Instana.config?.defaultRedactedQueryParams ?: emptyList()
 
             return URLUtils.redactURLQueryParams(

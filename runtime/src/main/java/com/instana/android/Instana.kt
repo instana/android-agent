@@ -7,12 +7,9 @@
 package com.instana.android
 
 import android.app.Application
-import android.content.Context
-import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.telephony.TelephonyManager
 import androidx.annotation.RequiresApi
 import androidx.annotation.Size
 import androidx.annotation.VisibleForTesting
@@ -44,7 +41,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.Collections
+import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.properties.Delegates
 
@@ -268,7 +266,7 @@ object Instana {
     @JvmOverloads
     fun startCapture(@Size(max = 4096) url: String, @Size(max = 256) viewName: String? = view, requestHeaders: Map<String, String>? = emptyMap()): HTTPMarker? {
         val redactedUrl = ConstantsAndUtil.redactQueryParams(url)
-        if (instrumentationService == null) Logger.e("Tried to start capture before Instana agent initialized with: `url` $redactedUrl")
+        if (instrumentationService == null && config?.collectionEnabled != false) Logger.e("Tried to start capture before Instana agent initialized with: `url` $redactedUrl")
         return instrumentationService?.markCall(redactedUrl, viewName, requestHeaders)
     }
 
@@ -405,20 +403,12 @@ object Instana {
 
             @Synchronized
             override fun run() {
-                pthis.workManager = InstanaWorkManager(config, app).also {
-                    val cm = (app.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager)!! //TODO don't force-cast
-                    val tm = (app.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager)!!
-
-                    crashReporting = CrashService(app, it, config, cm, tm)
-                    sessionService = SessionService(app, it, config)
-                    customEvents = CustomEventService(app, it, cm, tm, config) //TODO don't force-cast
-                    instrumentationService = InstrumentationService(app, it, config)
-                    performanceService = PerformanceService(app, config.performanceMonitorConfig, lifeCycle!!) //TODO don't force-cast
-                    performanceReporterService = PerformanceReporterService(app, it, config)
-                    performanceService?.anrMonitor?.enabled = config.performanceMonitorConfig.enableAnrReport
-                    performanceService?.lowMemoryMonitor?.enabled = config.performanceMonitorConfig.enableLowMemoryReport
-                    viewChangeService = ViewChangeService(app, it, config)
-                    dropBeaconService = DropBeaconReporterService(app, it, config)
+                pthis.workManager = InstanaWorkManager(config, app).also { workManager ->
+                    if (Instana.config?.collectionEnabled == false) {
+                        disableAllServices()
+                    } else {
+                        initialiseServices(workManager, app, config)
+                    }
                 }
                 this.isDone = true
                 (this as Object).notifyAll()
@@ -439,6 +429,44 @@ object Instana {
                 Logger.w("The initialization of Instana agent is not finished yet")
             }
         }
+    }
+
+
+    private fun disableAllServices() {
+        performanceService?.apply {
+            anrMonitor?.enabled = false
+            lowMemoryMonitor?.enabled = false
+        }
+        crashReporting = null
+        sessionService = null
+        customEvents = null
+        instrumentationService = null
+        performanceService = null
+        performanceReporterService = null
+        viewChangeService = null
+        dropBeaconService = null
+        Logger.i("All Instana monitoring services have been disabled")
+    }
+
+    private fun initialiseServices(
+        workManager: InstanaWorkManager,
+        app: Application,
+        config: InstanaConfig
+    ) {
+        crashReporting = CrashService(app, workManager, config)
+        sessionService = SessionService(app, workManager, config)
+        customEvents = CustomEventService(app, workManager, config)
+        instrumentationService = InstrumentationService(app, workManager, config)
+        performanceService = PerformanceService(app, config.performanceMonitorConfig, requireNotNull(lifeCycle) {
+            "LifeCycle must not be null"
+        }).apply {
+            anrMonitor.enabled = config.performanceMonitorConfig.enableAnrReport
+            lowMemoryMonitor.enabled = config.performanceMonitorConfig.enableLowMemoryReport
+        }
+        performanceReporterService = PerformanceReporterService(app, workManager, config)
+        viewChangeService = ViewChangeService(app, workManager, config)
+        dropBeaconService = DropBeaconReporterService(app, workManager, config)
+        Logger.i("All Instana monitoring services have been initialised")
     }
 
     /**

@@ -25,11 +25,6 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 
 class LowMemoryMonitorTest:BaseTest() {
-    @Mock
-    lateinit var connectivityManager: ConnectivityManager
-
-    @Mock
-    lateinit var telephonyManager: TelephonyManager
 
     private lateinit var lowMemoryMonitor: LowMemoryMonitor
     private lateinit var config: InstanaConfig
@@ -40,7 +35,7 @@ class LowMemoryMonitorTest:BaseTest() {
         config = InstanaConfig(InstanaTest.API_KEY, InstanaTest.SERVER_URL)
         wrkManager = InstanaWorkManager(config,app)
         wrkManager.isInitialDelayComplete = false
-        Instana.customEvents = CustomEventService(app,wrkManager,connectivityManager,telephonyManager,config)
+        Instana.customEvents = CustomEventService(app,wrkManager,config)
         Instana.sessionId = null
         Instana.performanceReporterService = PerformanceReporterService(app,wrkManager,config)
         SessionService(app,mockWorkManager,config)

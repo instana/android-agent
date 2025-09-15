@@ -6,21 +6,16 @@
 package com.instana.android.core.event
 
 import android.content.Context
-import android.net.ConnectivityManager
-import android.telephony.TelephonyManager
 import com.instana.android.Instana
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
 import com.instana.android.core.event.models.Beacon
-import com.instana.android.core.event.models.ConnectionProfile
 import com.instana.android.core.util.ConstantsAndUtil
 import com.instana.android.core.util.Logger
 
 class CustomEventService(
     private val context: Context,
     private val manager: InstanaWorkManager,
-    private val cm: ConnectivityManager,
-    private val tm: TelephonyManager,
     config: InstanaConfig
 ) {
 
@@ -43,11 +38,7 @@ class CustomEventService(
         }
 
         val mergedMeta = Instana.meta.clone().apply { putAll(meta) }
-        val connectionProfile = ConnectionProfile(
-            carrierName = ConstantsAndUtil.getCarrierName(context, cm, tm),
-            connectionType = ConstantsAndUtil.getConnectionType(context, cm),
-            effectiveConnectionType = ConstantsAndUtil.getCellularConnectionType(context, cm, tm)
-        )
+        val connectionProfile = ConstantsAndUtil.getConnectionProfile(context)
         val errorMessage = error?.message
         val beacon = Beacon.newCustomEvent(
             appKey = appKey,
