@@ -1,5 +1,13 @@
 Changelog
 ==========
+## Version 6.3.0
+
+_2025-12-08_
+
+- Removed `READ_PHONE_STATE`, host apps must request it to access cellular effective connection type.
+- Added support for detecting 5G cellular connections.
+- Removed requirement for `ACCESS_SUPERUSER` permission.
+
 ## Version 6.2.5
 
 _2025-09-12_

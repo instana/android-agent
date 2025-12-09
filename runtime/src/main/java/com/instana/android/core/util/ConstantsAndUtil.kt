@@ -6,6 +6,7 @@
 package com.instana.android.core.util
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
@@ -77,6 +78,7 @@ object ConstantsAndUtil {
         }
     }
 
+    @SuppressLint("MissingPermission")
     fun getConnectionType(context: Context, cm: ConnectivityManager): ConnectionType? {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
             Logger.w("Missing permission 'ACCESS_NETWORK_STATE'. Instana Agent won't be able to detect connection type")
@@ -127,6 +129,7 @@ object ConstantsAndUtil {
             else -> null
         }
 
+    @SuppressLint("MissingPermission")
     fun getCellularConnectionType(context: Context, cm: ConnectivityManager, tm: TelephonyManager): EffectiveConnectionType? {
         if (getConnectionType(context, cm) != ConnectionType.CELLULAR) {
             return null
@@ -161,6 +164,8 @@ object ConstantsAndUtil {
                 -> EffectiveConnectionType.TYPE_3G
 
             TelephonyManager.NETWORK_TYPE_LTE -> EffectiveConnectionType.TYPE_4G
+
+            TelephonyManager.NETWORK_TYPE_NR -> EffectiveConnectionType.TYPE_5G
             else -> null
         }
     }

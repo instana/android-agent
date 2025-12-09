@@ -2,8 +2,8 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: openjdk
-    tag: 11-jre-slim
+    repository: eclipse-temurin
+    tag: 11-jre
     
 inputs:
   - name: android-test-app

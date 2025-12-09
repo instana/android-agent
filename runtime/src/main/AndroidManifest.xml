@@ -20,6 +20,4 @@
     </application>
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_SUPERUSER"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 </manifest>
