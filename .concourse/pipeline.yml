@@ -1,7 +1,7 @@
 meta:
   artifactory-creds: &artifactory_creds
-    username: ((delivery-instana-io-internal-project-artifact-read-writer-creds.username))
-    password: ((delivery-instana-io-internal-project-artifact-read-writer-creds.password))
+    username: ((icr-api-key.username))
+    password: ((icr-api-key.password))
   gh-status_hooks: &gh-status-hooks
     on_success:
       put: gh-status
@@ -118,6 +118,6 @@ resource_types:
     type: registry-image
     check_every: never
     source:
-      repository: delivery.instana.io/int-docker-ci-utility-images-local/cogito-gh-status-resource
-      tag: 1.0.1-instana
+      repository: icr.io/instana-int/int-docker-ci-utility-images-local/cogito-gh-status-resource
+      tag: 1.0.0-instana
       <<: *artifactory_creds
