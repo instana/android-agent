@@ -241,8 +241,18 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         OkHttp3GlobalInterceptor.intercept(mockChain)
     }
 
-    @Test
-    fun `test intercept retries request when autoRetryOnNetworkException is true`() {
+    /**
+     * autoRetryOnNetworkException=true no longer causes a chain.proceed() retry inside the
+     * interceptor. Re-driving the same chain on an already-failed exchange corrupts the OkHttp
+     * codec state (Http1ExchangeCodec state: 0) → fatal IllegalStateException on the dispatcher
+     * thread. The retry was removed in favour of always rethrowing; OkHttp's own
+     * RetryAndFollowUpInterceptor handles safe connection-level retries.
+     *
+     * The autoRetryOnNetworkException field is kept in InstanaConfig for API compatibility
+     * but has no behavioural effect. Exceptions always propagate.
+     */
+    @Test(expected = IOException::class)
+    fun `test intercept propagates exception even when autoRetryOnNetworkException is true`() {
         config.httpCaptureConfig = HTTPCaptureConfig.AUTO
         config.autoRetryOnNetworkException = true
         Instana.setup(app, config)
@@ -256,16 +266,14 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         `when`(mockBuilders.header(any(String::class.java), any(String::class.java))).thenReturn(mockBuilders)
         `when`(mockBuilders.build()).thenReturn(mockRequest)
 
-        // First call throws exception, second call succeeds
+        // chain.proceed throws — interceptor must rethrow, NOT call chain.proceed() again.
         `when`(mockChain.proceed(any(Request::class.java)))
             .thenThrow(IOException("Network error"))
-            .thenReturn(mockResponse)
 
-        val result = OkHttp3GlobalInterceptor.intercept(mockChain)
+        OkHttp3GlobalInterceptor.intercept(mockChain)
 
-        // Verify chain.proceed was called twice (once for error, once for retry)
-        verify(mockChain, times(2)).proceed(any(Request::class.java))
-        assert(result == mockResponse)
+        // Verify chain.proceed was called exactly once — no retry
+        verify(mockChain, times(1)).proceed(any(Request::class.java))
     }
 
     @Test(expected = ProtocolException::class)
@@ -283,11 +291,10 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         `when`(mockBuilders.header(any(String::class.java), any(String::class.java))).thenReturn(mockBuilders)
         `when`(mockBuilders.build()).thenReturn(mockRequest)
 
-        // Throw a ProtocolException
+        // Throw a ProtocolException — must always rethrow
         `when`(mockChain.proceed(any(Request::class.java)))
             .thenThrow(ProtocolException("Protocol error"))
 
-        // This should throw ProtocolException without retrying
         OkHttp3GlobalInterceptor.intercept(mockChain)
     }
 
@@ -319,8 +326,13 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         }
     }
 
+    /**
+     * Verifies that exceptions from different network error types (SocketTimeoutException,
+     * ConnectException) are always rethrown — never swallowed or turned into retries.
+     * autoRetryOnNetworkException=true has no effect; it is a deprecated no-op field.
+     */
     @Test
-    fun `test intercept retries for different exception types when autoRetryOnNetworkException is true`() {
+    fun `test intercept propagates different exception types even when autoRetryOnNetworkException is true`() {
         config.httpCaptureConfig = HTTPCaptureConfig.AUTO
         config.autoRetryOnNetworkException = true
         Instana.setup(app, config)
@@ -334,23 +346,27 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         `when`(mockBuilders.header(any(String::class.java), any(String::class.java))).thenReturn(mockBuilders)
         `when`(mockBuilders.build()).thenReturn(mockRequest)
 
-        // Test with SocketTimeoutException
+        // SocketTimeoutException must propagate — chain.proceed called exactly once
         `when`(mockChain.proceed(any(Request::class.java)))
             .thenThrow(SocketTimeoutException("Timeout"))
-            .thenReturn(mockResponse)
 
-        val result1 = OkHttp3GlobalInterceptor.intercept(mockChain)
-        verify(mockChain, times(2)).proceed(any(Request::class.java))
-        assert(result1 == mockResponse)
+        try {
+            OkHttp3GlobalInterceptor.intercept(mockChain)
+            assert(false) { "Expected SocketTimeoutException" }
+        } catch (e: SocketTimeoutException) {
+            verify(mockChain, times(1)).proceed(any(Request::class.java))
+        }
 
-        // Reset and test with ConnectException
+        // ConnectException must propagate — chain.proceed called exactly once more
         `when`(mockChain.proceed(any(Request::class.java)))
             .thenThrow(ConnectException("Connection failed"))
-            .thenReturn(mockResponse)
 
-        val result2 = OkHttp3GlobalInterceptor.intercept(mockChain)
-        verify(mockChain, times(4)).proceed(any(Request::class.java)) // 2 more calls
-        assert(result2 == mockResponse)
+        try {
+            OkHttp3GlobalInterceptor.intercept(mockChain)
+            assert(false) { "Expected ConnectException" }
+        } catch (e: ConnectException) {
+            verify(mockChain, times(2)).proceed(any(Request::class.java))
+        }
     }
 
 }

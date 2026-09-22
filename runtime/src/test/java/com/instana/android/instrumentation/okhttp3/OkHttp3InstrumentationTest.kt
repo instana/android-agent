@@ -49,6 +49,83 @@ class OkHttp3InstrumentationTest {
         verify(mockBuilder, atLeastOnce()).interceptors()
     }
 
+    // ── clientBuilderInterceptor — idempotency ────────────────────────────────
+
+    @Test
+    fun `clientBuilderInterceptor adds interceptor to fresh builder`() {
+        val builder = okhttp3.OkHttpClient.Builder()
+        OkHttp3Instrumentation.clientBuilderInterceptor(builder)
+        assert(builder.interceptors().count { it === OkHttp3GlobalInterceptor } == 1) {
+            "Expected exactly 1 OkHttp3GlobalInterceptor, got ${builder.interceptors().size}"
+        }
+    }
+
+    @Test
+    fun `clientBuilderInterceptor does not add duplicate when interceptor already present`() {
+        // Simulates the copy-constructor path: newBuilder() copies interceptors from parent,
+        // then the instrumented <init> calls clientBuilderInterceptor again.
+        val builder = okhttp3.OkHttpClient.Builder()
+        builder.addInterceptor(OkHttp3GlobalInterceptor)  // already present (copied from parent)
+        OkHttp3Instrumentation.clientBuilderInterceptor(builder)
+        assert(builder.interceptors().count { it === OkHttp3GlobalInterceptor } == 1) {
+            "Guard failed: interceptor duplicated. Count=${builder.interceptors().size}"
+        }
+    }
+
+    // ── clientBuildSafetyCheck — safety-net deduplication ────────────────────
+
+    @Test
+    fun `clientBuildSafetyCheck is a no-op when interceptor is absent`() {
+        val builder = okhttp3.OkHttpClient.Builder()
+        OkHttp3Instrumentation.clientBuildSafetyCheck(builder)
+        assert(builder.interceptors().isEmpty()) { "Expected empty interceptor list" }
+    }
+
+    @Test
+    fun `clientBuildSafetyCheck is a no-op when interceptor appears exactly once`() {
+        val builder = okhttp3.OkHttpClient.Builder()
+        builder.addInterceptor(OkHttp3GlobalInterceptor)
+        OkHttp3Instrumentation.clientBuildSafetyCheck(builder)
+        assert(builder.interceptors().count { it === OkHttp3GlobalInterceptor } == 1) {
+            "Safety check should not remove the single interceptor"
+        }
+    }
+
+    @Test
+    fun `clientBuildSafetyCheck removes duplicate OkHttp3GlobalInterceptor leaving exactly one`() {
+        val builder = okhttp3.OkHttpClient.Builder()
+        builder.addInterceptor(OkHttp3GlobalInterceptor)
+        builder.addInterceptor(OkHttp3GlobalInterceptor) // duplicate — simulates the bug
+        assert(builder.interceptors().count { it === OkHttp3GlobalInterceptor } == 2) { "Setup failed" }
+
+        OkHttp3Instrumentation.clientBuildSafetyCheck(builder)
+
+        assert(builder.interceptors().count { it === OkHttp3GlobalInterceptor } == 1) {
+            "Safety check should reduce duplicates to 1, got ${builder.interceptors().size}"
+        }
+    }
+
+    @Test
+    fun `clientBuildSafetyCheck preserves non-Instana interceptors alongside single Instana interceptor`() {
+        val otherInterceptor = okhttp3.Interceptor { chain -> chain.proceed(chain.request()) }
+        val builder = okhttp3.OkHttpClient.Builder()
+        builder.addInterceptor(otherInterceptor)
+        builder.addInterceptor(OkHttp3GlobalInterceptor)
+        builder.addInterceptor(OkHttp3GlobalInterceptor) // duplicate
+        builder.addInterceptor(otherInterceptor)
+
+        OkHttp3Instrumentation.clientBuildSafetyCheck(builder)
+
+        val interceptors = builder.interceptors()
+        assert(interceptors.count { it === OkHttp3GlobalInterceptor } == 1) {
+            "Expected 1 Instana interceptor after safety check"
+        }
+        assert(interceptors.count { it === otherInterceptor } == 2) {
+            "Safety check must not remove non-Instana interceptors"
+        }
+        assert(interceptors.size == 3) { "Expected 3 interceptors total, got ${interceptors.size}" }
+    }
+
     @Test
     fun `test check if cancel call triggers request calls to cancel`() {
         try {

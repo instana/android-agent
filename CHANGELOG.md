@@ -1,5 +1,12 @@
 Changelog
 ==========
+
+## Version 6.4.0
+
+_2026-09-18_
+
+- Fixed duplicate `OkHttp3GlobalInterceptor` injection when building custom `OkHttpClient` instances via copy constructor / `newBuilder()`.
+
 ## Version 6.3.0
 
 _2025-12-08_
