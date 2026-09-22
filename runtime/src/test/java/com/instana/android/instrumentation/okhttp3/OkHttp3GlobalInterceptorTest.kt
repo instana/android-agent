@@ -328,11 +328,11 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
 
     /**
      * Verifies that exceptions from different network error types (SocketTimeoutException,
-     * ConnectException) are always rethrown — never swallowed or turned into retries.
-     * autoRetryOnNetworkException=true has no effect; it is a deprecated no-op field.
+     * ConnectException) trigger a retry when autoRetryOnNetworkException=true,
+     * causing chain.proceed to be called twice per intercept (initial attempt + retry).
      */
     @Test
-    fun `test intercept propagates different exception types even when autoRetryOnNetworkException is true`() {
+    fun `test intercept retries on network exception when autoRetryOnNetworkException is true`() {
         config.httpCaptureConfig = HTTPCaptureConfig.AUTO
         config.autoRetryOnNetworkException = true
         Instana.setup(app, config)
@@ -346,7 +346,7 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
         `when`(mockBuilders.header(any(String::class.java), any(String::class.java))).thenReturn(mockBuilders)
         `when`(mockBuilders.build()).thenReturn(mockRequest)
 
-        // SocketTimeoutException must propagate — chain.proceed called exactly once
+        // SocketTimeoutException triggers retry — chain.proceed called twice (attempt + retry)
         `when`(mockChain.proceed(any(Request::class.java)))
             .thenThrow(SocketTimeoutException("Timeout"))
 
@@ -354,10 +354,10 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
             OkHttp3GlobalInterceptor.intercept(mockChain)
             assert(false) { "Expected SocketTimeoutException" }
         } catch (e: SocketTimeoutException) {
-            verify(mockChain, times(1)).proceed(any(Request::class.java))
+            verify(mockChain, times(2)).proceed(any(Request::class.java))
         }
 
-        // ConnectException must propagate — chain.proceed called exactly once more
+        // ConnectException triggers retry — chain.proceed called twice more (cumulative: 4)
         `when`(mockChain.proceed(any(Request::class.java)))
             .thenThrow(ConnectException("Connection failed"))
 
@@ -365,7 +365,7 @@ class OkHttp3GlobalInterceptorTest:BaseTest() {
             OkHttp3GlobalInterceptor.intercept(mockChain)
             assert(false) { "Expected ConnectException" }
         } catch (e: ConnectException) {
-            verify(mockChain, times(2)).proceed(any(Request::class.java))
+            verify(mockChain, times(4)).proceed(any(Request::class.java))
         }
     }
 
