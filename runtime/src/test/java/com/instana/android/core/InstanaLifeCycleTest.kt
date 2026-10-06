@@ -17,6 +17,7 @@ import com.instana.android.BaseTest
 import com.instana.android.Instana
 import com.instana.android.InstanaTest
 import com.instana.android.performance.launchtime.LaunchTimeTracker
+import com.instana.android.performance.network.AppLifecycleIdentificationService
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.verify
@@ -42,6 +43,7 @@ class InstanaLifeCycleTest:BaseTest() {
     @Before
     fun `test setup`(){
         MockitoAnnotations.initMocks(this)
+        Instana.config = null
         instanaLifeCycle = InstanaLifeCycle(app)
     }
 
@@ -277,7 +279,45 @@ class InstanaLifeCycleTest:BaseTest() {
         verify(mockApp, atLeastOnce()).registerActivityLifecycleCallbacks(any())
     }
 
+    @Test
+    fun `test startAppLifecycleIdentificationService starts service on ActivityStarted when ENU enabled`() {
+        val config = InstanaConfig(
+            InstanaTest.API_KEY,
+            InstanaTest.SERVER_URL,
+            trustDeviceTiming = true,
+            performanceMonitorConfig = com.instana.android.performance.PerformanceMonitorConfig(enableBackgroundEnuReport = true)
+        )
+        Instana.setup(app, config)
+        val localLifeCycle = InstanaLifeCycle(app)
 
+        whenever(mockActivity.application).thenReturn(app)
+        whenever(mockActivity.localClassName).thenReturn("TestActivity")
 
+        localLifeCycle.onActivityStarted(mockActivity)
+
+        val serviceIntent = org.robolectric.Shadows.shadowOf(app).nextStartedService
+        Assert.assertNotNull(serviceIntent)
+        Assert.assertEquals(AppLifecycleIdentificationService::class.java.name, serviceIntent.component?.className)
+    }
+
+    @Test
+    fun `test startAppLifecycleIdentificationService does not throw when startService fails`() {
+        val mockApp = mock(Application::class.java)
+        val config = InstanaConfig(
+            InstanaTest.API_KEY,
+            InstanaTest.SERVER_URL,
+            trustDeviceTiming = true,
+            performanceMonitorConfig = com.instana.android.performance.PerformanceMonitorConfig(enableBackgroundEnuReport = true)
+        )
+        Instana.config = config
+        whenever(mockApp.startService(any())).thenThrow(IllegalStateException("Not allowed to start service"))
+        val localLifeCycle = InstanaLifeCycle(mockApp)
+
+        whenever(mockActivity.application).thenReturn(mockApp)
+        whenever(mockActivity.localClassName).thenReturn("TestActivity")
+
+        // Should not crash the host app
+        localLifeCycle.onActivityStarted(mockActivity)
+    }
 
 }

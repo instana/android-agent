@@ -1,6 +1,12 @@
 Changelog
 ==========
 
+## Version 6.4.1
+
+_2026-10-06_
+
+- Prevent background service start crashes during background SDK initialization on Android 8.0+.
+
 ## Version 6.4.0
 
 _2026-09-18_

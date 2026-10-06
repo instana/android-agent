@@ -21,6 +21,7 @@ import com.instana.android.Instana
 import com.instana.android.activity.FragmentActivityRegister
 import com.instana.android.activity.InstanaActivityLifecycleCallbacks
 import com.instana.android.core.util.ConstantsAndUtil
+import com.instana.android.core.util.Logger
 import com.instana.android.fragments.FragmentLifecycleCallbacks
 import com.instana.android.performance.launchtime.LaunchTimeTracker
 import com.instana.android.performance.launchtime.LaunchTypeEnum
@@ -32,13 +33,14 @@ import java.util.concurrent.TimeUnit
  * Util class to get current activity data and memory alerts
  */
 class InstanaLifeCycle(
-    application: Application,
+    private val application: Application,
 ) : DefaultActivityLifecycleCallbacks, ComponentCallbacks2 {
 
     private var callback: AppStateCallback? = null
     private var backgrounded: Boolean = false
     private var activityCount = 0  // Track active activities
     private var isConfigurationChange = false  // Track if the activity is just being recreated
+    private var isAppLifecycleServiceStarted = false
     /**
      * Public variable that provides activity name for reports that require it
      */
@@ -51,9 +53,20 @@ class InstanaLifeCycle(
             application.registerActivityLifecycleCallbacks(InstanaActivityLifecycleCallbacks())
             registerFragmentCallbacks(application)
         }
-        if(ConstantsAndUtil.isBackgroundEnuEnabled() && !backgrounded){
-            application.startService(Intent(application, AppLifecycleIdentificationService::class.java))
+        if (ConstantsAndUtil.isBackgroundEnuEnabled()) {
             startTheDailyWorkerForENU()
+        }
+    }
+
+    private fun startAppLifecycleIdentificationService(app: Application?) {
+        val targetApp = app ?: application
+        if (!isAppLifecycleServiceStarted && ConstantsAndUtil.isBackgroundEnuEnabled()) {
+            try {
+                targetApp.startService(Intent(targetApp, AppLifecycleIdentificationService::class.java))
+                isAppLifecycleServiceStarted = true
+            } catch (e: Exception) {
+                Logger.e("Failed to start AppLifecycleIdentificationService: ${e.localizedMessage}", e)
+            }
         }
     }
 
@@ -68,14 +81,15 @@ class InstanaLifeCycle(
                     .build()
             )
             .build()
-        Instana.getApplication()?.let {
-            WorkManager.getInstance(it).enqueueUniquePeriodicWork(
+        try {
+            WorkManager.getInstance(application).enqueueUniquePeriodicWork(
                 "InstanaEnuWork",
                 ExistingPeriodicWorkPolicy.KEEP, // prevent duplication
                 workRequest
             )
+        } catch (e: Exception) {
+            Logger.e("Failed to enqueue NetworkUsageWorker: ${e.localizedMessage}", e)
         }
-
     }
 
     override fun onLowMemory() {
@@ -119,6 +133,7 @@ class InstanaLifeCycle(
         }
         activityName = activity.localClassName.toString()
         activityCount++
+        startAppLifecycleIdentificationService(activity.application)
     }
 
     override fun onActivityDestroyed(activity: Activity) {
