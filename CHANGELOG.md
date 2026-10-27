@@ -1,6 +1,16 @@
 Changelog
 ==========
 
+## Version 6.5.0
+
+_2026-10-26_
+
+- Fixed duplicate beacon reporting across concurrent flush workers, app restarts, and lost network responses.
+- Added `enableStrictBeaconDedup` configuration option to drop unconfirmed in-flight beacons on lost responses or app restarts to guarantee zero server
+  duplicates.
+- Added bounded retries with exponential backoff (capped at 3 for unconfirmed in-flight beacons and 5 for network drops) for failed beacon transmissions.
+- Improved beacon queue ordering (oldest-first) and softened buffer overflow cleanup.
+
 ## Version 6.4.1
 
 _2026-10-06_

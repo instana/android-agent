@@ -64,7 +64,7 @@ class InstanaConfig
      * If the value is equal to 0L (`usiRefreshTimeIntervalInHrs == 0L`): Tracking is disabled [No tracking].
      * If the value is greater than 0L (`usiRefreshTimeIntervalInHrs > 0L`): Tracking is limited within the specified timeframe (refreshing the ID within the provided hours).
      */
-    var usiRefreshTimeIntervalInHrs:Long = -1L,
+    var usiRefreshTimeIntervalInHrs: Long = -1L,
 
     /*
      * If Instana is not initialized on the main thread, the current thread will be blocked until
@@ -84,14 +84,14 @@ class InstanaConfig
      * Toggle automatic capture of screen names for Activities and Fragments.
      * Note: Composable UIs currently do not have support for auto-capturing screen names.
      */
-    var autoCaptureScreenNames : Boolean = false,
+    var autoCaptureScreenNames: Boolean = false,
     /**
      * Toggle the reporting of dropped beacon samples.
      * Note: Disabling this will prevent the CUSTOM EVENT named
      * "INSTANA_DROPPED_BEACON_SAMPLE" from being sent, which includes metadata
      * about the sampled dropped beacons.
      */
-    var dropBeaconReporting : Boolean = false,
+    var dropBeaconReporting: Boolean = false,
     /**
      * Configuration of the Instana Performance Monitoring Service
      */
@@ -111,18 +111,18 @@ class InstanaConfig
      *     - 2500 beacons per 5 minutes
      *     - 100 beacons per 10 seconds
      */
-    var rateLimits:RateLimits = RateLimits.DEFAULT_LIMITS,
+    var rateLimits: RateLimits = RateLimits.DEFAULT_LIMITS,
 
     /**
      * When enabled, this prevents beacons older than 15 minutes (saved while the device was offline) from being sent to the backend.
      */
-    var deleteOldBeacons:Boolean = false,
+    var deleteOldBeacons: Boolean = false,
 
     /**
      * When enabled, the backend will consider the device's (beacon creation) time as the actual time, rather than updating it to the ingestion time
      * (the time the beacon arrived at the server). If the beacon is received after 30 minutes, the ingestion time will be used instead.
      */
-    var trustDeviceTiming:Boolean = false,
+    var trustDeviceTiming: Boolean = false,
 
     /**
      * If true, this option adds W3C-compliant headers to the request headers of all outgoing application requests,
@@ -135,7 +135,15 @@ class InstanaConfig
      * When disabled, exceptions will propagate normally without retrying.
      * Default is false to prevent unexpected duplicate requests.
      */
-    var autoRetryOnNetworkException: Boolean = false
+    var autoRetryOnNetworkException: Boolean = false,
+
+    /**
+     * When enabled, prevents duplicate beacon reporting on lost network responses or cross-process restarts
+     * by dropping in-flight beacons whose transmission state is unconfirmed.
+     * When disabled, in-flight beacons with unconfirmed responses will be retried up to a maximum of 3 times.
+     * Default is false.
+     */
+    var enableStrictBeaconDedup: Boolean = false,
 ) {
 
     val breadcrumbsBufferSize: Int = 20

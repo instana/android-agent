@@ -9,7 +9,12 @@ package com.instana.android.core
 import android.content.Context
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
-import androidx.work.*
+import androidx.work.Configuration
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.Operation
+import androidx.work.WorkManager
 import com.instana.android.Instana
 import com.instana.android.Instana.config
 import com.instana.android.core.event.models.Beacon
@@ -20,14 +25,20 @@ import com.instana.android.core.util.RateLimiter
 import com.instana.android.core.util.isDirectoryEmpty
 import com.instana.android.dropbeaconhandler.DropBeaconHandler
 import com.instana.android.view.VisibleScreenNameTracker
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
-import java.util.*
+import java.util.Queue
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -36,6 +47,7 @@ class InstanaWorkManager(
     private val context: Context,
 ) {
     private val beaconsDirectoryName = "instanaBeacons"
+    private val beaconsStagingDirectoryName = "instanaBeacons_staging"
     private val flushDelayMs = 1000L
 
     /**
@@ -56,7 +68,8 @@ class InstanaWorkManager(
     private val initialExecutorFuture: ScheduledFuture<*>
 
     internal var lastFlushTimeMillis = AtomicLong(0)
-    internal var sendFirstBeacon = true // first beacon is sent all by itself, not in a batch
+    // AtomicBoolean to safely transition from true→false exactly once across threads.
+    internal val sendFirstBeacon = AtomicBoolean(true)
     internal var slowSendStartTime: Long? = null
         set (value) {
             if (value == null) {
@@ -110,6 +123,9 @@ class InstanaWorkManager(
         }
         return directory
     }
+
+    internal fun getStagingDirectory(): File =
+        File(context.filesDir, beaconsStagingDirectoryName).apply { mkdirs() }
 
     @VisibleForTesting
     internal fun getWorkManager(): WorkManager? {
@@ -167,39 +183,33 @@ class InstanaWorkManager(
         return config?.slowSendIntervalMillis != null
     }
     internal fun isInSlowSendMode(): Boolean {
-        return canDoSlowSend() && (slowSendStartTime != null || sendFirstBeacon)
+        return canDoSlowSend() && (slowSendStartTime != null || sendFirstBeacon.get())
     }
 
     private fun canScheduleFlush(): Boolean {
-        if (lastFlushTimeMillis.get() == 0L) {
-            return true
-        }
-        val maxFlushingTimeAllowed = 10000 // 10 seconds
-
-        val diff = System.currentTimeMillis() - lastFlushTimeMillis.get()
+        val lastFlush = lastFlushTimeMillis.get()
+        if (lastFlush == 0L) return true
+        // Must always exceed the OkHttp readTimeout (currently 30s) to prevent a concurrent
+        // worker from starting while an active POST is still in flight.
+        val maxFlushingTimeAllowed = 35000L // 35 seconds
+        val diff = System.currentTimeMillis() - lastFlush
         if (diff > maxFlushingTimeAllowed) {
-            // Previous flushing takes too long, force a new flush to prevent
-            // too many beacons accumulated locally
-            Logger.w("Previous flushing takes more than $diff milliseconds. Force another flushing now")
+            Logger.w("[INSTANA_DEDUP] canScheduleFlush: previous flush has been in flight for ${diff}ms — forcing new worker")
             return true
         }
         return false
     }
 
     /**
-     * Send all beacons together once beacon-creation stops for 1s
+     * Send all beacons together once beacon-creation stops for 1s.
      */
     internal fun flush(manager: WorkManager) {
-        if (!canScheduleFlush()) {
-            Logger.d("Flushing going on, can not flush now")
-            return
-        }
-        Logger.i("Scheduling beacons for flushing")
+        if (!canScheduleFlush()) return
         val directory = getBeaconsDirectory()
         if (directory.isDirectoryEmpty()) return
 
         var intervalMillis = flushIntervalMillis
-        if (isInSlowSendMode() && !sendFirstBeacon) {
+        if (isInSlowSendMode() && !sendFirstBeacon.get()) {
             intervalMillis = config!!.slowSendIntervalMillis!!
         }
 
@@ -219,10 +229,12 @@ class InstanaWorkManager(
             EventWorker.createWorkRequest(
                 constraints = constraints,
                 directory = directory,
+                stagingDirectory = getStagingDirectory(),
                 reportingURL = config?.reportingURL,
                 allowSlowSend,
                 initialDelayMs = flushDelayMs,
-                tag = tag
+                tag = tag,
+                enableStrictBeaconDedup = config?.enableStrictBeaconDedup ?: false
             )
         )
     }
@@ -230,11 +242,13 @@ class InstanaWorkManager(
     @Synchronized
     internal fun queue(beacon: Beacon) {
         val beaconId = beacon.getBeaconId()
-        Logger.d("Queueing beacon with: `beaconId` $beaconId")
         when {
-            isInitialDelayComplete.not() -> initialDelayQueue.add(beacon)
-            beaconId.isNullOrBlank() -> Logger.e("Tried to queue beacon with no beaconId: $beacon")
+            isInitialDelayComplete.not() -> {
+                initialDelayQueue.add(beacon)
+            }
+            beaconId.isNullOrBlank() -> Logger.e("[INSTANA_DEDUP] queue() blank beaconId — dropping: $beacon")
             rateLimiter.isRateExceeded(1) -> {
+                Logger.w("[INSTANA_DEDUP] queue() RATE LIMITED beaconId=$beaconId")
                 if(config?.dropBeaconReporting == true) {
                     DropBeaconHandler.addBeaconToDropHandler(beacon = beacon)
                 }
@@ -251,7 +265,7 @@ class InstanaWorkManager(
                             file.writeText(beacon.toString(), Charsets.UTF_8)
                             getWorkManager()?.run { flush(this) }
                         } catch (e: IOException) {
-                            Logger.e("Failed to persist beacon in file-system. Dropping beacon: $beacon", e)
+                            Logger.e("[INSTANA_DEDUP] queue() FAILED to persist beaconId=$beaconId", e)
                         }
                     }
                 }
@@ -272,8 +286,9 @@ class InstanaWorkManager(
         runBlocking {
             withContext(Dispatchers.IO) {
                 try {
-                    /** Adding crash beacon to the directory */
-                    val file = File(getBeaconsDirectory(), beaconId)
+                    /** Adding crash beacon to the directory with cr_ prefix for higher retry budget */
+                    val crashFileName = if (beaconId.startsWith("cr_")) beaconId else "cr_$beaconId"
+                    val file = File(getBeaconsDirectory(), crashFileName)
                     file.writeText(beacon.toString(), Charsets.UTF_8)
                     /**
                      * Verifies whether the executor has finished the task or is currently running.

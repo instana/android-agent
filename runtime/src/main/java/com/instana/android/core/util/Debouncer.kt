@@ -9,8 +9,10 @@ import java.util.Timer
 import java.util.TimerTask
 
 internal class Debouncer {
+    @Volatile
     private var timer: Timer? = null
 
+    @Synchronized
     fun enqueue(millis: Long, action: () -> Unit) {
         timer?.cancel()
 

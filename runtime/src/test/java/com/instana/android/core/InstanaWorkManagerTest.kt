@@ -56,7 +56,7 @@ class InstanaWorkManagerTest : BaseTest() {
     fun `test is in slow send mode must return false when slowSendStartTime is null`() {
         Instana.setup(application, InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = 2000))
         Instana.workManager?.slowSendStartTime = null
-        Instana.workManager?.sendFirstBeacon = false
+        Instana.workManager?.sendFirstBeacon?.set(false)
         assertNotNull(Instana.workManager?.isInSlowSendMode())
         Instana.workManager?.isInSlowSendMode()?.let {
             assertFalse(it)
@@ -67,7 +67,7 @@ class InstanaWorkManagerTest : BaseTest() {
     fun `test is in slow send mode must return true when slowSendStartTime is not null`() {
         Instana.setup(application, InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = 2000))
         Instana.workManager?.slowSendStartTime = 1000
-        Instana.workManager?.sendFirstBeacon = false
+        Instana.workManager?.sendFirstBeacon?.set(false)
         assertNotNull(Instana.workManager?.isInSlowSendMode())
         Instana.workManager?.isInSlowSendMode()?.let {
             assertTrue(it)
@@ -79,7 +79,7 @@ class InstanaWorkManagerTest : BaseTest() {
         val config = InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = 2000)
         val instanaWrkManager = InstanaWorkManager(config,app)
         instanaWrkManager.slowSendStartTime = 1000
-        instanaWrkManager.sendFirstBeacon = false
+        instanaWrkManager.sendFirstBeacon.set(false)
         assertNotNull(instanaWrkManager.isInSlowSendMode())
         instanaWrkManager.isInSlowSendMode().let {
             assertFalse(it)
@@ -90,7 +90,7 @@ class InstanaWorkManagerTest : BaseTest() {
     fun `test is in slow send mode must return false when slowSendIntervalMillis is null`() {
         Instana.setup(application, InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = null))
         Instana.workManager?.slowSendStartTime = 1000
-        Instana.workManager?.sendFirstBeacon = false
+        Instana.workManager?.sendFirstBeacon?.set(false)
         assertNotNull(Instana.workManager?.isInSlowSendMode())
         Instana.workManager?.isInSlowSendMode()?.let {
             assertFalse(it)
@@ -310,7 +310,7 @@ class InstanaWorkManagerTest : BaseTest() {
     fun `test flush with can schedule as in slow send mode and not 1st beacon`(){
         val config = InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = 100L)
         val wrkManager = InstanaWorkManager(config,app)
-        wrkManager.sendFirstBeacon=false
+        wrkManager.sendFirstBeacon.set(false)
         val mockWrkManager = Mockito.mock(WorkManager::class.java)
         wrkManager.lastFlushTimeMillis.set(1000L)
         assertEquals(wrkManager.flush(mockWrkManager),Unit)

@@ -32,6 +32,7 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.net.MalformedURLException
 import java.net.URL
+import java.util.concurrent.TimeUnit
 
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
@@ -49,6 +50,9 @@ object ConstantsAndUtil {
         Runtime.getRuntime()
     }
 
+    // maxFlushingTimeAllowed in InstanaWorkManager must always exceed this timeout (currently 35s vs 30s)
+    internal const val HTTP_TIMEOUT_SECONDS = 30L
+
     val client: OkHttpClient by lazy {
         var client: OkHttpClient? = null
         if (Instana.config?.debugTrustInsecureReportingURL == true) {
@@ -57,6 +61,9 @@ object ConstantsAndUtil {
             client = OkHttpClient.Builder()
                 .sslSocketFactory(insecureSocketFactory, insecureTrustAllManager)
                 .hostnameVerifier { _, _ -> true }
+                .connectTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .readTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .writeTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .build()
         } else if (Build.VERSION.SDK_INT < 20) {
             // Enable TLSv1.2 support: https://developer.android.com/reference/javax/net/ssl/SSLSocket.html#protocols
@@ -64,10 +71,17 @@ object ConstantsAndUtil {
             if (trustManager != null) {
                 client = OkHttpClient.Builder()
                     .sslSocketFactory(TLSSocketFactory(), trustManager)
+                    .connectTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .readTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                    .writeTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                     .build()
             }
         }
-        client ?: OkHttpClient()
+        client ?: OkHttpClient.Builder()
+            .connectTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .readTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .writeTimeout(HTTP_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .build()
     }
 
     fun getOsName(): String {
