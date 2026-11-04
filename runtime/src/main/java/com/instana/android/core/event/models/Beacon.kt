@@ -745,12 +745,22 @@ internal class Beacon private constructor(
             userProfile: UserProfile,
             sessionId: String,
             view: String?,
-            meta: Map<String, String>
+            meta: Map<String, String>,
+            origin: String? = null,
+            /**
+             * Override the SESSION_START beacon's timestamp. When non-null, the beacon `ti`
+             * field is set to this value instead of the construction-time wall clock. Used by
+             * lazy background sessions to ensure SESSION_START is always older than the first
+             * beacon that triggered session creation.
+             */
+            sessionTimestamp: Long? = null,
         ): Beacon {
             return Beacon(BeaconType.SESSION_START, 0, appKey, sessionId, 0, appProfile, deviceProfile, connectionProfile, userProfile)
                 .apply {
                     view?.run { setView(this) }
                     for (it in meta) { setMeta(it.key, it.value) }
+                    origin?.run { setInternalMeta("sessionOrigin", this) }
+                    sessionTimestamp?.run { setTimestamp(this) }
                 }
         }
 

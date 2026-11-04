@@ -54,7 +54,12 @@ class HTTPMarker(
     private val markerId = UUID.randomUUID().toString()
     private var carrierName: String? = null
     private var connectionProfile: ConnectionProfile
-    private val sessionId: String?
+
+    // sessionId is read lazily in sendBeacon() so that ensureSession() can be deferred
+    // to the point where we know the HTTP call actually completed and a beacon will be sent.
+    // Reading it here (at marker creation time) and calling ensureSession() here would create
+    // a SESSION_START beacon even if the process is killed before the HTTP call finishes,
+    // producing a ghost session with no following HTTP beacon.
     private var status: MarkerStatus
 
     val headers = MaxCapacityMap<String, String>(64)
@@ -66,7 +71,6 @@ class HTTPMarker(
     init {
         status = MarkerStatus.STARTED
         stopWatch.start()
-        sessionId = Instana.sessionId
         connectionProfile = ConnectionProfile(
             carrierName = Instana.instrumentationService?.run { getCarrierName(context, connectivityManager, telephonyManager) },
             connectionType = Instana.instrumentationService?.run { getConnectionType(context, connectivityManager) },
@@ -278,6 +282,12 @@ class HTTPMarker(
         errorMessage: String? = null,
         headers: MaxCapacityMap<String, String>
     ) {
+        // ensureSession() is called here, not in init, so that SESSION_START and the HTTP beacon
+        // are always written together. If the process dies mid-request, neither beacon is on disk.
+        // Pass stopWatch.startTime so the SESSION_START beacon is backdated to 1 ms before the
+        // HTTP request started — ensuring SESSION_START is always the oldest beacon in the session.
+        Instana.ensureSession(beaconStartTime = stopWatch.startTime)
+        val sessionId = Instana.sessionId
         if (sessionId == null) {
             Logger.e("Tried to end HTTPMarker with null sessionId")
             return

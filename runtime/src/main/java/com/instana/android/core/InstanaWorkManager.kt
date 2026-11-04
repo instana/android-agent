@@ -16,7 +16,6 @@ import androidx.work.NetworkType
 import androidx.work.Operation
 import androidx.work.WorkManager
 import com.instana.android.Instana
-import com.instana.android.Instana.config
 import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.worker.EventWorker
 import com.instana.android.core.util.Debouncer
@@ -38,12 +37,11 @@ import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingDeque
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class InstanaWorkManager(
-    config: InstanaConfig,
+    private val config: InstanaConfig,
     private val context: Context,
 ) {
     private val beaconsDirectoryName = "instanaBeacons"
@@ -68,21 +66,6 @@ class InstanaWorkManager(
     private val initialExecutorFuture: ScheduledFuture<*>
 
     internal var lastFlushTimeMillis = AtomicLong(0)
-    // AtomicBoolean to safely transition from true→false exactly once across threads.
-    internal val sendFirstBeacon = AtomicBoolean(true)
-    internal var slowSendStartTime: Long? = null
-        set (value) {
-            if (value == null) {
-                if (field != null) {
-                    Logger.i("Slow send ended at ${System.currentTimeMillis()}")
-                    field = null
-                }
-            } else if (field == null) {
-                // if slow send started, do not update so as to keep the earliest time
-                field = value
-                Logger.i("Slow send started at ${value!!}")
-            }
-        }
 
     init {
         constraints = configureWorkManager(config)
@@ -179,13 +162,6 @@ class InstanaWorkManager(
             .build()
     }
 
-    internal fun canDoSlowSend(): Boolean {
-        return config?.slowSendIntervalMillis != null
-    }
-    internal fun isInSlowSendMode(): Boolean {
-        return canDoSlowSend() && (slowSendStartTime != null || sendFirstBeacon.get())
-    }
-
     private fun canScheduleFlush(): Boolean {
         val lastFlush = lastFlushTimeMillis.get()
         if (lastFlush == 0L) return true
@@ -208,12 +184,7 @@ class InstanaWorkManager(
         val directory = getBeaconsDirectory()
         if (directory.isDirectoryEmpty()) return
 
-        var intervalMillis = flushIntervalMillis
-        if (isInSlowSendMode() && !sendFirstBeacon.get()) {
-            intervalMillis = config!!.slowSendIntervalMillis!!
-        }
-
-        flushDebouncer.enqueue(intervalMillis) {
+        flushDebouncer.enqueue(flushIntervalMillis) {
             flushInternal(directory, manager)
         }
     }
@@ -222,7 +193,6 @@ class InstanaWorkManager(
         lastFlushTimeMillis.set(System.currentTimeMillis())
 
         val tag = directory.absolutePath
-        val allowSlowSend = (config?.slowSendIntervalMillis != null)
         return manager.enqueueUniqueWork(
             tag,
             ExistingWorkPolicy.REPLACE,
@@ -231,7 +201,6 @@ class InstanaWorkManager(
                 directory = directory,
                 stagingDirectory = getStagingDirectory(),
                 reportingURL = config?.reportingURL,
-                allowSlowSend,
                 initialDelayMs = flushDelayMs,
                 tag = tag,
                 enableStrictBeaconDedup = config?.enableStrictBeaconDedup ?: false
@@ -241,6 +210,10 @@ class InstanaWorkManager(
 
     @Synchronized
     internal fun queue(beacon: Beacon) {
+        if (config.collectionEnabled.not()) {
+            Logger.d("Data collection is disabled. Dropping beacon: $beacon")
+            return
+        }
         val beaconId = beacon.getBeaconId()
         when {
             isInitialDelayComplete.not() -> {
@@ -275,6 +248,10 @@ class InstanaWorkManager(
 
     @Synchronized
     internal fun queueAndFlushBlocking(beacon: Beacon) {
+        if (config.collectionEnabled.not()) {
+            Logger.d("Data collection is disabled. Dropping crash beacon: $beacon")
+            return
+        }
         val beaconId = beacon.getBeaconId()
         Logger.d("Blocking Queue beacon with: `beaconId` $beaconId")
 

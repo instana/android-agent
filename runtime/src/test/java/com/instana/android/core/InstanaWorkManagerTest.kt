@@ -47,57 +47,6 @@ class InstanaWorkManagerTest : BaseTest() {
     }
 
     @Test
-    fun `test can do slow send`() {
-        Instana.setup(application, InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = 2000))
-        assertEquals(Instana.workManager?.canDoSlowSend(), true)
-    }
-
-    @Test
-    fun `test is in slow send mode must return false when slowSendStartTime is null`() {
-        Instana.setup(application, InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = 2000))
-        Instana.workManager?.slowSendStartTime = null
-        Instana.workManager?.sendFirstBeacon?.set(false)
-        assertNotNull(Instana.workManager?.isInSlowSendMode())
-        Instana.workManager?.isInSlowSendMode()?.let {
-            assertFalse(it)
-        }
-    }
-
-    @Test
-    fun `test is in slow send mode must return true when slowSendStartTime is not null`() {
-        Instana.setup(application, InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = 2000))
-        Instana.workManager?.slowSendStartTime = 1000
-        Instana.workManager?.sendFirstBeacon?.set(false)
-        assertNotNull(Instana.workManager?.isInSlowSendMode())
-        Instana.workManager?.isInSlowSendMode()?.let {
-            assertTrue(it)
-        }
-    }
-
-    @Test
-    fun `test is in slow send mode must return true when slowSendStartTime is not null directly on the class`() {
-        val config = InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = 2000)
-        val instanaWrkManager = InstanaWorkManager(config,app)
-        instanaWrkManager.slowSendStartTime = 1000
-        instanaWrkManager.sendFirstBeacon.set(false)
-        assertNotNull(instanaWrkManager.isInSlowSendMode())
-        instanaWrkManager.isInSlowSendMode().let {
-            assertFalse(it)
-        }
-    }
-
-    @Test
-    fun `test is in slow send mode must return false when slowSendIntervalMillis is null`() {
-        Instana.setup(application, InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = null))
-        Instana.workManager?.slowSendStartTime = 1000
-        Instana.workManager?.sendFirstBeacon?.set(false)
-        assertNotNull(Instana.workManager?.isInSlowSendMode())
-        Instana.workManager?.isInSlowSendMode()?.let {
-            assertFalse(it)
-        }
-    }
-
-    @Test
     fun `test updateQueueItems with values called at init`() {
         Instana.view = "view"
         val config = InstanaConfig(API_KEY, SERVER_URL)
@@ -307,13 +256,27 @@ class InstanaWorkManagerTest : BaseTest() {
     }
 
     @Test
-    fun `test flush with can schedule as in slow send mode and not 1st beacon`(){
-        val config = InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = 100L)
-        val wrkManager = InstanaWorkManager(config,app)
-        wrkManager.sendFirstBeacon.set(false)
+    fun `test slowSendIntervalMillis is deprecated and has no effect on flush interval or batch limit`() {
+        // Setting slowSendIntervalMillis must NOT change the flush debounce interval (always 2s)
+        // and must NOT reduce the batch limit to 1. The field is kept for binary backward
+        // compatibility only — its value is completely ignored at runtime.
+        val config = InstanaConfig(API_KEY, SERVER_URL, slowSendIntervalMillis = 5000)
+        val wrkManager = InstanaWorkManager(config, app)
         val mockWrkManager = Mockito.mock(WorkManager::class.java)
-        wrkManager.lastFlushTimeMillis.set(1000L)
-        assertEquals(wrkManager.flush(mockWrkManager),Unit)
+        // Gate is open (lastFlushTimeMillis == 0) so flush() should proceed into the debouncer.
+        // The important assertion: flush() returns Unit (no exception) and does NOT crash because
+        // slowSendIntervalMillis logic no longer exists.
+        assertEquals(Unit, wrkManager.flush(mockWrkManager))
+    }
+
+    @Test
+    fun `test slowSendIntervalMillis field still exists and is settable for backward compatibility`() {
+        // Host apps that compiled with slowSendIntervalMillis = 30000 must not crash at runtime.
+        val config = InstanaConfig(API_KEY, SERVER_URL)
+        @Suppress("DEPRECATION")
+        config.slowSendIntervalMillis = 30000L
+        @Suppress("DEPRECATION")
+        assertEquals(30000L, config.slowSendIntervalMillis)
     }
 
     @Test

@@ -128,12 +128,20 @@ class InstanaLifeCycle(
     }
 
     override fun onActivityStarted(activity: Activity) {
-        if(LaunchTimeTracker.applicationStartedFromBackground){
+        if (LaunchTimeTracker.applicationStartedFromBackground) {
             LaunchTimeTracker.startTimer()
         }
         activityName = activity.localClassName.toString()
         activityCount++
         startAppLifecycleIdentificationService(activity.application)
+
+        // When a background-started process receives its first Activity (user opens the app),
+        // replace any lazy background session with a fresh foreground session, then clear the
+        // flag so rotation or subsequent Activity starts do not fire createNewSession() again.
+        if (activityCount == 1 && LaunchTimeTracker.applicationStartedFromBackground) {
+            Instana.createNewSession()
+            LaunchTimeTracker.applicationStartedFromBackground = false
+        }
     }
 
     override fun onActivityDestroyed(activity: Activity) {

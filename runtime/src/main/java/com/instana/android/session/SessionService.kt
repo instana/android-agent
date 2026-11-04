@@ -19,7 +19,16 @@ import java.util.UUID
 class SessionService(
     val context: Context,
     manager: InstanaWorkManager,
-    config: InstanaConfig
+    config: InstanaConfig,
+    origin: String? = null,
+    /**
+     * When a background session is created lazily (triggered by the first beacon in a background
+     * process), the triggering beacon may have a start time earlier than the moment
+     * SessionService is constructed. Pass the triggering beacon's start time here so that the
+     * SESSION_START beacon is timestamped 1 ms before it, guaranteeing SESSION_START is always
+     * the oldest beacon in the session. Null means use the current wall-clock time.
+     */
+    earliestBeaconTimestamp: Long? = null,
 ) {
 
     /**
@@ -28,6 +37,15 @@ class SessionService(
     init {
         val sessionId = UUID.randomUUID()
             .toString() // May produce false positive for StrictMode DiskReads in old Android versions: https://issuetracker.google.com/issues/36969031
+
+        // If the session was created lazily (background), backdate the SESSION_START timestamp
+        // to 1 ms before the earliest beacon that triggered session creation so it always sorts
+        // first in the backend's timeline.
+        val sessionTimestamp = if (earliestBeaconTimestamp != null && earliestBeaconTimestamp > 0L) {
+            earliestBeaconTimestamp - 1L
+        } else {
+            System.currentTimeMillis()
+        }
 
         val connectionProfile = getConnectionProfile(context)
         val session = Beacon.newSessionStart(
@@ -39,6 +57,8 @@ class SessionService(
             sessionId = sessionId,
             view = Instana.view,
             meta = Instana.meta.getAll(),
+            origin = origin,
+            sessionTimestamp = sessionTimestamp,
         )
 
         manager.queue(session)

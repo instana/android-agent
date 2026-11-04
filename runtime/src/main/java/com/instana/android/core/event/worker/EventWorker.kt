@@ -15,7 +15,6 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkerParameters
 import com.instana.android.Instana
 import com.instana.android.core.InstanaWorkManager
-import com.instana.android.core.event.models.Beacon
 import com.instana.android.core.event.worker.EventWorker.Companion.STAGING_RECOVERY_THRESHOLD_MS
 import com.instana.android.core.util.BeaconSendEventListener
 import com.instana.android.core.util.ConstantsAndUtil
@@ -66,13 +65,7 @@ open class EventWorker(
             recoverStagingFiles(stagingDir, beaconsDir, workerTag, strictDedup)
         }
 
-        var inSlowModeBeforeFlush = false
-        var limit = maxBatchLimit
-        if (!isWorkWithoutApp) {
-            inSlowModeBeforeFlush = manager!!.isInSlowSendMode()
-            if (inSlowModeBeforeFlush) limit = 1
-        }
-
+        val limit = maxBatchLimit
         val (data, files) = readAllFiles(manager, beaconsDir, stagingDir, limit, workerTag)
         if (data.isBlank()) {
             return finaliseResult(manager, Result.success(), workerTag, "no-data")
@@ -116,13 +109,7 @@ open class EventWorker(
                 if (isWorkWithoutApp) {
                     if (inflightFiles.size == limit) Result.retry() else Result.success()
                 } else {
-                    if (manager!!.isInSlowSendMode()) {
-                        manager.slowSendStartTime = null  // exit slow-send mode
-                    }
-                    // Reset gate and optionally schedule next batch AFTER deletes are done.
-                    val result = finaliseResult(manager, Result.success(), workerTag, "success")
-                    scheduleFlushAgain(manager, inSlowModeBeforeFlush, inflightFiles.size == limit, workerTag)
-                    result
+                    finaliseResult(manager, Result.success(), workerTag, "success")
                 }
             }
 
@@ -196,21 +183,10 @@ open class EventWorker(
                 }
 
                 if (isWorkWithoutApp) {
-                    if (!anyFileKept) {
-                        Result.failure()
-                    } else if (params.inputData.getBoolean(ALLOW_SLOW_SEND, false)) {
-                        Result.failure()
-                    } else {
-                        Result.retry()
-                    }
+                    if (!anyFileKept) Result.failure() else Result.retry()
                 } else {
                     if (!anyFileKept) {
                         finaliseResult(manager, Result.failure(), workerTag, "all-dropped")
-                    } else if (manager!!.canDoSlowSend()) {
-                        manager.slowSendStartTime = System.currentTimeMillis()
-                        val result = finaliseResult(manager, Result.success(), workerTag, "slow-send")
-                        scheduleFlushAgain(manager, inSlowModeBeforeFlush, workerTag = workerTag)
-                        result
                     } else {
                         finaliseResult(manager, Result.retry(), workerTag, "retry")
                     }
@@ -239,25 +215,6 @@ open class EventWorker(
         return result
     }
 
-    private fun scheduleFlushAgain(
-        instanaManager: InstanaWorkManager,
-        inSlowModeBeforeFlush: Boolean,
-        reachedBatchLimit: Boolean = false,
-        workerTag: String = "",
-    ) {
-        val workManager = instanaManager.getWorkManager()
-        if (workManager == null) {
-            Logger.w("[INSTANA_DEDUP] worker=$workerTag scheduleFlushAgain: WorkManager null, cannot reschedule")
-            return
-        }
-        workManager.run {
-            val shouldReschedule = instanaManager.isInSlowSendMode() || inSlowModeBeforeFlush || reachedBatchLimit
-            if (shouldReschedule) {
-                instanaManager.flush(this)
-            }
-        }
-    }
-
     private fun readAllFiles(
         instanaManager: InstanaWorkManager?,
         directory: File,
@@ -272,7 +229,6 @@ open class EventWorker(
         }
         val sb = StringBuffer()
         var retFiles: Array<File> = arrayOf()
-        val meta = instanaManager?.slowSendStartTime?.toString()
         // Sort oldest-first so session-start beacons (created first) are always delivered
         // first and are never expired while arbitrarily newer beacons are sent.
         filteredFileList = filteredFileList.sortedBy(File::lastModified).toTypedArray()
@@ -305,12 +261,7 @@ open class EventWorker(
                 }
                 return@forEach
             }
-            val finalStr = if (meta != null) {
-                Beacon.addMetaData(beaconStr, "slowSendStartTime", meta)
-            } else {
-                beaconStr
-            }
-            sb.append("$finalStr\n")
+            sb.append("$beaconStr\n")
             retFiles += claimedFile
         }
         Logger.i("[INSTANA_DEDUP] worker=$workerTag readAllFiles: claimed ${retFiles.size} beacon(s)")
@@ -486,7 +437,6 @@ open class EventWorker(
             directory: File,
             stagingDirectory: File?,
             reportingURL: String?,
-            allowSlowSend: Boolean,
             initialDelayMs: Long,
             tag: String,
             enableStrictBeaconDedup: Boolean = false,
@@ -494,7 +444,6 @@ open class EventWorker(
             val dataBuilder = Data.Builder()
                 .putString(DIRECTORY_ABS_PATH, directory.absolutePath)
                 .putString(REPORTING_URL, reportingURL)
-                .putBoolean(ALLOW_SLOW_SEND, allowSlowSend)
                 .putBoolean(ENABLE_STRICT_BEACON_DEDUP, enableStrictBeaconDedup)
             if (stagingDirectory != null) {
                 dataBuilder.putString(STAGING_DIRECTORY_ABS_PATH, stagingDirectory.absolutePath)
@@ -515,7 +464,6 @@ open class EventWorker(
         private const val DIRECTORY_ABS_PATH = "dir_abs_path"
         private const val STAGING_DIRECTORY_ABS_PATH = "staging_dir_abs_path"
         private const val REPORTING_URL = "reporting_url"
-        private const val ALLOW_SLOW_SEND = "allow_slow_mode"
         private const val ENABLE_STRICT_BEACON_DEDUP = "enable_strict_beacon_dedup"
     }
 

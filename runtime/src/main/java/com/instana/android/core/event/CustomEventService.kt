@@ -31,6 +31,7 @@ class CustomEventService(
         error: Throwable?,
         customMetric: Double?
     ) {
+        Instana.ensureSession(beaconStartTime = startTime)
         val sessionId = Instana.sessionId
         if (sessionId == null) {
             Logger.e("Tried send CustomEvent with null sessionId")

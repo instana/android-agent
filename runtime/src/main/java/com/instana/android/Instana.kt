@@ -13,6 +13,9 @@ import android.os.Looper
 import androidx.annotation.RequiresApi
 import androidx.annotation.Size
 import androidx.annotation.VisibleForTesting
+import com.instana.android.Instana.config
+import com.instana.android.Instana.initialiseServices
+import com.instana.android.Instana.sessionId
 import com.instana.android.android.agent.BuildConfig
 import com.instana.android.core.HybridAgentOptions
 import com.instana.android.core.InstanaConfig
@@ -34,6 +37,7 @@ import com.instana.android.instrumentation.HTTPMarker
 import com.instana.android.instrumentation.InstrumentationService
 import com.instana.android.performance.PerformanceReporterService
 import com.instana.android.performance.PerformanceService
+import com.instana.android.performance.launchtime.LaunchTimeTracker
 import com.instana.android.performance.network.NetworkStatsHelper
 import com.instana.android.session.SessionService
 import com.instana.android.view.ViewChangeService
@@ -307,14 +311,44 @@ object Instana {
         avoidStrictModeFalsePositives()
     }
 
-    fun createNewSession(){
+    fun createNewSession() {
+        if (config?.collectionEnabled == false) return
         app?.let { app ->
-            config?.let { config->
-            workManager?.let {  workManager->
-                    sessionService = SessionService(app,workManager,config)
+            config?.let { config ->
+                workManager?.let { workManager ->
+                    sessionService = SessionService(app, workManager, config)
                 }
             }
         }
+    }
+
+    @Synchronized
+    internal fun createBackgroundSession(earliestBeaconTimestamp: Long? = null) {
+        if (sessionId != null) return
+        val theApp = this.app ?: return
+        val theConfig = this.config ?: return
+        if (theConfig.collectionEnabled.not()) return
+        val theWm = this.workManager ?: return
+        sessionService = SessionService(theApp, theWm, theConfig, origin = "background", earliestBeaconTimestamp = earliestBeaconTimestamp)
+    }
+
+    /**
+     * Ensures a session exists before a beacon is emitted in a background-started process.
+     *
+     * No-op when:
+     * - A session already exists ([sessionId] != null), or
+     * - Collection is disabled ([config.collectionEnabled] == false), or
+     * - The process was started in the foreground (session was created in [initialiseServices]).
+     *
+     * @param beaconStartTime The epoch-ms start time of the beacon about to be emitted. When
+     *   provided, the lazily-created SESSION_START beacon is backdated to 1 ms before this value
+     *   so SESSION_START is always the chronologically oldest beacon in the session.
+     */
+    internal fun ensureSession(beaconStartTime: Long? = null) {
+        if (sessionId != null) return
+        if (config?.collectionEnabled == false) return
+        if (!LaunchTimeTracker.applicationStartedFromBackground) return
+        createBackgroundSession(earliestBeaconTimestamp = beaconStartTime)
     }
 
     /**
@@ -407,7 +441,7 @@ object Instana {
                     if (Instana.config?.collectionEnabled == false) {
                         disableAllServices()
                     } else {
-                        initialiseServices(workManager, app, config)
+                        initialiseServices(workManager, app, config, isRuntimeUpdate)
                     }
                 }
                 this.isDone = true
@@ -439,6 +473,7 @@ object Instana {
         }
         crashReporting = null
         sessionService = null
+        sessionId = null
         customEvents = null
         instrumentationService = null
         performanceService = null
@@ -451,10 +486,13 @@ object Instana {
     private fun initialiseServices(
         workManager: InstanaWorkManager,
         app: Application,
-        config: InstanaConfig
+        config: InstanaConfig,
+        isRuntimeUpdate: Boolean = false,
     ) {
         crashReporting = CrashService(app, workManager, config)
-        sessionService = SessionService(app, workManager, config)
+        if (!LaunchTimeTracker.applicationStartedFromBackground && (!isRuntimeUpdate || sessionId == null)) {
+            sessionService = SessionService(app, workManager, config)
+        }
         customEvents = CustomEventService(app, workManager, config)
         instrumentationService = InstrumentationService(app, workManager, config)
         performanceService = PerformanceService(app, config.performanceMonitorConfig, requireNotNull(lifeCycle) {

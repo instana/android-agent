@@ -52,6 +52,12 @@ class InstanaConfig
 
     var enableCrashReporting: Boolean = false,
 
+    @Deprecated(
+        "slowSendIntervalMillis no longer has any effect and will be removed in a future version. " +
+                "The agent now uses exponential backoff with a maximum of 3 retries.",
+        level = DeprecationLevel.WARNING
+    )
+    @java.lang.Deprecated
     var slowSendIntervalMillis: Long? = null,
 
 

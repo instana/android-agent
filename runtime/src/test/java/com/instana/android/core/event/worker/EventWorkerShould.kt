@@ -12,7 +12,6 @@ import androidx.work.Data
 import androidx.work.ListenableWorker
 import androidx.work.NetworkType
 import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import com.instana.android.BaseTest
@@ -21,9 +20,6 @@ import com.instana.android.InstanaTest.Companion.API_KEY
 import com.instana.android.InstanaTest.Companion.SERVER_URL
 import com.instana.android.core.InstanaConfig
 import com.instana.android.core.InstanaWorkManager
-import com.nhaarman.mockitokotlin2.atLeastOnce
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.verify
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
@@ -68,7 +64,8 @@ class EventWorkerShould : BaseTest() {
             .build()
         val directory = app.filesDir
         val workRequest: WorkRequest = EventWorker.createWorkRequest(workerConstraint, directory,
-            null, Instana.config?.reportingURL, false, 0L, "tag")
+            null, Instana.config?.reportingURL, 0L, "tag"
+        )
         val workSpec = workRequest.workSpec
 
         assertThat(workSpec.constraints.requiredNetworkType, `is`(equalTo(NetworkType.UNMETERED)))
@@ -80,7 +77,8 @@ class EventWorkerShould : BaseTest() {
     fun doWorkEnqueued() {
         val directory = app.filesDir
         val request = EventWorker.createWorkRequest(Constraints.NONE, directory,
-            null, Instana.config?.reportingURL, false, 0L, "tag")
+            null, Instana.config?.reportingURL, 0L, "tag"
+        )
 
         val instanaWorkManager = Instana.workManager
         Assert.assertNotNull(instanaWorkManager)
@@ -178,87 +176,6 @@ class EventWorkerShould : BaseTest() {
         finaliseResultMethod.isAccessible = true
         val result = finaliseResultMethod.invoke(eventWorker, null, mockResult, "", "test") as ListenableWorker.Result
         Assert.assertNull(result.outputData)
-    }
-
-    @Test
-    fun `test scheduleFlushAgain checks on work manager in slow send mode`(){
-        // scheduleFlushAgain now takes (InstanaWorkManager, Boolean, Boolean, String)
-        val scheduleFlushAgainMethod = EventWorker::class.java.getDeclaredMethod("scheduleFlushAgain",
-            InstanaWorkManager::class.java,
-            Boolean::class.java,
-            Boolean::class.java,
-            String::class.java)
-        scheduleFlushAgainMethod.isAccessible = true
-        val mockWorkManager = mock(InstanaWorkManager::class.java)
-        val mockInternalWorkManager = mock(WorkManager::class.java)
-        `when`(mockWorkManager.getWorkManager()).thenReturn(mockInternalWorkManager)
-        `when`(mockWorkManager.isInSlowSendMode()).thenReturn(true)
-        scheduleFlushAgainMethod.invoke(eventWorker, mockWorkManager, true, true, "")
-        verify(mockWorkManager, atLeastOnce()).flush(mockInternalWorkManager)
-    }
-
-    @Test
-    fun `test scheduleFlushAgain checks on work manager in slow send mode before flush`(){
-        val scheduleFlushAgainMethod = EventWorker::class.java.getDeclaredMethod("scheduleFlushAgain",
-            InstanaWorkManager::class.java,
-            Boolean::class.java,
-            Boolean::class.java,
-            String::class.java)
-        scheduleFlushAgainMethod.isAccessible = true
-        val mockWorkManager = mock(InstanaWorkManager::class.java)
-        val mockInternalWorkManager = mock(WorkManager::class.java)
-        `when`(mockWorkManager.getWorkManager()).thenReturn(mockInternalWorkManager)
-        `when`(mockWorkManager.isInSlowSendMode()).thenReturn(false)
-        scheduleFlushAgainMethod.invoke(eventWorker, mockWorkManager, true, true, "")
-        verify(mockWorkManager, atLeastOnce()).flush(mockInternalWorkManager)
-    }
-
-    @Test
-    fun `test scheduleFlushAgain checks on work manager in slow send with reachedBatchLimit`(){
-        val scheduleFlushAgainMethod = EventWorker::class.java.getDeclaredMethod("scheduleFlushAgain",
-            InstanaWorkManager::class.java,
-            Boolean::class.java,
-            Boolean::class.java,
-            String::class.java)
-        scheduleFlushAgainMethod.isAccessible = true
-        val mockWorkManager = mock(InstanaWorkManager::class.java)
-        val mockInternalWorkManager = mock(WorkManager::class.java)
-        `when`(mockWorkManager.getWorkManager()).thenReturn(mockInternalWorkManager)
-        `when`(mockWorkManager.isInSlowSendMode()).thenReturn(false)
-        scheduleFlushAgainMethod.invoke(eventWorker, mockWorkManager, false, true, "")
-        verify(mockWorkManager, atLeastOnce()).flush(mockInternalWorkManager)
-    }
-
-    @Test
-    fun `test scheduleFlushAgain checks on work manager in slow send with empty message`(){
-        val scheduleFlushAgainMethod = EventWorker::class.java.getDeclaredMethod("scheduleFlushAgain",
-            InstanaWorkManager::class.java,
-            Boolean::class.java,
-            Boolean::class.java,
-            String::class.java)
-        scheduleFlushAgainMethod.isAccessible = true
-        val mockWorkManager = mock(InstanaWorkManager::class.java)
-        val mockInternalWorkManager = mock(WorkManager::class.java)
-        `when`(mockWorkManager.getWorkManager()).thenReturn(mockInternalWorkManager)
-        `when`(mockWorkManager.isInSlowSendMode()).thenReturn(false)
-        scheduleFlushAgainMethod.invoke(eventWorker, mockWorkManager, false, false, "")
-        verify(mockWorkManager, never()).flush(mockInternalWorkManager)
-    }
-
-    @Test
-    fun `test scheduleFlushAgain checks on work manager is null`(){
-        val scheduleFlushAgainMethod = EventWorker::class.java.getDeclaredMethod("scheduleFlushAgain",
-            InstanaWorkManager::class.java,
-            Boolean::class.java,
-            Boolean::class.java,
-            String::class.java)
-        scheduleFlushAgainMethod.isAccessible = true
-        val mockWorkManager = mock(InstanaWorkManager::class.java)
-        val mockInternalWorkManager = mock(WorkManager::class.java)
-        `when`(mockWorkManager.getWorkManager()).thenReturn(null)
-        `when`(mockWorkManager.isInSlowSendMode()).thenReturn(false)
-        scheduleFlushAgainMethod.invoke(eventWorker, mockWorkManager, false, false, "")
-        verify(mockWorkManager, never()).flush(mockInternalWorkManager)
     }
 
     @Test

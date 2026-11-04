@@ -27,6 +27,7 @@ internal class DropBeaconReporterService(
         droppingStartTime: Long,
         dropBeaconStartView: String?
     ) {
+        Instana.ensureSession()
         val sessionId = Instana.sessionId
         if (sessionId == null) {
             Logger.e("Tried send DropBeacon with null sessionId")

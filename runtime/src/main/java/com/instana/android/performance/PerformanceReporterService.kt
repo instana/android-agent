@@ -29,6 +29,7 @@ internal class PerformanceReporterService(
     fun sendPerformance(
         performanceMetric: PerformanceMetric
     ) {
+        Instana.ensureSession()
         val sessionId = Instana.sessionId
         if (sessionId == null) {
             Logger.e("Tried sending Performance beacon with null sessionId")

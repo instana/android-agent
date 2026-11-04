@@ -49,6 +49,9 @@ class CrashService(
             handler?.disable()
             return
         }
+        if (config.collectionEnabled.not()) {
+            return
+        }
 
         val stackTrace = Log.getStackTraceString(throwable)
 
@@ -65,6 +68,7 @@ class CrashService(
         } else throwable?.javaClass?.name
 
         // send crash
+        Instana.ensureSession()
         val beacon = Beacon.newCrash(
             appKey = appKey,
             appProfile = Instana.appProfile,

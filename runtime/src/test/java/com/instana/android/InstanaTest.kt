@@ -9,8 +9,6 @@ package com.instana.android
 import android.R
 import android.app.Activity
 import android.app.Application
-import android.net.ConnectivityManager
-import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -591,15 +589,16 @@ class InstanaTest : BaseTest() {
         // Initialize lifecycle
         setPrivateField(Instana, "lifeCycle", mockInstanaLifeCycle)
 
-        // When - invoke initialiseServices
+        // When - invoke initialiseServices (isRuntimeUpdate = false so foreground path is taken)
         val initialiseServicesMethod = Instana::class.java.getDeclaredMethod(
             "initialiseServices",
             InstanaWorkManager::class.java,
             Application::class.java,
-            InstanaConfig::class.java
+            InstanaConfig::class.java,
+            Boolean::class.javaPrimitiveType
         )
         initialiseServicesMethod.isAccessible = true
-        initialiseServicesMethod.invoke(Instana, mockWorkManager, app, config)
+        initialiseServicesMethod.invoke(Instana, mockWorkManager, app, config, false)
 
         // Then - verify all services are initialized
         Assert.assertNotNull(Instana.crashReporting)

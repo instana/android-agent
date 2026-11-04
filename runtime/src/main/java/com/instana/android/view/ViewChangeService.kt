@@ -24,6 +24,7 @@ class ViewChangeService(
     private val appKey = config.key
 
     fun sendViewChange(viewName: String) {
+        Instana.ensureSession()
         val sessionId = Instana.sessionId
         if (sessionId == null) {
             Logger.e("Tried send CustomEvent with null sessionId")

@@ -11,6 +11,12 @@ _2026-10-26_
 - Added bounded retries with exponential backoff (capped at 3 for unconfirmed in-flight beacons and 5 for network drops) for failed beacon transmissions.
 - Improved beacon queue ordering (oldest-first) and softened buffer overflow cleanup.
 
+_2026-11-03_
+
+- Added a fix to prevent ghosted session start events from being sent.
+- Users will see fewer sessions, as unwanted background ghost sessions are no longer sent.
+- `slowSendIntervalMillis` API's implementation is removed, no longer supported.
+
 ## Version 6.4.1
 
 _2026-10-06_
